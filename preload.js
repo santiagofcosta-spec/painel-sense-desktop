@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld("senseAPI", {
   senseIaAsk: () => ipcRenderer.invoke("sense-ia-ask"),
   /** Leitura automática: minutos entre disparos (0 = off). */
   getSenseIaSchedule: () => ipcRenderer.invoke("get-sense-ia-schedule"),
+  getLicenseStatus: () => ipcRenderer.invoke("get-license-status"),
   /** Chamado quando o ficheiro dashboard.json muda no disco (ex.: MT5 gravou). */
   onDashboardFileChanged: (cb) => {
     if (typeof cb !== "function") return;

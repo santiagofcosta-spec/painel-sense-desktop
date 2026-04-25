@@ -12,6 +12,14 @@
     "gensparkBase": "",
     "autoEveryMinutes": 30
   },
+  "license": {
+    "enabled": false,
+    "serverUrl": "http://127.0.0.1:8787",
+    "licenseKey": "",
+    "mt5Account": "",
+    "appId": "painel",
+    "hmacSecret": ""
+  },
   "security": {
     "machineLock": {
       "enabled": false,

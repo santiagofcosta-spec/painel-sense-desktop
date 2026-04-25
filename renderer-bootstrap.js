@@ -86,3 +86,16 @@ if (window.senseAPI && typeof window.senseAPI.onDashboardFileChanged === "functi
     tick();
   });
 }
+
+if (window.senseAPI && typeof window.senseAPI.getLicenseStatus === "function") {
+  window.senseAPI
+    .getLicenseStatus()
+    .then((s) => {
+      if (!s || typeof s !== "object") return;
+      if (s.mode === "offline_grace") {
+        const until = s.graceUntil ? ` até ${s.graceUntil}` : "";
+        setDataBanner(true, `Licença em modo offline (grace 24h)${until}.`);
+      }
+    })
+    .catch(() => {});
+}

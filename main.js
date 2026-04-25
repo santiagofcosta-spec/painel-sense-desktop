@@ -22,6 +22,13 @@ const {
 } = require(path.join(__dirname, "scripts", "lib", "sense-ia-ask-core.js"));
 
 let mainWindow = null;
+let licenseRuntimeStatus = {
+  ok: false,
+  mode: "unknown",
+  reason: "not_checked",
+  checkedAt: null,
+  graceUntil: null,
+};
 /** fs.watch da pasta do dashboard — leitura imediata quando o MT5 grava (além do intervalo). */
 let dashboardWatchHandle = null;
 let dashboardWatchDebounce = null;
@@ -48,6 +55,27 @@ function readConfigJson() {
     return JSON.parse(stripJsonBom(fs.readFileSync(cfg, "utf8")));
   } catch (e) {
     return {};
+  }
+}
+
+function readLicenseConfig() {
+  const cfg = readConfigJson();
+  const lic = cfg && cfg.license && typeof cfg.license === "object" ? cfg.license : {};
+  return {
+    enabled: lic.enabled === true,
+    serverUrl: String(lic.serverUrl || "").trim(),
+    licenseKey: String(lic.licenseKey || "").trim(),
+    mt5Account: String(lic.mt5Account || "").trim(),
+    appId: String(lic.appId || "painel").trim() || "painel",
+    hmacSecret: String(process.env.SENSE_LICENSE_HMAC_SECRET || lic.hmacSecret || "").trim(),
+  };
+}
+
+function licenseCachePath() {
+  try {
+    return path.join(app.getPath("userData"), "license-cache.json");
+  } catch (e) {
+    return path.join(__dirname, "license-cache.json");
   }
 }
 
@@ -166,6 +194,149 @@ function normalizeHexSig(sigRaw) {
   const s = String(sigRaw || "").trim().toLowerCase();
   if (s.startsWith("sha256=")) return s.slice("sha256=".length).trim();
   return s;
+}
+
+function verifyLicenseSignedPayload(payload, signature, secret) {
+  if (!payload || typeof payload !== "object") return false;
+  const sig = normalizeHexSig(signature);
+  if (!sig || !secret) return false;
+  const expected = hmacSha256Hex(secret, stableStringify(payload));
+  return timingSafeEqualHex(sig, expected);
+}
+
+function readLicenseCache() {
+  try {
+    const p = licenseCachePath();
+    if (!fs.existsSync(p)) return null;
+    const raw = stripJsonBom(fs.readFileSync(p, "utf8"));
+    const j = JSON.parse(raw);
+    if (!j || typeof j !== "object") return null;
+    return j;
+  } catch (e) {
+    return null;
+  }
+}
+
+function writeLicenseCache(entry) {
+  try {
+    const p = licenseCachePath();
+    fs.writeFileSync(p, JSON.stringify(entry, null, 2) + "\n", "utf8");
+  } catch (e) {
+    console.warn("[Painel SENSE] license-cache write:", e.message || e);
+  }
+}
+
+async function validateLicenseOnline(licCfg) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6000);
+  try {
+    const payload = {
+      licenseKey: licCfg.licenseKey,
+      mt5Account: licCfg.mt5Account,
+      machineHash: getCurrentMachineFingerprint(),
+      appId: licCfg.appId || "painel",
+      appVersion: app.getVersion(),
+    };
+    const url = String(licCfg.serverUrl || "").replace(/\/+$/, "") + "/v1/license/validate";
+    const r = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    const body = await r.json();
+    if (!body || typeof body !== "object") {
+      return { ok: false, reason: "license_response_invalid" };
+    }
+    const signature = body.signature;
+    const signedPayload = {
+      ok: body.ok === true,
+      licenseStatus: String(body.licenseStatus || ""),
+      serverTime: String(body.serverTime || ""),
+      onlineValidUntil: String(body.onlineValidUntil || ""),
+      graceUntil: String(body.graceUntil || ""),
+      reason: String(body.reason || ""),
+    };
+    if (!verifyLicenseSignedPayload(signedPayload, signature, licCfg.hmacSecret)) {
+      return { ok: false, reason: "license_signature_invalid" };
+    }
+    const entry = {
+      payload: signedPayload,
+      signature: normalizeHexSig(signature),
+      checkedAt: new Date().toISOString(),
+      source: "online",
+    };
+    writeLicenseCache(entry);
+    if (!signedPayload.ok || signedPayload.licenseStatus !== "active") {
+      return { ok: false, reason: signedPayload.reason || "license_denied", payload: signedPayload };
+    }
+    return { ok: true, payload: signedPayload };
+  } catch (e) {
+    return { ok: false, reason: e && e.name === "AbortError" ? "license_timeout" : "license_network_error" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function validateLicenseFromCache(licCfg) {
+  const cached = readLicenseCache();
+  if (!cached || !cached.payload || !cached.signature) {
+    return { ok: false, reason: "license_cache_missing" };
+  }
+  const signedPayload = cached.payload;
+  if (!verifyLicenseSignedPayload(signedPayload, cached.signature, licCfg.hmacSecret)) {
+    return { ok: false, reason: "license_cache_signature_invalid" };
+  }
+  const graceUntilMs = Date.parse(String(signedPayload.graceUntil || ""));
+  if (!Number.isFinite(graceUntilMs) || Date.now() > graceUntilMs) {
+    return { ok: false, reason: "license_grace_expired" };
+  }
+  if (signedPayload.ok !== true || String(signedPayload.licenseStatus) !== "active") {
+    return { ok: false, reason: String(signedPayload.reason || "license_cache_denied") };
+  }
+  return { ok: true, payload: signedPayload };
+}
+
+async function enforceOnlineLicenseOrThrow() {
+  const licCfg = readLicenseConfig();
+  if (!licCfg.enabled) {
+    licenseRuntimeStatus = {
+      ok: true,
+      mode: "disabled",
+      reason: "",
+      checkedAt: new Date().toISOString(),
+      graceUntil: null,
+    };
+    return;
+  }
+  if (!licCfg.serverUrl || !licCfg.licenseKey || !licCfg.mt5Account || !licCfg.hmacSecret) {
+    throw new Error("Licenciamento ativo, mas faltam campos: serverUrl/licenseKey/mt5Account/hmacSecret.");
+  }
+
+  const online = await validateLicenseOnline(licCfg);
+  if (online.ok) {
+    licenseRuntimeStatus = {
+      ok: true,
+      mode: "online",
+      reason: "",
+      checkedAt: new Date().toISOString(),
+      graceUntil: online.payload.graceUntil || null,
+    };
+    return;
+  }
+
+  const cached = validateLicenseFromCache(licCfg);
+  if (cached.ok) {
+    licenseRuntimeStatus = {
+      ok: true,
+      mode: "offline_grace",
+      reason: online.reason || "",
+      checkedAt: new Date().toISOString(),
+      graceUntil: cached.payload.graceUntil || null,
+    };
+    return;
+  }
+  throw new Error(`Licença inválida (${online.reason || cached.reason || "denied"}).`);
 }
 
 function readSecurityConfig() {
@@ -608,17 +779,24 @@ app.whenReady().then(() => {
     app.quit();
     return;
   }
-  const fp = getDataFilePath();
-  /* Evitar imprimir caminho com acentos no CMD (codepage) — só confirma leitura. */
-  console.log("[Painel SENSE] JSON:", fs.existsSync(fp) ? "ficheiro encontrado" : "ficheiro em falta");
-  const dq = demoPulsoSpeedQueryFromEnvOrConfig();
-  if (dq && dq.demoPulso === "1") {
-    console.log("[Painel SENSE] Demo pulso Speed: %PICO / %PERSIST simulados (ciclo).");
-  }
-  createWindow();
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
+  enforceOnlineLicenseOrThrow()
+    .then(() => {
+      const fp = getDataFilePath();
+      /* Evitar imprimir caminho com acentos no CMD (codepage) — só confirma leitura. */
+      console.log("[Painel SENSE] JSON:", fs.existsSync(fp) ? "ficheiro encontrado" : "ficheiro em falta");
+      const dq = demoPulsoSpeedQueryFromEnvOrConfig();
+      if (dq && dq.demoPulso === "1") {
+        console.log("[Painel SENSE] Demo pulso Speed: %PICO / %PERSIST simulados (ciclo).");
+      }
+      createWindow();
+      app.on("activate", () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+      });
+    })
+    .catch((e) => {
+      dialog.showErrorBox("Licença inválida", e.message || String(e));
+      app.quit();
+    });
 });
 
 app.on("window-all-closed", () => {
@@ -685,4 +863,8 @@ ipcMain.handle("get-security-status", async () => {
     dashboardSignatureEnabled: sigCfg.enabled === true,
     dashboardSignatureField: String(sigCfg.field || "_sig"),
   };
+});
+
+ipcMain.handle("get-license-status", async () => {
+  return { ...licenseRuntimeStatus };
 });
