@@ -1,0 +1,28 @@
+/**
+ * [shell] — parte 0025 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.panel-hud {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  overflow-x: hidden;
+  overflow-y: visible;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 170px;
+  max-height: none;
+  /* +2px úteis por lado nas 3 colunas (AGR / Radar / Makers) */
+  padding-left: 5px;
+  padding-right: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-hud::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}

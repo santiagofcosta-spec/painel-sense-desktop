@@ -1,0 +1,121 @@
+/**
+ * [hud] — parte 0014 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-makers-preparo__ia-coda-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e0f2fe;
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.95),
+    0 0 20px rgba(34, 211, 238, 0.5);
+}
+
+.hud-makers-preparo__ia-coda-yellow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #1c1917;
+  background: linear-gradient(145deg, #fde68a, #facc15);
+  border: 1px solid rgba(253, 224, 71, 0.95);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  text-align: center;
+  box-shadow:
+    0 0 14px rgba(250, 204, 21, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.hud-makers-preparo__ia-coda-trend {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  line-height: 1.35;
+  transform-origin: center center;
+  animation: hudIaTrendPulseBuy 2.25s ease-in-out infinite;
+}
+
+.hud-makers-preparo__ia-coda-trend--buy {
+  color: #6ee7b7;
+  animation-name: hudIaTrendPulseBuy;
+}
+
+.hud-makers-preparo__ia-coda-trend--sell {
+  color: #fca5a5;
+  animation-name: hudIaTrendPulseSell;
+  animation-duration: 2.1s;
+}
+
+.hud-makers-preparo__ia-coda-trend--lat {
+  color: #fde68a;
+  animation-name: hudIaTrendPulseLat;
+  animation-duration: 2.55s;
+}
+
+@keyframes hudIaTrendPulseBuy {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(52, 211, 153, 0.7),
+      0 0 18px rgba(16, 185, 129, 0.28);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.12);
+    text-shadow:
+      0 0 16px rgba(110, 231, 183, 0.95),
+      0 0 30px rgba(52, 211, 153, 0.5);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hudIaTrendPulseSell {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(248, 113, 113, 0.72),
+      0 0 18px rgba(239, 68, 68, 0.28);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.12);
+    text-shadow:
+      0 0 16px rgba(252, 165, 165, 0.95),
+      0 0 30px rgba(248, 113, 113, 0.48);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hudIaTrendPulseLat {
+  0%,
+  100% {
+    opacity: 0.88;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(250, 204, 21, 0.65),
+      0 0 18px rgba(234, 179, 8, 0.25);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.1);
+    text-shadow:
+      0 0 16px rgba(253, 224, 71, 0.88),
+      0 0 28px rgba(250, 204, 21, 0.42);
+    transform: scale(1.025);
+  }
+}

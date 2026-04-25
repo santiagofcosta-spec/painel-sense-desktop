@@ -1,0 +1,13 @@
+/**
+ * [gatilho] — parte 0016 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-col-instruments .hud-makers-preparo .hud-makers-preparo__logo--dual {
+  min-width: min(260px, 88vw);
+  max-width: min(400px, 94vw);
+  width: auto;
+  flex: 1 1 auto;
+  min-height: calc(var(--gatilho-idle-logo-side, 76px) * 1.05 + 8px);
+}

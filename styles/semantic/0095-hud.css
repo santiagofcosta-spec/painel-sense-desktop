@@ -1,0 +1,25 @@
+/**
+ * [hud] — parte 0095 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* % PICO / % Persist — arco “hero” maior; separador quase invisível */
+.hud-col-instruments .hud-makers-delta {
+  --radar-delta-gauge-svg-h-makers: 72px;
+  margin-top: 2px;
+  padding: 10px 0 8px;
+  border-top-color: rgba(74, 100, 140, 0.14);
+  position: relative;
+  z-index: 2;
+  min-height: 146px;
+}
+
+.hud-col-instruments .hud-makers-delta .radar-delta-gauges-wrap {
+  padding-bottom: 2px;
+}
+
+.hud-col-instruments .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__num {
+  font-size: 1.55rem;
+  letter-spacing: 0.03em;
+}

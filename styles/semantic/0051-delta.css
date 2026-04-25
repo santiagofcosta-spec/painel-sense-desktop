@@ -1,0 +1,18 @@
+/**
+ * [delta] — parte 0051 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.delta-hint {
+  margin: 4px 0 0;
+  line-height: 1.4;
+}
+
+.delta-hint--independencia {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(74, 100, 140, 0.35);
+  font-size: 11px;
+  color: var(--ui-label-muted);
+}

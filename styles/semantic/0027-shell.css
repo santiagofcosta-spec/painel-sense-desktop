@@ -1,0 +1,22 @@
+/**
+ * [shell] — parte 0027 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.panel-bl {
+  grid-column: 1;
+  grid-row: 3;
+  min-height: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.panel-bl .panel-title {
+  flex-shrink: 0;
+}

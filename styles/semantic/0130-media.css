@@ -1,0 +1,28 @@
+/**
+ * [media] — parte 0130 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .regime-mercado--one::after {
+    animation: none;
+    opacity: 0;
+  }
+
+  .regime-mercado--one::before {
+    animation: none;
+    opacity: 0.88;
+  }
+
+  .regime-mercado__strip .regime-mercado__vies--buy,
+  .regime-mercado__strip .regime-mercado__vies--sell,
+  .regime-mercado__strip .regime-mercado__vies--neutro {
+    animation: none !important;
+  }
+
+  .regime-mercado--one.regime-mercado--flash {
+    animation: none;
+    box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.35);
+  }
+}

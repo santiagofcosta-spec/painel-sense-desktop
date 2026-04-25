@@ -1,0 +1,13 @@
+/**
+ * [media] — parte 0056 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-col-makers .hud-ptax-inline__compass.ptax-compass,
+  .hud-col-makers .hud-ptax-inline__compass .ptax-compass__ring,
+  .hud-col-makers .hud-ptax-inline__compass .ptax-compass__needle {
+    animation: none !important;
+  }
+}

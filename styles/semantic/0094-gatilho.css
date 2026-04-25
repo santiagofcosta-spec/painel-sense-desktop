@@ -1,0 +1,98 @@
+/**
+ * [gatilho] — parte 0094 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-cols > .hud-col:first-child .gatilho-wrap {
+  clear: both;
+  margin-top: 12px;
+  padding: 4px 0 8px;
+  border-top: 1px solid rgba(47, 66, 100, 0.5);
+  background: linear-gradient(180deg, rgba(13, 20, 34, 0.42) 0%, transparent 100%);
+  isolation: isolate;
+}
+
+/* HOLD ativo: subir bloco de botões + Preço/SL/TP para evitar corte inferior. */
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold {
+  margin-top: 4px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main {
+  margin-top: -6px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-btns {
+  justify-content: flex-end;
+  margin-top: -8px;
+  margin-bottom: 2px;
+  padding-right: 12px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-details-wrap {
+  margin-top: -4px;
+  margin-bottom: 0;
+  align-items: flex-end;
+  padding-right: 12px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-details {
+  padding: 4px 7px;
+  width: min(280px, 100%);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap .gatilho-subtitle {
+  margin: 0 0 6px;
+  padding: 0;
+  line-height: 1.35;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle .gatilho-lateral-alert-wrap,
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle .gatilho-breakeven-wrap,
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle h4.gatilho-subtitle {
+  position: relative;
+  z-index: 2;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-body--hold-only-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: stretch;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-body--hold-only-main .gatilho-body__main {
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+  margin-top: -28px !important;
+  gap: 1px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-btns {
+  width: min(280px, 100%);
+  justify-content: center;
+  /* Margem negativa puxava o bloco de preço/SL/TP para cima e sobreponha o botão. */
+  margin: -6px 0 8px !important;
+  padding-right: 0;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-details-wrap {
+  width: min(280px, 100%);
+  align-items: center;
+  margin: 6px 0 0 !important;
+  padding-right: 0;
+  gap: 3px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-details {
+  width: min(280px, 100%);
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-detail-row {
+  align-items: center;
+}

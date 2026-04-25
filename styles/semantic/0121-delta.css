@@ -1,0 +1,23 @@
+/**
+ * [delta] — parte 0121 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.delta-row .streak-txt {
+  font-size: 11px;
+  line-height: 1.22;
+}
+
+.delta-row .hammer {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px;
+  line-height: 1.22;
+  text-align: right;
+  max-width: 16rem;
+}
+
+.delta-row--neut .hammer {
+  color: #cbd5e1;
+}

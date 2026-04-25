@@ -1,0 +1,11 @@
+/**
+ * [gatilho] — parte 0008 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.sense-ia-enabled .hud-makers-preparo .gatilho-idle-logo--sense-ia:focus-visible {
+  outline: 1px solid rgba(130, 180, 255, 0.55);
+  outline-offset: 3px;
+  border-radius: 8px;
+}

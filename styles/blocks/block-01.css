@@ -1,0 +1,1398 @@
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * % Pico / % Persist (Makers): arcos um pouco maiores que o Radar base (58px), sem ir ao 76px antigo.
+ * Logo do gatilho em repouso: variável à parte (76px × escala).
+ */
+:root {
+  --radar-delta-gauge-svg-h-makers: 66px;
+  --gatilho-idle-logo-gauge-baseline: 76px;
+  --gatilho-idle-logo-scale: 1.92;
+  --ui-gap: 6px;
+  --ui-panel-padding: 7px;
+  --ui-panel-radius: 9px;
+  --ui-title-size: 11px;
+  --ui-text-size: 11.5px;
+  --ui-small-size: 10px;
+  --grid-gap: 5px;
+  --flow-row-gap: 4px;
+  /* Secundário sobre #070b12 — mais legível que #5c6a8a / #6a7a9a */
+  --ui-text-muted: #99abc9;
+  --ui-label-muted: #a4b3cf;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    48vw
+  );
+
+  --speed-pos: #38bdf8;
+  --speed-pos-soft: #7dd3fc;
+  --speed-pos-rgb: 56, 189, 248;
+
+  --speed-neg: #e879f9;
+  --speed-neg-soft: #f0abfc;
+  --speed-neg-rgb: 232, 121, 249;
+
+  --speed-neut: #94a3b8;
+  --speed-neut-num: #e2e8f0;
+  --speed-neut-rgb: 148, 163, 184;
+
+  /* Cartões placar (BUY/SELL) — barra de força reutiliza a mesma família */
+  --placar-score-buy-border: #1e4d3a;
+  --placar-score-buy-glow: rgba(0, 255, 140, 0.42);
+  --placar-score-buy-mid: #22c55e;
+  --placar-score-buy-light: #86efac;
+
+  --placar-score-sell-border: #4d1e2a;
+  --placar-score-sell-glow: rgba(255, 60, 80, 0.48);
+  --placar-score-sell-mid: #ff3c50;
+  --placar-score-sell-light: #fda4af;
+
+  /* Bloco Δ: barras e % — mesma família que .delta-row (rápida / forte), não o radar % Pico·Persist */
+  --delta-press-buy-soft: #7dd3fc;
+  --delta-press-buy-mid: #38bdf8;
+  --delta-press-buy-deep: #0284c7;
+  --delta-press-buy-rgb: 56, 189, 248;
+
+  --delta-press-sell-soft: #fdba74;
+  --delta-press-sell-mid: #fb923c;
+  --delta-press-sell-deep: #c2410c;
+  --delta-press-sell-rgb: 251, 146, 60;
+
+  /* Multiplicador global (>1 = mais lento). */
+  --sense-anim-factor: 2.05;
+  /*
+   * Extra em brilhos que atravessam o arco, medidores speed, barras Δ agressor
+   * e pontos de sequência — estes costumavam parecer mais rápidos que o resto.
+   */
+  --sense-glow-sweep-extra: 1.65;
+  /* Alvos / níveis: sombras pulsantes — mais lentas e discretas */
+  --sense-levels-pulse-extra: 1.9;
+  /* Coluna Makers só: pulso do arco / relógio P+P */
+  --sense-makers-gauge-extra: 1.55;
+  /*
+   * Makers só: feixe de luz (esq.→dir.) nos dois medidores % Pico e % Persist —
+   * mais lento que o pulso do arco; não afeta o radar central.
+   */
+  --sense-makers-shine-sweep-extra: 4.1;
+}
+
+/* Modo focado em latência: corta animações decorativas para liberar CPU/GPU ao render dos ticks. */
+html.realtime-optimized {
+  --sense-glow-sweep-extra: 6.5;
+  --sense-levels-pulse-extra: 6.5;
+  --sense-makers-gauge-extra: 5.5;
+  --sense-makers-shine-sweep-extra: 12;
+}
+
+html.realtime-optimized .signal-strip--active .signal-strip__moving,
+html.realtime-optimized .hud-line--radar-consensus-pulse,
+html.realtime-optimized .hud-makers-preparo__flow-lines,
+html.realtime-optimized .hud-makers-preparo__shine,
+html.realtime-optimized .pp-clock,
+html.realtime-optimized .delta-bars::before,
+html.realtime-optimized .delta-bars::after {
+  animation: none !important;
+}
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+  /* Sem reserva de faixa para scrollbar — evita “faixa” visível ao lado do conteúdo */
+  scrollbar-gutter: unset;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #070b12;
+  color: #e8f0ff;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2a44;
+  background: #0a101c;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.data-banner {
+  display: none;
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1.45;
+  color: #fecaca;
+  background: linear-gradient(90deg, #3f1d1d 0%, #2a1212 100%);
+  border-bottom: 1px solid #7f1d1d;
+}
+
+.data-banner.data-banner--show {
+  display: block;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: block;
+  height: 30px;
+  width: auto;
+  max-width: min(220px, 42vw);
+  object-fit: contain;
+  mix-blend-mode: lighten;
+  opacity: 0.95;
+  filter:
+    drop-shadow(0 0 6px rgba(130, 180, 255, 0.25))
+    drop-shadow(0 0 12px rgba(90, 120, 220, 0.12));
+}
+
+.hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: #b4c3df;
+}
+
+/* Caminho do JSON — canto superior direito. (SENSE IA: clique na logo central do HUD.) */
+.topbar__tail {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.btn-pick-json {
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #dbe8ff;
+  background: rgba(30, 58, 95, 0.55);
+  border: 1px solid rgba(100, 140, 200, 0.45);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-pick-json:hover {
+  background: rgba(40, 80, 130, 0.65);
+  border-color: rgba(130, 170, 230, 0.55);
+}
+
+.btn-pick-json:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+/* Logo central do HUD como atalho SENSE IA (cursor só quando o preload expõe senseIaAsk). */
+.sense-ia-enabled .hud-makers-preparo .gatilho-idle-logo--sense-ia {
+  cursor: pointer;
+}
+
+.sense-ia-enabled .hud-makers-preparo .hud-makers-preparo__logo--dual {
+  cursor: pointer;
+}
+
+.sense-ia-enabled .hud-makers-preparo .gatilho-idle-logo--sense-ia:focus-visible {
+  outline: 1px solid rgba(130, 180, 255, 0.55);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+.sense-ia-enabled .hud-makers-preparo .hud-makers-preparo__logo--dual:focus-visible {
+  outline: 1px solid rgba(130, 180, 255, 0.55);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.sense-ia-dialog {
+  margin: auto;
+  max-width: min(560px, 92vw);
+  width: 100%;
+  padding: 0;
+  border: 1px solid rgba(71, 85, 105, 0.75);
+  border-radius: 12px;
+  background: #0c1422;
+  color: #e2e8f0;
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.55),
+    0 0 0 1px rgba(34, 211, 238, 0.08);
+}
+
+.sense-ia-dialog[hidden] {
+  display: none !important;
+}
+
+.sense-ia-dialog.sense-ia-dialog--floating {
+  position: fixed;
+  inset: auto 16px 16px auto;
+  margin: 0;
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(70vh, 560px);
+  z-index: 9999;
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow:
+    0 26px 60px rgba(2, 6, 15, 0.72),
+    0 0 0 1px rgba(56, 189, 248, 0.25),
+    0 0 28px rgba(34, 211, 238, 0.2);
+}
+
+.sense-ia-dialog::backdrop {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Failsafe global: qualquer <dialog> aberto nunca deve escurecer o painel. */
+dialog::backdrop {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+.sense-ia-dialog__panel {
+  padding: 14px 16px 12px;
+}
+
+.sense-ia-dialog__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.sense-ia-dialog__title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #a5f3fc;
+  text-transform: uppercase;
+}
+
+.sense-ia-dialog__close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  font-size: 22px;
+  line-height: 1;
+  color: #94a3b8;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(71, 85, 105, 0.65);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sense-ia-dialog__close:hover {
+  color: #f1f5f9;
+  background: rgba(51, 65, 85, 0.75);
+}
+
+.sense-ia-dialog__meta {
+  margin: 0 0 10px;
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  word-break: break-word;
+}
+
+.sense-ia-dialog__body {
+  min-height: 5em;
+  max-height: min(58vh, 420px);
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(71, 85, 105, 0.82) rgba(12, 20, 34, 0.88);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  padding: 10px 0;
+  border-top: 1px solid rgba(51, 65, 85, 0.55);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+}
+
+.sense-ia-dialog__body--rich {
+  white-space: normal;
+  padding: 10px 2px;
+}
+
+.sense-ia-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sense-ia-card__confidence {
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(51, 65, 85, 0.85);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.sense-ia-card__confidence-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 0.45s ease;
+}
+
+.sense-ia-card__confidence-track--alta .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #22c55e 0%, #86efac 100%);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+}
+
+.sense-ia-card__confidence-track--baixa .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #f43f5e 0%, #fda4af 100%);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.42);
+}
+
+.sense-ia-card__confidence-track--lateral .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #64748b 0%, #cbd5e1 100%);
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.32);
+}
+
+.sense-ia-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sense-ia-dialog__bias,
+.sense-ia-dialog__conf {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(71, 85, 105, 0.75);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.sense-ia-dialog__bias--alta {
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(21, 128, 61, 0.22);
+}
+
+.sense-ia-dialog__bias--baixa {
+  color: #fecdd3;
+  border-color: rgba(244, 63, 94, 0.6);
+  background: rgba(159, 18, 57, 0.22);
+}
+
+.sense-ia-dialog__bias--lateral {
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.55);
+  background: rgba(51, 65, 85, 0.24);
+}
+
+.sense-ia-dialog__conf {
+  color: #bae6fd;
+  border-color: rgba(56, 189, 248, 0.48);
+  background: rgba(8, 47, 73, 0.28);
+}
+
+.sense-ia-card__sec {
+  border: 1px solid rgba(51, 65, 85, 0.68);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.78) 0%, rgba(15, 23, 42, 0.48) 100%);
+  padding: 8px 10px;
+}
+
+.sense-ia-card__ttl {
+  margin: 0 0 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #93c5fd;
+}
+
+.sense-ia-card__txt {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #dbeafe;
+}
+
+.sense-ia-dialog__list {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 5px;
+}
+
+.sense-ia-dialog__list li {
+  color: #e2e8f0;
+}
+
+.sense-ia-dialog__none {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sense-ia-dialog__empty {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-track {
+  background: rgba(12, 20, 34, 0.9);
+  border-radius: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.9) 0%, rgba(51, 65, 85, 0.92) 100%);
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  border-radius: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(100, 116, 139, 0.95) 0%, rgba(71, 85, 105, 0.95) 100%);
+}
+
+.sense-ia-dialog__foot {
+  margin-top: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.sense-ia-dialog__link {
+  margin-left: 0.35em;
+  color: #94a8d4;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sense-ia-dialog__link:hover {
+  color: #c7d6f5;
+}
+
+.sense-ia-dialog__foot strong {
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.sense-ia-dialog__kbd {
+  display: inline;
+  padding: 0.1em 0.35em;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.95em;
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.85);
+  border-radius: 4px;
+}
+
+/* Leitura automática: logo + texto em camadas (logo permanece no DOM; cruza com transição). */
+.hud-makers-preparo__logo--dual {
+  position: relative;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.hud-makers-preparo__dual-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  transition:
+    opacity 0.48s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.48s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hud-makers-preparo__logo--dual.hud-makers-preparo--no-anim .hud-makers-preparo__dual-layer {
+  transition: none !important;
+}
+
+.hud-makers-preparo__dual-layer--logo {
+  justify-content: flex-end;
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  z-index: 1;
+}
+
+.hud-makers-preparo__dual-layer--text {
+  justify-content: flex-start;
+  opacity: 0;
+  transform: translateX(12px);
+  z-index: 2;
+  pointer-events: none;
+  padding: 0;
+  text-align: left;
+  align-items: stretch;
+  inset: auto 0 0 0;
+  width: min(100%, 392px);
+  margin-left: auto;
+  max-height: min(36vh, 270px);
+}
+
+.hud-makers-preparo__logo--dual.hud-makers-preparo__logo--ia-visible .hud-makers-preparo__dual-layer--logo {
+  opacity: 0;
+  transform: translateX(-10px) scale(0.96);
+  pointer-events: none;
+}
+
+.hud-makers-preparo__logo--dual.hud-makers-preparo__logo--ia-visible .hud-makers-preparo__dual-layer--text {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+  background: rgba(8, 14, 26, 0.74);
+  border: 1px solid rgba(100, 140, 200, 0.38);
+  border-radius: 10px;
+  padding: 6px 8px 8px;
+}
+
+.hud-makers-preparo__ia-msg-meta {
+  margin: 0 0 4px;
+  font-size: 9px;
+  color: #64748b;
+  word-break: break-word;
+}
+
+.hud-makers-preparo__ia-msg {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: min(32vh, 240px);
+  width: 100%;
+}
+
+/* Fase final (~10s): cartão neon + caixa amarela + tendência (após o texto principal). */
+.hud-makers-preparo__ia-coda {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  animation: hudIaCodaIn 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes hudIaCodaIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hud-makers-preparo__ia-coda-title {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #e0f2fe;
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.95),
+    0 0 20px rgba(34, 211, 238, 0.5);
+}
+
+.hud-makers-preparo__ia-coda-yellow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #1c1917;
+  background: linear-gradient(145deg, #fde68a, #facc15);
+  border: 1px solid rgba(253, 224, 71, 0.95);
+  border-radius: 8px;
+  padding: 6px 10px;
+  margin-bottom: 8px;
+  text-align: center;
+  box-shadow:
+    0 0 14px rgba(250, 204, 21, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.hud-makers-preparo__ia-coda-trend {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-align: center;
+  line-height: 1.35;
+  transform-origin: center center;
+  animation: hudIaTrendPulseBuy 2.25s ease-in-out infinite;
+}
+
+.hud-makers-preparo__ia-coda-trend--buy {
+  color: #6ee7b7;
+  animation-name: hudIaTrendPulseBuy;
+}
+
+.hud-makers-preparo__ia-coda-trend--sell {
+  color: #fca5a5;
+  animation-name: hudIaTrendPulseSell;
+  animation-duration: 2.1s;
+}
+
+.hud-makers-preparo__ia-coda-trend--lat {
+  color: #fde68a;
+  animation-name: hudIaTrendPulseLat;
+  animation-duration: 2.55s;
+}
+
+@keyframes hudIaTrendPulseBuy {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(52, 211, 153, 0.7),
+      0 0 18px rgba(16, 185, 129, 0.28);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.12);
+    text-shadow:
+      0 0 16px rgba(110, 231, 183, 0.95),
+      0 0 30px rgba(52, 211, 153, 0.5);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hudIaTrendPulseSell {
+  0%,
+  100% {
+    opacity: 0.9;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(248, 113, 113, 0.72),
+      0 0 18px rgba(239, 68, 68, 0.28);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.12);
+    text-shadow:
+      0 0 16px rgba(252, 165, 165, 0.95),
+      0 0 30px rgba(248, 113, 113, 0.48);
+    transform: scale(1.03);
+  }
+}
+
+@keyframes hudIaTrendPulseLat {
+  0%,
+  100% {
+    opacity: 0.88;
+    filter: brightness(1);
+    text-shadow:
+      0 0 8px rgba(250, 204, 21, 0.65),
+      0 0 18px rgba(234, 179, 8, 0.25);
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.1);
+    text-shadow:
+      0 0 16px rgba(253, 224, 71, 0.88),
+      0 0 28px rgba(250, 204, 21, 0.42);
+    transform: scale(1.025);
+  }
+}
+
+.hud-makers-preparo__logo--dual.hud-makers-preparo__logo--ia-coda.hud-makers-preparo__logo--ia-visible .hud-makers-preparo__dual-layer--text {
+  background: rgba(5, 10, 22, 0.97);
+  border: 1px solid rgba(250, 204, 21, 0.42);
+  box-shadow:
+    0 0 28px rgba(34, 211, 238, 0.12),
+    0 0 48px rgba(250, 204, 21, 0.08);
+}
+
+.hud-col-instruments .hud-makers-preparo .hud-makers-preparo__logo--dual {
+  min-width: min(260px, 88vw);
+  max-width: min(400px, 94vw);
+  width: auto;
+  flex: 1 1 auto;
+  min-height: calc(var(--gatilho-idle-logo-side, 76px) * 1.05 + 8px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-makers-preparo__dual-layer {
+    transition: opacity 0.2s ease;
+  }
+
+  .hud-makers-preparo__dual-layer--text {
+    transform: none;
+  }
+
+  .hud-makers-preparo__logo--dual.hud-makers-preparo__logo--ia-visible .hud-makers-preparo__dual-layer--logo {
+    transform: none;
+  }
+
+  .hud-makers-preparo__ia-coda {
+    animation: none;
+  }
+
+  .hud-makers-preparo__ia-coda-trend {
+    animation: none;
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+
+  .hud-makers-preparo__ia-coda-trend--buy {
+    text-shadow:
+      0 0 10px rgba(52, 211, 153, 0.9),
+      0 0 22px rgba(16, 185, 129, 0.35);
+  }
+
+  .hud-makers-preparo__ia-coda-trend--sell {
+    text-shadow:
+      0 0 10px rgba(248, 113, 113, 0.9),
+      0 0 22px rgba(239, 68, 68, 0.35);
+  }
+
+  .hud-makers-preparo__ia-coda-trend--lat {
+    text-shadow:
+      0 0 10px rgba(250, 204, 21, 0.75),
+      0 0 20px rgba(234, 179, 8, 0.3);
+  }
+}
+
+/* Escolha manual oculta — define o ficheiro em `config.json` (ex.: …\\MQL5\\Files\\dashboard.json). */
+#pickJsonBtn {
+  display: none !important;
+}
+
+.path {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  margin-left: 0;
+  max-width: min(38%, 280px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path.path--bad {
+  color: #f87171;
+  max-width: min(92%, 720px);
+}
+
+.path.path--cloud {
+  color: #fbbf24;
+  max-width: min(92%, 720px);
+}
+
+/* Faixa de sinal (mesma lógica do HUD: hold amarelo/fúcsia · consenso verde/vermelho) */
+.signal-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2a44;
+  font-size: 12px;
+  min-height: 34px;
+  flex-shrink: 0;
+}
+
+/* Trilho + texto a deslizar (mesmo padrão que .hud-sr-detect__track / __moving) */
+.signal-strip--active .signal-strip__track {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.signal-strip--active .signal-strip__moving {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.signal-strip--active .signal-strip__src {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.signal-strip--idle {
+  background: #080c14;
+  color: var(--ui-text-muted);
+}
+
+.signal-strip__idle {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.signal-strip__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.93;
+}
+
+.signal-strip__dir {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+/* Texto mais longo quando o gatilho abre a janela dos botões (mesmas cores .signal-src-*) */
+.signal-strip--confirmed .signal-strip__dir {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+
+.signal-strip__src {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.signal-strip--active.signal-compra.signal-src-hold {
+  background: linear-gradient(90deg, #2a2408 0%, #0f0d06 100%);
+  border-left: 4px solid #facc15;
+  color: #fef9c3;
+}
+
+.signal-strip--active.signal-compra.signal-src-hold .signal-strip__dir {
+  color: #fde047;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.45);
+}
+
+.signal-strip--active.signal-compra.signal-src-consenso {
+  background: linear-gradient(90deg, #0d2418 0%, #0a0f14 100%);
+  border-left: 4px solid #22c55e;
+  color: #d1fae5;
+}
+
+.signal-strip--active.signal-compra.signal-src-consenso .signal-strip__dir {
+  color: #4ade80;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+}
+
+.signal-strip--active.signal-venda.signal-src-hold {
+  background: linear-gradient(90deg, #2a1028 0%, #120812 100%);
+  border-left: 4px solid #e879f9;
+  color: #fae8ff;
+}
+
+.signal-strip--active.signal-venda.signal-src-hold .signal-strip__dir {
+  color: #f0abfc;
+  text-shadow: 0 0 12px rgba(232, 121, 249, 0.45);
+}
+
+.signal-strip--active.signal-venda.signal-src-consenso {
+  background: linear-gradient(90deg, #2a1010 0%, #140a0a 100%);
+  border-left: 4px solid #ef4444;
+  color: #fee2e2;
+}
+
+.signal-strip--active.signal-venda.signal-src-consenso .signal-strip__dir {
+  color: #f87171;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+}
+
+.signal-strip--active.signal-compra.signal-src-unk,
+.signal-strip--active.signal-venda.signal-src-unk {
+  border-left: 4px solid #64748b;
+  background: #0f1624;
+  color: #e2e8f0;
+}
+
+.signal-strip--active.signal-strip--divergent {
+  border-left-color: #facc15 !important;
+  box-shadow: inset 0 0 18px rgba(250, 204, 21, 0.12);
+}
+
+.signal-strip--active.signal-strip--divergent .signal-strip__dir {
+  color: #fde68a !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.32) !important;
+}
+
+.grid {
+  /* Linha 1 = fluxo/níveis; linha 2 = HUD; linha 3 = Δ/placar — equilibrado para não esmagar placar + barra de força */
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows:
+    minmax(100px, auto)
+    minmax(255px, 1.58fr)
+    minmax(200px, 1.12fr);
+  gap: var(--grid-gap);
+  padding: 5px 6px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: unset;
+  /* Barra oculta (incl. Electron/Win — scroll com roda / touch) */
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  scrollbar-color: transparent transparent;
+}
+.grid::-webkit-scrollbar,
+.grid::-webkit-scrollbar-corner {
+  width: 0 !important;
+  max-width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  display: none !important;
+}
+.grid::-webkit-scrollbar-thumb,
+.grid::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: none !important;
+}
+
+.panel {
+  border: 1px solid #1f2a44;
+  border-radius: var(--ui-panel-radius);
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  padding: var(--ui-panel-padding);
+  box-shadow: 0 0 24px rgba(0, 80, 255, 0.06);
+  min-height: 0;
+  overflow-x: hidden;
+  /* Conteúdo visível; scroll global no body se a janela for baixa */
+  overflow-y: visible;
+}
+
+.panel-tl {
+  grid-column: 1;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  align-self: stretch;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+/* Ocupa a altura da célula da grelha; a faixa REGIME estica em baixo e fecha o «buraco» visual */
+.panel-tl .flow {
+  flex: 1 1 0%;
+  min-height: 0;
+}
+
+/* Regime no Fluxo — largura total; após retirar PTAX do fluxo, mais respiro na faixa */
+.flow > .regime-mercado {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+/* Só o gap do .flow (4px) em relação ao Viés; estica em altura para preencher o fundo do painel */
+.panel-tl .flow > .regime-mercado--one {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 100%;
+  max-width: 100%;
+  padding: 6px 8px 12px 10px;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+.panel-tl .flow > .regime-mercado--one .regime-mercado__strip {
+  font-size: 10.5px;
+  gap: 8px 12px;
+  row-gap: 5px;
+  flex-wrap: wrap;
+}
+
+.panel-tl .flow > .regime-mercado--one .regime-mercado__tag {
+  font-size: 10.5px;
+}
+
+.panel-tl .flow > .regime-mercado--one .regime-mercado__rotulo-inline {
+  flex: 1 1 min(100%, 220px);
+  min-width: 0;
+  white-space: nowrap;
+  line-height: 1.35;
+  overflow: hidden;
+}
+
+.panel-tl .flow > .regime-mercado--one .regime-mercado__conf {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.panel-tl .flow > .regime-mercado--one::before {
+  top: 5px;
+  bottom: 5px;
+  left: 2px;
+}
+
+.panel-tr {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+.panel-tr .levels {
+  flex: 1 1 auto;
+}
+
+.panel-hud {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  overflow-x: hidden;
+  overflow-y: visible;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  min-height: 170px;
+  max-height: none;
+  /* +2px úteis por lado nas 3 colunas (AGR / Radar / Makers) */
+  padding-left: 5px;
+  padding-right: 5px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-hud::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.panel-hud .hud-block {
+  flex: 0 1 auto;
+  min-height: min-content;
+  padding-top: 0;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-hud .hud-block::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.panel-bl {
+  grid-column: 1;
+  grid-row: 3;
+  min-height: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.panel-bl .panel-title {
+  flex-shrink: 0;
+}
+
+.panel-bl .delta-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.panel-br {
+  grid-column: 2;
+  grid-row: 3;
+  min-height: 0;
+  box-sizing: border-box;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.panel-br .panel-title {
+  flex-shrink: 0;
+}
+
+.panel-br .summary {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  gap: 5px;
+  /* Linha placar + BUY/SELY + barrinha ficam alinhadas ao topo; barra não “some” para baixo do clip */
+  justify-content: flex-start;
+}
+
+/* Δ / Placar: barra de scroll oculta (roda do rato / touch) */
+.panel-bl .delta-panel,
+.panel-br .summary {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-bl .delta-panel::-webkit-scrollbar,
+.panel-br .summary::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.panel-title {
+  margin: 0 0 5px;
+  font-size: var(--ui-title-size);
+  font-weight: 600;
+  color: #d5def0;
+  line-height: 1.2;
+}
+
+.panel-hud .panel-title {
+  margin: 0 0 2px;
+  font-size: 11.5px;
+}
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flow-row-gap);
+}
+
+/* Fluxo por ativo: mesma família visual que .delta-row, porém bem mais suave */
+.flow .flow-row.delta-row {
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.flow .flow-row.delta-row .lbl {
+  max-width: 56%;
+  text-transform: none;
+  letter-spacing: 0.03em;
+  font-size: var(--ui-small-size);
+}
+
+.flow .flow-row.delta-row > strong {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--ui-text-size);
+}
+
+/* Peles atenuadas (só neste bloco) */
+.flow .flow-row.delta-row--neut {
+  border-left-color: rgba(100, 116, 139, 0.65);
+  background: linear-gradient(90deg, rgba(71, 85, 105, 0.05) 0%, #0f1626 55%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.55);
+}
+
+.flow .flow-row.delta-row--buy {
+  border-left-color: rgba(14, 165, 233, 0.5);
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.06) 0%, rgba(15, 22, 38, 0.98) 58%);
+  box-shadow:
+    inset 0 0 14px rgba(56, 189, 248, 0.03),
+    0 0 6px rgba(14, 165, 233, 0.07);
+}
+
+.flow .flow-row.delta-row--sell {
+  border-left-color: rgba(251, 146, 60, 0.48);
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.05) 0%, rgba(15, 22, 38, 0.98) 58%);
+  box-shadow:
+    inset 0 0 14px rgba(251, 146, 60, 0.03),
+    0 0 6px rgba(251, 146, 60, 0.07);
+}
+
+.flow .flow-row.delta-row--buy-soft {
+  border-left-color: rgba(56, 189, 248, 0.28);
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.035) 0%, #0f1626 62%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+}
+
+.flow .flow-row.delta-row--sell-soft {
+  border-left-color: rgba(251, 146, 60, 0.26);
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.03) 0%, #0f1626 62%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+}
+
+.flow .flow-row.delta-row--neut .lbl {
+  color: rgba(196, 208, 232, 0.95);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--buy .lbl,
+.flow .flow-row.delta-row--buy-soft .lbl {
+  color: rgba(186, 230, 253, 0.9);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--sell .lbl,
+.flow .flow-row.delta-row--sell-soft .lbl {
+  color: rgba(254, 215, 170, 0.88);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--neut > strong {
+  color: #d0dcee;
+}
+
+.flow .flow-row.delta-row--buy > strong {
+  color: rgba(186, 230, 253, 0.92);
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.18);
+}
+
+.flow .flow-row.delta-row--sell > strong {
+  color: rgba(254, 215, 170, 0.9);
+  text-shadow: 0 0 6px rgba(251, 146, 60, 0.16);
+}
+
+.flow .flow-row.delta-row--buy-soft > strong {
+  color: rgba(186, 230, 253, 0.78);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--sell-soft > strong {
+  color: rgba(254, 215, 170, 0.75);
+  text-shadow: none;
+}
+
+/* Pulso na linha — só viés Forte (intensidade um pouco maior) */
+.flow .flow-row.delta-row--buy-soft.flow-row--pulse {
+  animation: flowRowBuySoftPulse calc(2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.flow .flow-row.delta-row--sell-soft.flow-row--pulse {
+  animation: flowRowSellSoftPulse calc(2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes flowRowBuySoftPulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 22px rgba(56, 189, 248, 0.08),
+      0 0 14px rgba(14, 165, 233, 0.14),
+      0 0 22px rgba(14, 165, 233, 0.06);
+  }
+}
+
+@keyframes flowRowSellSoftPulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 22px rgba(251, 146, 60, 0.075),
+      0 0 14px rgba(251, 146, 60, 0.12),
+      0 0 22px rgba(249, 115, 22, 0.055);
+  }
+}
+
+/* Pulsada no texto do viés (Baixa Forte, Neutro, Alta fraca, …) */
+.flow .flow-row strong.flow-trend-label {
+  display: inline-block;
+  transform-origin: 50% 55%;
+  animation: flowTrendLabelPulse calc(2.15s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes flowTrendLabelPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.86;
+    transform: scale(1.032);
+    filter: brightness(1.09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow .flow-row.flow-row--pulse {
+    animation: none;
+  }
+
+  .flow .flow-row strong.flow-trend-label {
+    animation: none;
+  }
+}
+
+.flow .flow-row strong.flow-trend.flow-trend--sell-strong {
+  color: #fb7185 !important;
+  text-shadow:
+    0 0 4px rgba(251, 113, 133, 0.35),
+    0 0 10px rgba(239, 68, 68, 0.18);
+}
+
+.flow .flow-row strong.flow-trend.flow-trend--buy-strong {
+  color: #93c5fd !important;
+  text-shadow:
+    0 0 4px rgba(147, 197, 253, 0.35),
+    0 0 10px rgba(56, 189, 248, 0.15);
+}

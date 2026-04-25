@@ -1,0 +1,33 @@
+/**
+ * [levels] — parte 0067 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+  animation: srDetectShineAcrossAbsorptionLevels calc(24s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) ease-in-out
+    infinite alternate;
+}
+
+@keyframes srDetectShineAcrossAbsorption {
+  0% {
+    left: -42%;
+    opacity: 0.25;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.65;
+  }
+}
+
+@keyframes srDetectShineAcrossAbsorptionLevels {
+  0% {
+    left: -42%;
+    opacity: 0.18;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.5;
+  }
+}

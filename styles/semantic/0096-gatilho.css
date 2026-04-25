@@ -1,0 +1,66 @@
+/**
+ * [gatilho] — parte 0096 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Termómetro + logo — equilíbrio com Speed; logo um pouco maior (cap ~108px) */
+.hud-makers-preparo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+  padding: 10px 3px 6px;
+  border-top: 1px solid rgba(74, 100, 140, 0.45);
+  box-sizing: border-box;
+  --gatilho-idle-logo-scale: 1.64;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    min(108px, 100%)
+  );
+  position: relative;
+  z-index: 1;
+  min-height: 120px;
+}
+
+/* Com gatilho ativo (COMPRA/VENDA), reduz só um pouco a escala para não “brigar” com o termómetro. */
+.hud-makers-preparo.hud-makers-preparo--hold {
+  --gatilho-idle-logo-scale: 1.48;
+}
+
+.hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
+  margin-top: 0;
+  align-self: flex-end;
+  padding-bottom: 0;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
+  height: 56px;
+  width: 16px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube {
+  border-radius: 8px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--up {
+  border-width: 0 6px 10px 6px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--down {
+  border-width: 10px 6px 0 6px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--mid {
+  width: 8px;
+  height: 8px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz {
+  width: 21px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__cap {
+  font-size: 8.5px;
+}

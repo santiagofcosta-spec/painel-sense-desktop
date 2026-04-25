@@ -1,0 +1,47 @@
+/**
+ * [hud] — parte 0052 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Agressão · Radar · Makers (schema v5) */
+.hud-block {
+  font-size: 11px;
+  line-height: 1.38;
+  color: #c8d6ee;
+  height: auto;
+  overflow: visible;
+  padding-right: 0;
+  padding-bottom: 2px;
+}
+
+.hud-cols {
+  display: grid;
+  /* AGR | logo·termómetro·Speed + Abs. | Makers + linhas Radar */
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 1.06fr) minmax(0, 1.06fr);
+  gap: 7px;
+  align-items: start;
+  max-width: 100%;
+}
+
+/* Coluna AGR + Gatilho acima do “glow” do Radar (sombras 0 0 16px que invadem para a esquerda). */
+.hud-cols > .hud-col:first-child {
+  position: relative;
+  z-index: 2;
+  overflow: visible;
+  min-width: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hud-cols > .hud-col:first-child::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.hud-cols > .hud-col:nth-child(2) {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+  padding-bottom: 4px;
+}

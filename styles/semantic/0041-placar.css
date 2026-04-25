@@ -1,0 +1,41 @@
+/**
+ * [placar] — parte 0041 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Placar SR (detect.) — bloco Placar: depois da barra de força, antes da absorção (evita colidir com a caixa) */
+.summary .summary-sr-wrap {
+  margin-top: 2px;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.summary .summary-sr-wrap .hud-sr-detect {
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 10.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.summary .summary-sr-wrap .hud-sr-detect.hud-sr-detect--lead-max {
+  font-size: 9px;
+}
+
+/* Forte: ocupar a linha inteira do resumo (senão a caixa encolhe ao texto e a animação fica com px de curso) */
+.summary .summary-sr-wrap .hud-sr-detect.hud-sr-detect--lead-strong {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Espaço entre SR no resumo e o bloco seguinte (absorção foi para o Radar) */
+.summary .summary-sr-wrap + .bar-wrap {
+  margin-top: 4px;
+}

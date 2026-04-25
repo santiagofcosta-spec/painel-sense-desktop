@@ -1,0 +1,15 @@
+/**
+ * [placar] — parte 0030 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.panel-br .summary {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  gap: 5px;
+  /* Linha placar + BUY/SELY + barrinha ficam alinhadas ao topo; barra não “some” para baixo do clip */
+  justify-content: flex-start;
+}

@@ -1,0 +1,11 @@
+/**
+ * [media] — parte 0072 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-thermo-viz__cap {
+    transition: none;
+  }
+}

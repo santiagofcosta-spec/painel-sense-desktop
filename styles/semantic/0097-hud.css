@@ -1,0 +1,17 @@
+/**
+ * [hud] — parte 0097 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-makers-preparo__logo {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 102px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-top: 6px;
+  margin-top: 2px;
+  box-sizing: border-box;
+}

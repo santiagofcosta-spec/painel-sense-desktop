@@ -1,0 +1,22 @@
+/**
+ * [levels] — parte 0062 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Alvos / níveis: faixa de luz no placar SR mais lenta e menos “piscante” */
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong::before,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong::before {
+  animation: srDetectShineAcrossLevels calc(14s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) linear infinite alternate;
+}
+
+@keyframes srDetectShineAcrossLevels {
+  0% {
+    left: -42%;
+    opacity: 0.22;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.48;
+  }
+}

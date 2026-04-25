@@ -1,0 +1,15 @@
+/**
+ * [media] — parte 0036 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .flow .flow-row.flow-row--pulse {
+    animation: none;
+  }
+
+  .flow .flow-row strong.flow-trend-label {
+    animation: none;
+  }
+}

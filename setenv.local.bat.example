@@ -1,0 +1,10 @@
+@echo off
+rem Copia este ficheiro para `setenv.local.bat` (o .gitignore ignora o .local).
+rem Nunca commits segredos — usa variáveis de ambiente ou ficheiros ignorados pelo git.
+
+rem Segredo da assinatura do dashboard (recomendado; o painel também aceita config.security.dashboardSignature.secret, mas evita-o no git)
+rem set "SENSE_DASH_SIG_SECRET=COLOCA_AQUI_UM_SEGREDO_FORTE"
+
+rem Opcional: salt extra para o fingerprint do machine lock
+rem set "SENSE_MACHINE_SALT=um_salt_opcional"
+

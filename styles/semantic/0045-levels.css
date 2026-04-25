@@ -1,0 +1,50 @@
+/**
+ * [levels] — parte 0045 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.level-row--int-1 {
+  animation: levelFlowPulse1 calc(1.25s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) ease-in-out infinite;
+}
+
+.level-row--int-2 {
+  animation: levelFlowPulse2 calc(1.05s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) ease-in-out infinite;
+}
+
+.level-row--int-3 {
+  animation: levelFlowPulse3 calc(0.8s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) ease-in-out infinite;
+}
+
+@keyframes levelFlowPulse1 {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.04);
+    box-shadow: 0 0 10px rgba(120, 180, 255, 0.14);
+  }
+}
+
+@keyframes levelFlowPulse2 {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.06);
+    box-shadow: 0 0 12px rgba(120, 190, 255, 0.18);
+  }
+}
+
+@keyframes levelFlowPulse3 {
+  0%,
+  100% {
+    filter: brightness(1.01);
+  }
+  50% {
+    filter: brightness(1.09);
+    box-shadow: 0 0 14px rgba(140, 210, 255, 0.22);
+  }
+}

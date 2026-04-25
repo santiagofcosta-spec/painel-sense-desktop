@@ -1,0 +1,20 @@
+/**
+ * [media] — parte 0107 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-delta-gauge {
+    animation: none;
+  }
+
+  .radar-delta-gauge__viz {
+    animation: none !important;
+  }
+
+  .radar-delta-gauge__viz::before {
+    animation: none;
+    opacity: 0;
+  }
+}

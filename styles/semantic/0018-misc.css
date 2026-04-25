@@ -1,0 +1,10 @@
+/**
+ * [misc] — parte 0018 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Escolha manual oculta — define o ficheiro em `config.json` (ex.: …\\MQL5\\Files\\dashboard.json). */
+#pickJsonBtn {
+  display: none !important;
+}

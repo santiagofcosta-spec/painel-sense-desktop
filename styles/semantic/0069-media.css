@@ -1,0 +1,23 @@
+/**
+ * [media] — parte 0069 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+    animation: none;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text,
+  .hud-sr-detect--sell.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+    animation: none;
+  }
+}

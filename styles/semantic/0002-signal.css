@@ -1,0 +1,15 @@
+/**
+ * [signal] — parte 0002 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+html.realtime-optimized .signal-strip--active .signal-strip__moving,
+html.realtime-optimized .hud-line--radar-consensus-pulse,
+html.realtime-optimized .hud-makers-preparo__flow-lines,
+html.realtime-optimized .hud-makers-preparo__shine,
+html.realtime-optimized .pp-clock,
+html.realtime-optimized .delta-bars::before,
+html.realtime-optimized .delta-bars::after {
+  animation: none !important;
+}

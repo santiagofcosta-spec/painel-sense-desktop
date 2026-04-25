@@ -1,0 +1,11 @@
+/**
+ * [media] — parte 0077 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-breakeven__msg--fire {
+    animation: none;
+  }
+}

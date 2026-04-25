@@ -1,0 +1,29 @@
+{
+  "dataFile": "C:\\Program Files\\MetaTrader 5 Terminal\\MQL5\\Files\\dashboard.json",
+  "demoPulsoSpeed": false,
+  "senseIaNotas": "OpenAI: provider openai + openaiApiKey. Ollama: provider ollama + model. autoEveryMinutes: intervalo da leitura flutuante (0=off).",
+  "senseIa": {
+    "provider": "ollama",
+    "model": "llama3.2",
+    "ollamaHost": "http://127.0.0.1:11434",
+    "openaiApiKey": "",
+    "openAiBase": "",
+    "gskApiKey": "",
+    "gensparkBase": "",
+    "autoEveryMinutes": 30
+  },
+  "security": {
+    "machineLock": {
+      "enabled": false,
+      "salt": "",
+      "allowedFingerprints": [
+        "COLOQUE_AQUI_O_HASH_DA_MAQUINA_AUTORIZADA"
+      ]
+    },
+    "dashboardSignature": {
+      "enabled": false,
+      "field": "_sig",
+      "secret": ""
+    }
+  }
+}

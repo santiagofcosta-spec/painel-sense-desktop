@@ -1,0 +1,37 @@
+/**
+ * [hud] — parte 0068 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+  animation: srAbsorptionNuanceTextBuy calc(4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+  animation: srAbsorptionNuanceTextSell calc(4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes srAbsorptionNuanceTextBuy {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.96;
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes srAbsorptionNuanceTextSell {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.96;
+    filter: brightness(1.12);
+  }
+}

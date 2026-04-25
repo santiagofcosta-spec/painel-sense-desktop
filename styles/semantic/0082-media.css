@@ -1,0 +1,29 @@
+/**
+ * [media] — parte 0082 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/*
+ * “Pulso” no círculo/ondas em volta do S: pivô acima do centro (PNG quadrada, marca no topo).
+ * O PNG não separa camadas — o texto SENSE move um pouco menos que o anel.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .gatilho-idle-logo:not(.gatilho-idle-logo--off) .gatilho-idle-logo__art {
+    animation: gatilhoSenseRingPulse calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite alternate;
+  }
+
+  .gatilho-idle-logo--neutral:not(.gatilho-idle-logo--off) .gatilho-idle-logo__art {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+  }
+}
+
+@keyframes gatilhoSenseRingPulse {
+  0% {
+    transform: scale(1) rotate(-0.55deg);
+  }
+
+  100% {
+    transform: scale(1.028) rotate(0.6deg);
+  }
+}

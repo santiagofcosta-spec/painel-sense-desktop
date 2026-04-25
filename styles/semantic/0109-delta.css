@@ -1,0 +1,62 @@
+/**
+ * [delta] — parte 0109 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Δ — pressão rápida (●), pressão forte, barras */
+.delta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Bloco Δ agressor: mais compacto nas linhas */
+.panel-bl .delta-panel {
+  gap: 5px;
+  padding-bottom: 8px;
+}
+
+.panel-bl .delta-line {
+  min-height: 2.1rem;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.32;
+}
+
+.panel-bl .delta-row {
+  min-height: 2rem;
+  padding: 4px 6px;
+  gap: 8px;
+}
+
+.panel-bl .delta-row .lbl {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.panel-bl .delta-hint--independencia {
+  margin-top: 5px;
+  padding-top: 6px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* Linha PLACAR … e linha ΔAgr: mesma caixa (evita texto “fora” do quadrado no flex) */
+.placar-big,
+.delta-line {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b8d9ff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(40, 90, 160, 0.15);
+  border: 1px solid #2a4a6a;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 2.65rem;
+  width: 100%;
+}

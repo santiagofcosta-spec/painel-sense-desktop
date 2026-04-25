@@ -1,0 +1,128 @@
+/**
+ * [media] — parte 0055 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .hud-col-makers .hud-ptax-inline__compass.ptax-compass {
+    animation: ptaxCompassCardGlow 3.8s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline--bias-baixa .hud-ptax-inline__compass.ptax-compass {
+    animation: ptaxCompassCardGlowSell 3.8s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline--bias-neutra .hud-ptax-inline__compass.ptax-compass {
+    animation: ptaxCompassCardGlowNeut 3.8s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline__compass .ptax-compass__ring {
+    animation: ptaxCompassRingBreath 3s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicro 4.5s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline--bias-baixa .hud-ptax-inline__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicroSell 4.5s ease-in-out infinite;
+  }
+
+  .hud-col-makers .hud-ptax-inline--bias-neutra .hud-ptax-inline__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicroNeut 4.5s ease-in-out infinite;
+  }
+}
+
+@keyframes ptaxCompassCardGlow {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 14px rgba(0, 0, 0, 0.48),
+      0 0 8px rgba(56, 189, 248, 0.14);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 16px rgba(0, 0, 0, 0.42),
+      0 0 18px rgba(56, 189, 248, 0.32),
+      0 0 28px rgba(14, 165, 233, 0.1);
+  }
+}
+
+@keyframes ptaxCompassCardGlowSell {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 14px rgba(0, 0, 0, 0.48),
+      0 0 8px rgba(251, 146, 60, 0.12);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 16px rgba(0, 0, 0, 0.42),
+      0 0 18px rgba(251, 146, 60, 0.3),
+      0 0 26px rgba(234, 88, 12, 0.1);
+  }
+}
+
+@keyframes ptaxCompassCardGlowNeut {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 0 14px rgba(0, 0, 0, 0.48),
+      0 0 6px rgba(148, 163, 184, 0.1);
+  }
+
+  50% {
+    box-shadow:
+      inset 0 0 16px rgba(0, 0, 0, 0.42),
+      0 0 14px rgba(148, 163, 184, 0.28);
+  }
+}
+
+@keyframes ptaxCompassRingBreath {
+  0%,
+  100% {
+    opacity: 0.55;
+    border-color: rgba(148, 163, 184, 0.22);
+  }
+
+  50% {
+    opacity: 0.92;
+    border-color: rgba(148, 163, 184, 0.42);
+  }
+}
+
+@keyframes ptaxCompassNeedleMicro {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.65));
+  }
+}
+
+@keyframes ptaxCompassNeedleMicroSell {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 5px rgba(251, 146, 60, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 10px rgba(251, 146, 60, 0.65));
+  }
+}
+
+@keyframes ptaxCompassNeedleMicroNeut {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(148, 163, 184, 0.35));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 8px rgba(148, 163, 184, 0.55));
+  }
+}

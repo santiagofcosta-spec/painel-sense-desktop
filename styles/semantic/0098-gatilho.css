@@ -1,0 +1,43 @@
+/**
+ * [gatilho] — parte 0098 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Coluna central: logo estável (sem variar box por agressão/idle), evitando "empurrar" o Speed. */
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo {
+  margin-top: 0;
+  animation: none;
+  width: calc(var(--gatilho-idle-logo-side) * 1.05);
+  height: auto;
+  min-height: calc(var(--gatilho-idle-logo-side) * 1.05);
+  flex: 0 0 auto;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__ia {
+  font-size: 10px;
+  letter-spacing: 0.38em;
+  margin-top: 0;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__ia-next {
+  font-size: 7.5px;
+  letter-spacing: 0.05em;
+  margin-top: -1px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__art {
+  transform: none !important;
+  animation: none !important;
+}
+
+.hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__img {
+  height: calc(var(--gatilho-idle-logo-side) * 1.05);
+  max-width: calc(var(--gatilho-idle-logo-side) * 1.05);
+  /*
+   * Modo seguro: slot fixo (sem reflow) + crescimento visual por AGR.
+   * O EA manda --gatilho-idle-agg-scale ~1.68..2.38; normalizamos por 1.85.
+   */
+  transform: scale(clamp(0.92, calc(var(--gatilho-idle-agg-scale, 1.85) / 1.85), 1.32));
+  transform-origin: 50% 72%;
+}

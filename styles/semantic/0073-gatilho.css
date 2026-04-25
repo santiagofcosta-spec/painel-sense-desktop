@@ -1,0 +1,82 @@
+/**
+ * [gatilho] — parte 0073 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Área do tubo + bolinha: o tubo mantém overflow:hidden (máscara); a bolinha fica fora dele para o pulso não ser cortado. */
+.gatilho-thermo-viz__tube-wrap {
+  position: relative;
+  width: 14px;
+  height: 72px;
+  flex-shrink: 0;
+  overflow: visible;
+  z-index: 1;
+}
+
+.gatilho-thermo-viz__tube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 116, 139, 0.55);
+  box-shadow:
+    inset 0 0 14px rgba(15, 22, 38, 0.92),
+    0 0 8px rgba(15, 23, 42, 0.35);
+}
+
+.gatilho-thermo-viz__track {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.5) 0%,
+    rgba(71, 85, 105, 0.28) 52%,
+    rgba(251, 113, 133, 0.48) 100%
+  );
+}
+
+.gatilho-thermo-viz__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--thermo-pos, 0.5) * 100%);
+  /* Mesma escala que a bolinha (% do percurso base → topo C). */
+  transition:
+    height 0.45s ease,
+    opacity 0.35s ease;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.42) 0%,
+    rgba(34, 211, 238, 0.12) 55%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  opacity: calc(0.38 + 0.42 * var(--thermo-intensity, 0.5));
+  pointer-events: none;
+}
+
+/* Seta ▲/▼ (tipo indicador sob candle): piscar rápido + pulso; triângulo por bordas (sombras visíveis). */
+@keyframes gatilhoThermoMarkerPulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  35% {
+    transform: translateX(-50%) scale(1.36);
+  }
+  52% {
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+@keyframes gatilhoThermoMarkerBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.33;
+  }
+}

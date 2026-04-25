@@ -1,0 +1,20 @@
+/**
+ * [media] — parte 0075 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-thermo-viz {
+    animation: none;
+  }
+  .gatilho-thermo-viz__fill {
+    transition: none;
+  }
+  .gatilho-thermo-viz__marker {
+    transition: none;
+    animation: none;
+    will-change: auto;
+    transform: translateX(-50%) scale(1);
+  }
+}

@@ -1,0 +1,89 @@
+/**
+ * [misc] — parte 0049 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.score {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 7px 8px;
+  border-radius: 8px;
+  border: 1px solid #2a3548;
+}
+
+.score.buy {
+  border-color: #1e4d3a;
+  background: rgba(0, 255, 140, 0.06);
+}
+.score.sell {
+  border-color: #4d1e2a;
+  background: rgba(255, 60, 80, 0.08);
+}
+
+.score.score--tie {
+  border-color: rgba(251, 191, 36, 0.38);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.07) 0%, rgba(15, 22, 38, 0.94) 100%);
+  box-shadow: inset 0 0 10px rgba(251, 191, 36, 0.04);
+  color: rgba(253, 230, 138, 0.92);
+}
+
+.score .label {
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  opacity: 0.85;
+}
+.score .num {
+  font-size: 19px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+/* Barra de força do placar — nunca encolher a zero dentro do .summary em flex */
+.bar-wrap {
+  height: 18px;
+  border-radius: 9px;
+  background: #121a2a;
+  overflow: hidden;
+  border: 1px solid #2a3548;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 2px;
+}
+
+.bar {
+  height: 100%;
+  width: 0%;
+  min-width: 0;
+  background: linear-gradient(
+    90deg,
+    var(--placar-score-sell-border) 0%,
+    var(--placar-score-sell-mid) 45%,
+    var(--placar-score-sell-light) 100%
+  );
+  box-shadow: 0 0 14px var(--placar-score-sell-glow);
+  transition: width 0.25s ease;
+}
+
+.bar.bar-buy {
+  background: linear-gradient(
+    90deg,
+    var(--placar-score-buy-border) 0%,
+    var(--placar-score-buy-mid) 45%,
+    var(--placar-score-buy-light) 100%
+  );
+  box-shadow: 0 0 14px var(--placar-score-buy-glow);
+}
+
+.bar.bar-tie {
+  background: linear-gradient(
+    90deg,
+    rgba(251, 191, 36, 0.35) 0%,
+    rgba(251, 191, 36, 0.22) 45%,
+    rgba(251, 191, 36, 0.16) 100%
+  );
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.12);
+}

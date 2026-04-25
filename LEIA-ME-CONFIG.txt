@@ -1,0 +1,104 @@
+================================================================================
+  config.json — caminho do dashboard.json
+================================================================================
+
+O painel LÊ o ficheiro indicado em "dataFile".
+
+CAMINHO DO dashboard.json (tem de ser o MESMO ficheiro que o EA grava):
+
+  A) Muito comum (dados do terminal por utilizador):
+    %AppData%\\MetaQuotes\\Terminal\\<ID_HEX>\\MQL5\\Files\\dashboard.json
+    No Explorador: cola %AppData%\\MetaQuotes\\Terminal e abre a pasta do
+    terminal, depois MQL5\\Files\\
+
+  B) Algumas instalações (exemplo):
+    C:\\Program Files\\MetaTrader 5 Terminal\\MQL5\\Files\\dashboard.json
+
+  No MT5: Ficheiro -> Abrir pasta de dados -> confirma onde está MQL5\\Files
+  e usa esse caminho completo no config.json (com \\\\ no JSON).
+
+DESENVOLVIMENTO:
+  Podes apontar para o exemplo do projeto:
+    ...\\painel-sense-desktop\\data\\dashboard.json
+
+DEMO PULSO (% PICO / % PERSIST sem MT5 — ver animação no painel):
+  • Duplo clique em start-painel-demo.cmd  (define SENSE_DEMO_PULSO=1), ou
+  • Em config.json: "demoPulsoSpeed": true
+  O resto do JSON vem do dataFile; só estes dois percentuais são simulados.
+
+  Se no PowerShell aparecer erro ao correr "npm start" (ficheiro npm.ps1
+  bloqueado pela política de execução): usa o .cmd acima, ou no PowerShell:
+    $env:SENSE_DEMO_PULSO='1'; npm.cmd start
+  (npm.cmd não depende de scripts .ps1.) Opcional, no PowerShell:
+    Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+LIVE COM EA:
+  Aponta "dataFile" para o dashboard.json que o EA está a gravar (pasta Files
+  acima). Reinicia o painel após alterar config.json.
+
+================================================================================
+SEGURANCA (ANTI-USO NAO AUTORIZADO)
+================================================================================
+
+1) Bloquear o painel por maquina (fingerprint allowlist):
+   - No terminal, dentro desta pasta:
+       npm run security:fingerprint
+   - Copia o hash e coloca em:
+       security.machineLock.allowedFingerprints
+   - Ativa:
+       security.machineLock.enabled = true
+   - Opcional: define "salt" (ou env SENSE_MACHINE_SALT) para hash mais exclusivo.
+
+2) Verificar assinatura do dashboard.json (anti-edicao):
+   - Define um segredo forte (env recomendado):
+       SENSE_DASH_SIG_SECRET=um_segredo_bem_grande
+     No Windows, podes usar `setenv.local.bat` (ver `setenv.local.bat.example`):
+       copia o .example para `setenv.local.bat` e cola o segredo lá — esse ficheiro
+       fica fora do git (`.gitignore`). Evita gravar o segredo em `config.json`.
+   - Se abres o painel pelo Cursor/VS Code (`npm start`), o .bat não corre: usa o ficheiro
+       `sense-dash-secret.local.txt` ou `sense-dash-secret.local` (uma linha = segredo;
+       ver `sense-dash-secret.local.txt.example`) — também no `.gitignore`. O main.js
+       lê-no ao arrancar se a env estiver vazia.
+   - No EA (SENSE.mq5), ativa:
+       Dashboard_Export_Sign_Enable = true
+       Dashboard_Export_Sign_Secret = (mesmo segredo acima)
+       Dashboard_Export_Sign_Field  = "_sig" (ou outro, mas igual ao painel)
+   - No painel, ativa:
+       security.dashboardSignature.enabled = true
+       security.dashboardSignature.field = "_sig"
+   - Formato suportado: "_sigAlgo":"sha256_secret_raw_v1" + campo de assinatura.
+
+NOTAS IMPORTANTES:
+ - Se a assinatura estiver ativa e o JSON for alterado sem o segredo correto, o
+   painel recusa o snapshot e mostra erro (usa ultimo snapshot valido, se existir).
+ - Este bloqueio protege o painel local contra uso/acesso nao autorizado e
+   adulteracao do JSON, mas nao substitui boas praticas de SO/rede (senha do
+   Windows, antivirus, etc.).
+
+================================================================================
+  ESTRUTURA FRONT (modularizacao em curso)
+================================================================================
+
+ - `styles.css` apenas importa `styles/blocks/block-01.css` … `block-06.css` e
+   `styles/sense-ia-ux.css` — edita os fragmentos em `styles/blocks/`, nao dupliques
+   regras na raiz.
+ - `renderer-utils.js` — funcoes puras (fmtNum, escapeHtml, dashNum, …) carregadas
+   antes de `renderer.js` (ver `index.html`).
+
+================================================================================
+  INSTALADOR WINDOWS (electron-builder)
+================================================================================
+
+ - Na pasta do painel: `npm install` (primeira vez com electron-builder) e depois
+   `npm run dist` — gera instalador NSIS em `dist/` (pasta ignorada pelo git).
+ - `npm run dist:dir` — pasta descompactada sem NSIS (util para testar).
+ - Assinatura de codigo (SmartScreen): requer certificado pago; o build sem cert
+   pode ser bloqueado pelo Windows — esperado em ambiente de desenvolvimento.
+
+================================================================================
+  LICENCIAMENTO COMERCIAL (ainda nao implementado)
+================================================================================
+
+ - Validacao online por conta MT5 / HWID / revogacao: nao existe neste repo;
+   o machine lock em `config.json` e apenas protecao local. Definir requisitos
+   antes de implementar servidor de licencas.

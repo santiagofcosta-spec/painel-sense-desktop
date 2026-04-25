@@ -1,0 +1,10 @@
+/**
+ * [levels] — parte 0063 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  animation-duration: calc(2.6s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra));
+}

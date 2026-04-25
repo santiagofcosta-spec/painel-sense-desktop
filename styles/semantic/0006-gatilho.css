@@ -1,0 +1,10 @@
+/**
+ * [gatilho] — parte 0006 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Logo central do HUD como atalho SENSE IA (cursor só quando o preload expõe senseIaAsk). */
+.sense-ia-enabled .hud-makers-preparo .gatilho-idle-logo--sense-ia {
+  cursor: pointer;
+}

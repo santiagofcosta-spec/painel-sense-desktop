@@ -1,0 +1,48 @@
+/**
+ * [media] — parte 0017 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-makers-preparo__dual-layer {
+    transition: opacity 0.2s ease;
+  }
+
+  .hud-makers-preparo__dual-layer--text {
+    transform: none;
+  }
+
+  .hud-makers-preparo__logo--dual.hud-makers-preparo__logo--ia-visible .hud-makers-preparo__dual-layer--logo {
+    transform: none;
+  }
+
+  .hud-makers-preparo__ia-coda {
+    animation: none;
+  }
+
+  .hud-makers-preparo__ia-coda-trend {
+    animation: none;
+    transform: none;
+    filter: none;
+    opacity: 1;
+  }
+
+  .hud-makers-preparo__ia-coda-trend--buy {
+    text-shadow:
+      0 0 10px rgba(52, 211, 153, 0.9),
+      0 0 22px rgba(16, 185, 129, 0.35);
+  }
+
+  .hud-makers-preparo__ia-coda-trend--sell {
+    text-shadow:
+      0 0 10px rgba(248, 113, 113, 0.9),
+      0 0 22px rgba(239, 68, 68, 0.35);
+  }
+
+  .hud-makers-preparo__ia-coda-trend--lat {
+    text-shadow:
+      0 0 10px rgba(250, 204, 21, 0.75),
+      0 0 20px rgba(234, 179, 8, 0.3);
+  }
+}

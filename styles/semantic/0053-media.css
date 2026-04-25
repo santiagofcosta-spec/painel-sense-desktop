@@ -1,0 +1,11 @@
+/**
+ * [media] — parte 0053 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (max-width: 900px) {
+  .hud-cols {
+    grid-template-columns: 1fr;
+  }
+}

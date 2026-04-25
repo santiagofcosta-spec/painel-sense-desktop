@@ -1,0 +1,25 @@
+/**
+ * [hud] — parte 0070 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-sr-detect--neutral {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+@keyframes hudAggrDayAlertPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03);
+    filter: brightness(1.12);
+  }
+}

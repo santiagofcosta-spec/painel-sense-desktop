@@ -1,0 +1,1382 @@
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neut .radar-delta-gauge__dot,
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--empty .radar-delta-gauge__dot {
+  animation-duration: calc(1.15s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNegHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePosHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+/* Latch do recuo: bolinha mantém cor oposta até voltar a avançar. */
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-dot--recede-latched.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNeg;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-dot--recede-latched.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePos;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__dot {
+    animation: none !important;
+    transform: none;
+    filter: drop-shadow(0 0 6px rgba(var(--speed-pos-rgb), 0.5));
+  }
+
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--neg .radar-delta-gauge__dot {
+    filter: drop-shadow(0 0 6px rgba(var(--speed-neg-rgb), 0.48));
+  }
+
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--empty .radar-delta-gauge__dot,
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--neut .radar-delta-gauge__dot {
+    filter: drop-shadow(0 0 5px rgba(var(--speed-neut-rgb), 0.45));
+  }
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__num {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__label {
+  order: 3;
+  margin: 0;
+  padding: 0;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+  line-height: 1.2;
+}
+
+.hud-aggr-row {
+  display: flex;
+  flex-wrap: wrap;
+  /* Mesma altura na linha: caixa de texto e coluna valor+barras esticam e centram o conteúdo dentro */
+  align-items: center;
+  gap: 6px 8px;
+}
+
+/* Medidor à direita da caixa AGR — ocupa o resto da coluna */
+.hud-aggr-row > .hud-flow-meter-stack {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: center;
+}
+
+.hud-aggr {
+  margin: 0;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(20, 35, 60, 0.45);
+  border: 1px solid #2a3f64;
+  font-size: 10.5px;
+  line-height: 1.22;
+  word-break: break-word;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  /* Caixa mais curta na horizontal — sobra espaço para as barrinhas maiores */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(180px, 45%);
+  align-self: center;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+/* Valor acima das barrinhas — coluna com a mesma altura da caixa AGR; conteúdo centrado no eixo vertical */
+.hud-flow-meter-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__top {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.hud-aggr-row--buy .hud-flow-meter__top {
+  color: #d4ffd9;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.45),
+    0 0 12px rgba(57, 255, 20, 0.15);
+}
+
+.hud-aggr-row--sell .hud-flow-meter__top {
+  color: #ffd6dc;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.5),
+    0 0 12px rgba(255, 23, 68, 0.18);
+}
+
+.hud-aggr-row--neutro .hud-flow-meter__top,
+.hud-aggr-row--off .hud-flow-meter__top {
+  color: #cbd5e1;
+  text-shadow: none;
+}
+
+/* Barrinhas AGR: segmentos mais altos/largos que o texto compacto ao lado */
+.hud-flow-meter-stack--agr .hud-flow-meter {
+  height: 46px;
+  gap: 5px;
+  padding: 0 2px;
+  align-items: flex-end;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__seg {
+  width: 10px;
+  height: 42px;
+  border-radius: 2px;
+}
+
+/* AGR: barrinhas exatamente no meio da linha; valor fica acima sem empurrar para baixo */
+.hud-flow-meter-stack--agr {
+  position: relative;
+  justify-content: center;
+  min-width: max-content;
+  padding-top: 0;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__top {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-100% - 34px));
+  margin: 0;
+  pointer-events: none;
+}
+
+/* Com medidor: menos “glow” no texto — a intensidade passa às barrinhas */
+.hud-aggr--buy.hud-aggr--with-meter {
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.35);
+  box-shadow:
+    inset 0 0 14px rgba(57, 255, 20, 0.06),
+    0 0 10px rgba(57, 255, 20, 0.14);
+}
+
+.hud-aggr--sell.hud-aggr--with-meter {
+  text-shadow: 0 0 5px rgba(255, 23, 68, 0.35);
+  box-shadow:
+    inset 0 0 14px rgba(255, 23, 68, 0.06),
+    0 0 10px rgba(255, 23, 68, 0.14);
+}
+
+/* Medidor de fluxo (12 segmentos) — após AGR / Direção radar */
+.hud-flow-meter {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  padding: 0 2px;
+}
+
+.hud-flow-meter__seg {
+  width: 4px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(45, 55, 72, 0.95);
+  box-sizing: border-box;
+}
+
+.hud-flow-meter--buy .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #7dffb0 0%, #39ff14 55%, #20c040 100%);
+  box-shadow: 0 0 6px rgba(57, 255, 20, 0.55);
+}
+
+.hud-flow-meter--sell .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #ff8a9a 0%, #ff1744 55%, #c41430 100%);
+  box-shadow: 0 0 6px rgba(255, 23, 68, 0.5);
+}
+
+.hud-flow-meter--neutral .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #a8b8d8 0%, #7c8db0 100%);
+  box-shadow: 0 0 5px rgba(148, 163, 184, 0.45);
+}
+
+.hud-line .hud-v-wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+}
+
+.hud-line .hud-v {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+/* Agressão — neon (texto completo, como no MT5) */
+.hud-aggr--buy {
+  border-color: rgba(57, 255, 20, 0.55);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.14) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 24px rgba(57, 255, 20, 0.08),
+    0 0 18px rgba(57, 255, 20, 0.22);
+  color: #d4ffd9;
+  text-shadow:
+    0 0 8px rgba(57, 255, 20, 0.55),
+    0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.hud-aggr--sell {
+  border-color: rgba(255, 23, 68, 0.55);
+  background: linear-gradient(135deg, rgba(255, 23, 68, 0.14) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 24px rgba(255, 23, 68, 0.08),
+    0 0 18px rgba(255, 23, 68, 0.24);
+  color: #ffd6dc;
+  text-shadow:
+    0 0 8px rgba(255, 23, 68, 0.5),
+    0 0 20px rgba(255, 23, 68, 0.2);
+}
+
+.hud-aggr--neutro {
+  border-color: #64748b;
+  color: #cbd5e1;
+  text-shadow: none;
+}
+
+.hud-aggr--off {
+  border-color: #475569;
+  opacity: 0.9;
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+.hud-aggr-day {
+  margin-top: 5px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #2a3f64;
+  background: rgba(20, 35, 60, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.hud-aggr-day__k {
+  color: #8b9dc3;
+  white-space: nowrap;
+}
+
+.hud-aggr-day__v {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.hud-aggr-day--buy {
+  border-color: rgba(57, 255, 20, 0.45);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(57, 255, 20, 0.05),
+    0 0 12px rgba(57, 255, 20, 0.14);
+}
+
+.hud-aggr-day--buy .hud-aggr-day__v {
+  color: #b8ffc4;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.75),
+    0 0 14px rgba(57, 255, 20, 0.34);
+}
+
+.hud-aggr-day--buy .hud-aggr-day__k {
+  color: #b8ffc4;
+  text-shadow:
+    0 0 4px rgba(57, 255, 20, 0.35),
+    0 0 10px rgba(57, 255, 20, 0.12);
+}
+
+.hud-aggr-day--sell {
+  border-color: rgba(255, 23, 68, 0.45);
+  background: linear-gradient(135deg, rgba(255, 23, 68, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(255, 23, 68, 0.05),
+    0 0 12px rgba(255, 23, 68, 0.15);
+}
+
+.hud-aggr-day--sell .hud-aggr-day__v {
+  color: #ffb4c0;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.72),
+    0 0 14px rgba(255, 23, 68, 0.32);
+}
+
+.hud-aggr-day--sell .hud-aggr-day__k {
+  color: #ffb4c0;
+  text-shadow:
+    0 0 4px rgba(255, 23, 68, 0.34),
+    0 0 10px rgba(255, 23, 68, 0.12);
+}
+
+.hud-aggr-day--alert {
+  border-color: rgba(250, 204, 21, 0.5);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(250, 204, 21, 0.05),
+    0 0 12px rgba(250, 204, 21, 0.16);
+}
+
+.hud-aggr-day--alert .hud-aggr-day__v {
+  color: #fde047;
+  text-shadow:
+    0 0 8px rgba(250, 204, 21, 0.85),
+    0 0 16px rgba(250, 204, 21, 0.38);
+  animation: hudAggrDayAlertPulse calc(1.45s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.hud-aggr-day--alert .hud-aggr-day__k {
+  color: #fde047;
+  text-shadow:
+    0 0 5px rgba(250, 204, 21, 0.45),
+    0 0 11px rgba(250, 204, 21, 0.16);
+}
+
+.hud-aggr-day--off {
+  border-color: #475569;
+  background: rgba(20, 35, 60, 0.35);
+}
+
+.hud-aggr-day--off .hud-aggr-day__v {
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+.hud-aggr-day--off .hud-aggr-day__k {
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+/* Placar SR (discreto) — Sup+Melhor compra vs Res+Melhor venda (detect.) — bloco Placar */
+.hud-sr-detect {
+  margin-top: 5px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  align-self: flex-start;
+  opacity: 0.88;
+}
+
+/* Trilho: no modo forte o texto fica absolute aqui dentro — precisa altura mínima */
+.hud-sr-detect__track {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect__moving {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.hud-sr-detect__text {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+
+.hud-sr-detect__score {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #e5eefc;
+  background: rgba(8, 15, 30, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Texto longo (Suporte/Resistência máx. detect.) — mantém uma linha legível */
+.hud-sr-detect--lead-max {
+  font-size: 9px;
+  padding: 2px 6px;
+  letter-spacing: 0.01em;
+}
+
+/* Base = placar apertado (vantagem 0–1 pt) — mesmo tom “suave” de antes */
+.hud-sr-detect--buy {
+  color: #a7f3d0;
+  background: rgba(57, 255, 20, 0.05);
+  border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.hud-sr-detect--sell {
+  color: #fecdd3;
+  background: rgba(255, 23, 68, 0.05);
+  border: 1px solid rgba(255, 23, 68, 0.22);
+}
+
+/* Vantagem média (2–4 pts): mais saturado; forte só acima de 4 pts */
+.hud-sr-detect--buy.hud-sr-detect--lead-mid {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(52, 211, 153, 0.45);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.18);
+  opacity: 0.95;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-mid {
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.14);
+  border-color: rgba(251, 113, 133, 0.48);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+  opacity: 0.95;
+}
+
+/* Vantagem forte (>4 pts, ou seja ≥5): fundo + texto + luz “correndo” no fundo (gradiente animado) */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong .hud-sr-detect__track,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong .hud-sr-detect__track {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 1.35em;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong {
+  position: relative;
+  overflow: hidden;
+  color: #4ade80;
+  background: linear-gradient(
+    110deg,
+    rgba(6, 95, 70, 0.78) 0%,
+    rgba(16, 185, 129, 0.42) 22%,
+    rgba(74, 222, 128, 0.65) 48%,
+    rgba(16, 185, 129, 0.42) 74%,
+    rgba(6, 95, 70, 0.78) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(52, 211, 153, 0.75);
+  text-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    0 0 2px rgba(6, 78, 59, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(52, 211, 153, 0.35);
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* Movimento do texto: controlado em JS (renderer) — keyframes + var() falham no Electron */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong .hud-sr-detect__moving,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong .hud-sr-detect__moving {
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* Só com vantagem > 5 (≥6): texto bem vivo + pulso de luz (sombra; sem clip que apaga o fill) */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  color: #ecfdf5;
+  text-shadow:
+    0 0 10px rgba(74, 222, 128, 0.65),
+    0 0 2px rgba(6, 78, 59, 0.85);
+  animation: srMaxTextGlowBuy calc(2.6s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  color: #fff1f2;
+  text-shadow:
+    0 0 10px rgba(251, 113, 133, 0.6),
+    0 0 2px rgba(88, 28, 28, 0.85);
+  animation: srMaxTextGlowSell calc(2.6s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes srMaxTextGlowBuy {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px rgba(74, 222, 128, 0.45),
+      0 0 18px rgba(52, 211, 153, 0.35),
+      0 0 2px rgba(6, 78, 59, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 6px rgba(255, 255, 255, 0.55),
+      0 0 20px rgba(190, 242, 100, 0.75),
+      0 0 28px rgba(74, 222, 128, 0.55),
+      0 0 2px rgba(6, 78, 59, 0.75);
+  }
+}
+
+@keyframes srMaxTextGlowSell {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px rgba(251, 113, 133, 0.45),
+      0 0 18px rgba(244, 63, 94, 0.35),
+      0 0 2px rgba(88, 28, 28, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.45),
+      0 0 22px rgba(251, 113, 133, 0.8),
+      0 0 30px rgba(251, 113, 133, 0.45),
+      0 0 2px rgba(88, 28, 28, 0.75);
+  }
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-strong {
+  position: relative;
+  overflow: hidden;
+  color: #fb7185;
+  background: linear-gradient(
+    110deg,
+    rgba(88, 28, 36, 0.82) 0%,
+    rgba(225, 29, 72, 0.48) 24%,
+    rgba(251, 113, 133, 0.68) 50%,
+    rgba(225, 29, 72, 0.48) 76%,
+    rgba(88, 28, 36, 0.82) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(251, 113, 133, 0.78);
+  text-shadow:
+    0 0 12px rgba(251, 113, 133, 0.5),
+    0 0 2px rgba(88, 28, 28, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(251, 113, 133, 0.38);
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* Faixa: left em % do pai = percurso canto a canto (transform % era relativo à própria faixa) */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong::before,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -42%;
+  width: 42%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 18%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.05) 82%,
+    transparent 100%
+  );
+  mix-blend-mode: soft-light;
+  animation: srDetectShineAcross calc(9s * var(--sense-anim-factor)) linear infinite alternate;
+  will-change: left;
+}
+
+@keyframes srDetectShineAcross {
+  0% {
+    left: -42%;
+    opacity: 0.35;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.9;
+  }
+}
+
+/* Alvos / níveis: faixa de luz no placar SR mais lenta e menos “piscante” */
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong::before,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong::before {
+  animation: srDetectShineAcrossLevels calc(14s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) linear infinite alternate;
+}
+
+@keyframes srDetectShineAcrossLevels {
+  0% {
+    left: -42%;
+    opacity: 0.22;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.48;
+  }
+}
+
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  animation-duration: calc(2.6s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong {
+    animation: none;
+    will-change: auto;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong::before,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong::before {
+    animation: none;
+    display: none;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong .hud-sr-detect__moving,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong .hud-sr-detect__moving {
+    will-change: auto;
+    transform: none !important;
+    letter-spacing: 0.02em;
+    white-space: normal;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-max .hud-sr-detect__text,
+  .hud-sr-detect--sell.hud-sr-detect--lead-max .hud-sr-detect__text {
+    animation: none;
+    color: inherit;
+    text-shadow: none;
+  }
+
+  .levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong::before,
+  .levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong::before {
+    animation: none;
+    display: none;
+  }
+
+  .levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text,
+  .levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+    animation: none;
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+/* SR extremo + absorção no sentido oposto: brilho âmbar lento (sem deslize horizontal — ver renderer JS). */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  animation: srAbsorptionNuanceWrap calc(5.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Fundo e borda distintos do modo “só SR máx.” — mistura âmbar para ficar óbvio vs verde/vermelho puro. */
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  color: #fde68a;
+  background: linear-gradient(
+    110deg,
+    rgba(69, 26, 26, 0.94) 0%,
+    rgba(120, 53, 15, 0.82) 20%,
+    rgba(185, 28, 28, 0.42) 48%,
+    rgba(146, 64, 14, 0.72) 72%,
+    rgba(49, 21, 21, 0.92) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(251, 191, 36, 0.72);
+  text-shadow:
+    0 0 14px rgba(253, 224, 71, 0.42),
+    0 0 2px rgba(49, 21, 21, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(251, 191, 36, 0.42);
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  color: #ecfccb;
+  background: linear-gradient(
+    110deg,
+    rgba(6, 78, 59, 0.92) 0%,
+    rgba(22, 101, 52, 0.72) 22%,
+    rgba(113, 63, 18, 0.38) 50%,
+    rgba(22, 101, 52, 0.68) 76%,
+    rgba(6, 95, 70, 0.9) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(163, 230, 53, 0.62);
+  text-shadow:
+    0 0 12px rgba(217, 249, 157, 0.45),
+    0 0 2px rgba(6, 78, 59, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(132, 204, 22, 0.4);
+}
+
+@keyframes srAbsorptionNuanceWrap {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(251, 191, 36, 0.22);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(253, 224, 71, 0.55),
+      0 0 22px rgba(251, 191, 36, 0.28);
+  }
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+  animation: srDetectShineAcrossAbsorption calc(20s * var(--sense-anim-factor)) ease-in-out infinite alternate;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(251, 191, 36, 0.06) 35%,
+    rgba(253, 224, 71, 0.2) 50%,
+    rgba(251, 191, 36, 0.06) 65%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.levels-sr-wrap .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+.levels-sr-wrap .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+  animation: srDetectShineAcrossAbsorptionLevels calc(24s * var(--sense-anim-factor) * var(--sense-levels-pulse-extra)) ease-in-out
+    infinite alternate;
+}
+
+@keyframes srDetectShineAcrossAbsorption {
+  0% {
+    left: -42%;
+    opacity: 0.25;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.65;
+  }
+}
+
+@keyframes srDetectShineAcrossAbsorptionLevels {
+  0% {
+    left: -42%;
+    opacity: 0.18;
+  }
+  100% {
+    left: 100%;
+    opacity: 0.5;
+  }
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+  animation: srAbsorptionNuanceTextBuy calc(4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+  animation: srAbsorptionNuanceTextSell calc(4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes srAbsorptionNuanceTextBuy {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.96;
+    filter: brightness(1.12);
+  }
+}
+
+@keyframes srAbsorptionNuanceTextSell {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.96;
+    filter: brightness(1.12);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+    animation: none;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+  .hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .hud-sr-detect--buy.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text,
+  .hud-sr-detect--sell.hud-sr-detect--lead-max.hud-sr-detect--absorption-nuance .hud-sr-detect__text {
+    animation: none;
+  }
+}
+
+.hud-sr-detect--neutral {
+  color: #94a3b8;
+  background: rgba(148, 163, 184, 0.06);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+@keyframes hudAggrDayAlertPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.03);
+    filter: brightness(1.12);
+  }
+}
+
+/* Gatilho operacional — botões (acendem só quando buyReady/sellReady) */
+.gatilho-hint {
+  margin-top: 8px;
+}
+
+/* Coluna AGR no HUD: menos respiro — liberta altura para Radar/Makers */
+.hud-cols > .hud-col:first-child .gatilho-hint {
+  margin-top: 5px;
+}
+
+.gatilho-wrap {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(47, 66, 100, 0.6);
+  position: relative;
+}
+
+/* COMPRA/VENDA ativos: menos espaço vertical; detalhes vêm primeiro no HTML. */
+.gatilho-wrap--hold {
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.gatilho-wrap--hold .gatilho-subtitle {
+  margin-bottom: 4px;
+}
+
+/*
+ * Repouso: título → motivos → BE (largura total) → termómetro + logo.
+ * Inline: --gatilho-idle-agg-scale (JS) escala em cima do lado base abaixo.
+ */
+.gatilho-wrap--idle {
+  --gatilho-idle-logo-scale: 2.32;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    min(64vw, 100%)
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: visible;
+  overflow-y: visible;
+  box-sizing: border-box;
+}
+
+/* Termômetro vertical (Preparo) — à esquerda, ligeiramente abaixo do topo */
+.gatilho-wrap--thermo-viz .gatilho-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.gatilho-body__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.gatilho-thermo-meter-wrap {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 24px;
+  padding-bottom: 0;
+  z-index: 1;
+}
+
+/* Uma % só: cor do lado dominante, alinhada às cápsulas C (ciano) / V (laranja). */
+.gatilho-thermo-pct {
+  margin-top: 4px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 10px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  user-select: none;
+  transition:
+    color 0.22s ease,
+    text-shadow 0.22s ease,
+    filter 0.22s ease;
+}
+
+.gatilho-thermo-pct--buy .gatilho-thermo-pct__num {
+  color: rgba(125, 211, 252, 0.98);
+  text-shadow:
+    0 0 6px rgba(56, 189, 248, 0.5),
+    0 0 1px rgba(255, 255, 255, 0.2);
+  filter: brightness(1.02);
+}
+
+.gatilho-thermo-pct--sell .gatilho-thermo-pct__num {
+  color: rgba(253, 186, 116, 0.98);
+  text-shadow:
+    0 0 6px rgba(251, 146, 60, 0.42),
+    0 0 1px rgba(255, 247, 237, 0.2);
+  filter: brightness(1.02);
+}
+
+.gatilho-thermo-pct--neut .gatilho-thermo-pct__num {
+  color: rgba(148, 163, 184, 0.95);
+  text-shadow: 0 0 4px rgba(100, 116, 139, 0.25);
+  filter: brightness(0.98);
+}
+
+.gatilho-thermo-viz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 22px;
+  animation: gatilhoThermoPulse calc(2.75s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-thermo-viz__cap {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  user-select: none;
+  transition:
+    font-size 0.22s ease,
+    color 0.22s ease,
+    text-shadow 0.22s ease,
+    filter 0.22s ease;
+}
+
+/* C: maior + mais brilho quando --thermo-pos → 1 (compra). */
+.gatilho-thermo-viz__cap--c {
+  --cap-c-weight: var(--thermo-pos, 0.5);
+  font-size: calc(6.25px + var(--cap-c-weight) * 5.5px);
+  color: rgba(125, 211, 252, calc(0.72 + var(--cap-c-weight) * 0.23));
+  text-shadow:
+    0 0 calc(4px + var(--cap-c-weight) * 9px) rgba(56, 189, 248, calc(0.28 + var(--cap-c-weight) * 0.62)),
+    0 0 calc(12px + var(--cap-c-weight) * 20px) rgba(56, 189, 248, calc(0.1 + var(--cap-c-weight) * 0.42)),
+    0 0 1px rgba(255, 255, 255, calc(0.06 + var(--cap-c-weight) * 0.32));
+  filter: brightness(calc(0.96 + var(--cap-c-weight) * 0.14));
+}
+
+/* V: maior + mais brilho quando pos → 0 (venda). */
+.gatilho-thermo-viz__cap--v {
+  --cap-v-weight: calc(1 - var(--thermo-pos, 0.5));
+  font-size: calc(6.25px + var(--cap-v-weight) * 5.5px);
+  color: rgba(253, 186, 116, calc(0.72 + var(--cap-v-weight) * 0.23));
+  text-shadow:
+    0 0 calc(4px + var(--cap-v-weight) * 9px) rgba(251, 146, 60, calc(0.26 + var(--cap-v-weight) * 0.62)),
+    0 0 calc(12px + var(--cap-v-weight) * 20px) rgba(251, 146, 60, calc(0.09 + var(--cap-v-weight) * 0.4)),
+    0 0 1px rgba(255, 247, 237, calc(0.06 + var(--cap-v-weight) * 0.28));
+  filter: brightness(calc(0.96 + var(--cap-v-weight) * 0.14));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-thermo-viz__cap {
+    transition: none;
+  }
+}
+
+/* Área do tubo + bolinha: o tubo mantém overflow:hidden (máscara); a bolinha fica fora dele para o pulso não ser cortado. */
+.gatilho-thermo-viz__tube-wrap {
+  position: relative;
+  width: 14px;
+  height: 72px;
+  flex-shrink: 0;
+  overflow: visible;
+  z-index: 1;
+}
+
+.gatilho-thermo-viz__tube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 116, 139, 0.55);
+  box-shadow:
+    inset 0 0 14px rgba(15, 22, 38, 0.92),
+    0 0 8px rgba(15, 23, 42, 0.35);
+}
+
+.gatilho-thermo-viz__track {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.5) 0%,
+    rgba(71, 85, 105, 0.28) 52%,
+    rgba(251, 113, 133, 0.48) 100%
+  );
+}
+
+.gatilho-thermo-viz__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: calc(var(--thermo-pos, 0.5) * 100%);
+  /* Mesma escala que a bolinha (% do percurso base → topo C). */
+  transition:
+    height 0.45s ease,
+    opacity 0.35s ease;
+  background: linear-gradient(
+    180deg,
+    rgba(56, 189, 248, 0.42) 0%,
+    rgba(34, 211, 238, 0.12) 55%,
+    rgba(255, 255, 255, 0.08) 100%
+  );
+  opacity: calc(0.38 + 0.42 * var(--thermo-intensity, 0.5));
+  pointer-events: none;
+}
+
+/* Seta ▲/▼ (tipo indicador sob candle): piscar rápido + pulso; triângulo por bordas (sombras visíveis). */
+@keyframes gatilhoThermoMarkerPulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  35% {
+    transform: translateX(-50%) scale(1.36);
+  }
+  52% {
+    transform: translateX(-50%) scale(1.1);
+  }
+}
+
+@keyframes gatilhoThermoMarkerBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.33;
+  }
+}
+
+.gatilho-thermo-viz__marker {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  bottom: calc(var(--thermo-pos, 0.5) * (100% - 12px));
+  transition: bottom 0.45s ease;
+  pointer-events: none;
+}
+
+/* ▲ compra (ponta para C) — base da seta no nível de leitura */
+.gatilho-thermo-viz__marker--up {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 12px 7px;
+  border-color: transparent transparent #38bdf8 transparent;
+  filter: drop-shadow(0 0 7px rgba(56, 189, 248, 0.9)) drop-shadow(0 0 14px rgba(34, 211, 238, 0.45));
+  background: none;
+  animation: none;
+}
+
+/* ▼ venda (ponta para V) */
+.gatilho-thermo-viz__marker--down {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 12px 7px 0 7px;
+  border-color: #f87171 transparent transparent transparent;
+  filter: drop-shadow(0 0 7px rgba(248, 113, 113, 0.95)) drop-shadow(0 0 12px rgba(239, 68, 68, 0.4));
+  background: none;
+  animation: none;
+}
+
+/* Piscar + pulso só com força > 10% (compra ou venda) */
+.gatilho-thermo-viz__marker--up.gatilho-thermo-viz__marker--anim,
+.gatilho-thermo-viz__marker--down.gatilho-thermo-viz__marker--anim {
+  animation:
+    gatilhoThermoMarkerBlink 0.16s ease-in-out infinite,
+    gatilhoThermoMarkerPulse calc(1.85s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Equilíbrio: bolinha suave, sem piscar agressivo */
+.gatilho-thermo-viz__marker--mid {
+  width: 9px;
+  height: 9px;
+  margin-left: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f1f5f9, #64748b);
+  border: 1px solid rgba(15, 23, 42, 0.9);
+  box-shadow:
+    0 0 5px rgba(255, 255, 255, 0.35),
+    0 0 12px rgba(250, 204, 21, 0.35);
+  animation: gatilhoThermoMarkerPulse calc(2.1s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-thermo-viz--heat-ready .gatilho-thermo-viz__tube {
+  border-color: rgba(74, 222, 128, 0.55);
+  box-shadow:
+    inset 0 0 14px rgba(15, 22, 38, 0.88),
+    0 0 10px rgba(74, 222, 128, 0.22);
+}
+
+.gatilho-thermo-viz--heat-hot .gatilho-thermo-viz__tube {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.gatilho-thermo-viz--heat-warm .gatilho-thermo-viz__tube {
+  border-color: rgba(34, 211, 238, 0.42);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-thermo-viz {
+    animation: none;
+  }
+  .gatilho-thermo-viz__fill {
+    transition: none;
+  }
+  .gatilho-thermo-viz__marker {
+    transition: none;
+    animation: none;
+    will-change: auto;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.gatilho-wrap--idle .gatilho-lateral-alert-wrap {
+  justify-content: flex-start;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.gatilho-wrap--idle .gatilho-thermo-wrap {
+  margin-bottom: 0;
+}
+
+.gatilho-wrap--idle .gatilho-btns--idle-logo {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  align-self: stretch;
+  width: 100%;
+  max-width: 100%;
+  /* Altura para PNG (anel + texto SENSE em baixo) sem cortar o letreiro */
+  min-height: calc(var(--gatilho-idle-logo-side) * 1.45 + 22px);
+  padding: 0 40px 16px 10px;
+  /* Sobe a logo em direção à faixa AGR acum; se cortar no ecrã muito baixo, afrouxe este valor */
+  margin-top: -44px;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+/* Motivo: até 2 linhas; texto completo no tooltip. */
+.gatilho-wrap--idle .gatilho-aux-line-wrap .gatilho-lateral-alert--reason-info {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  max-width: 100%;
+  line-height: 1.25;
+  padding: 2px 6px;
+  font-size: 9.5px;
+  text-align: left;
+  border-radius: 6px;
+}
+
+/* Breakeven 40% / 50% — abaixo da linha de motivos; alinhado à esquerda com título / motivos. */
+.gatilho-breakeven-wrap {
+  width: 100%;
+  max-width: 100%;
+  margin: 8px 0 6px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.gatilho-wrap--hold .gatilho-breakeven-wrap {
+  /* BE fica abaixo do bloco de botões/Preço — precisa de folga para não “invadir” o glow do botão. */
+  margin-top: 10px;
+}
+
+/* BE calculado só no painel (JSON sem bloco breakeven do EA). */
+.gatilho-breakeven-wrap--synthetic .gatilho-breakeven__lines {
+  opacity: 0.92;
+}
+
+.gatilho-breakeven__lines {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.gatilho-breakeven__line {
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  color: #a5f3fc;
+  text-align: left;
+  line-height: 1.35;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.22);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.gatilho-breakeven__line--meta {
+  font-size: 8.5px;
+  font-weight: 650;
+  letter-spacing: 0.03em;
+  color: rgba(165, 243, 252, 0.78);
+}
+
+.gatilho-breakeven__line--prices {
+  font-size: 9px;
+}
+
+.gatilho-breakeven__line--compact {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+}
+
+.gatilho-breakeven__msg {
+  margin-top: 4px;
+  text-align: left;
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #ecfdf5;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(52, 211, 153, 0.55);
+  background: linear-gradient(95deg, rgba(6, 78, 59, 0.55) 0%, rgba(16, 185, 129, 0.38) 50%, rgba(6, 95, 70, 0.52) 100%);
+}
+
+.gatilho-breakeven__msg--fire {
+  animation: gatilhoBreakevenFire calc(1.5s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes gatilhoBreakevenFire {
+  0%,
+  100% {
+    box-shadow: 0 0 6px rgba(52, 211, 153, 0.28);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow:
+      0 0 14px rgba(74, 222, 128, 0.5),
+      0 0 22px rgba(16, 185, 129, 0.2);
+    filter: brightness(1.09);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-breakeven__msg--fire {
+    animation: none;
+  }
+}
+
+/* Faixa fina e estreita — não roubar altura do painel (botões + Preço/SL/TP visíveis). */
+.gatilho-lateral-alert-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 4px;
+  flex-shrink: 0;
+}
+
+.gatilho-wrap--hold .gatilho-lateral-alert-wrap {
+  justify-content: flex-start;
+  margin-bottom: 2px;
+}
+
+/* Linha “Preparo” acima da faixa de motivos / lateral. */
+.gatilho-thermo-wrap {
+  margin-bottom: 3px;
+}
+
+.gatilho-wrap--hold .gatilho-thermo-wrap {
+  margin-bottom: 2px;
+}
+
+/* Só cápsula comum: cor/animacão vêm de --cuidado, --reason-info ou termômetro (--cold … + .gatilho-thermo). */
+.gatilho-lateral-alert {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+/* Faixa dourada “CUIDADO · ATV LATERAL” — separada do termômetro de preparo. */
+.gatilho-lateral-alert--cuidado {
+  color: #0a0a0a;

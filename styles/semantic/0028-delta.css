@@ -1,0 +1,12 @@
+/**
+ * [delta] — parte 0028 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.panel-bl .delta-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}

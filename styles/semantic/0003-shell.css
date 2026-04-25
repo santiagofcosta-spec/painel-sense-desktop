@@ -1,0 +1,14 @@
+/**
+ * [shell] — parte 0003 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+html {
+  height: 100%;
+  overflow-x: hidden;
+  /* Sem reserva de faixa para scrollbar — evita “faixa” visível ao lado do conteúdo */
+  scrollbar-gutter: unset;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}

@@ -1,0 +1,60 @@
+/* SENSE IA — ajuda contextual (Ollama) e erros legíveis (carregado após os blocos base). */
+
+/* Só logo (sem termómetro): evita “caixa” vazia alta quando schema <6 ou sem gatilhoOperacional. */
+.hud-makers-preparo.hud-makers-preparo--no-prep {
+  min-height: 0;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-top: 1px solid rgba(74, 100, 140, 0.35);
+}
+
+/* Área clicável um pouco maior + menos atraso em toque (o handler usa pointerdown). */
+[data-sense-ia-trigger="1"] {
+  cursor: pointer;
+  touch-action: manipulation;
+  padding: 6px;
+  margin: -6px;
+  box-sizing: content-box;
+}
+
+.sense-ia-dialog__err-wrap {
+  text-align: left;
+}
+
+.sense-ia-dialog__err-pre {
+  margin: 0 0 10px;
+  font: inherit;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #fecaca;
+}
+
+.sense-ia-dialog__setup-aside {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: rgba(15, 23, 42, 0.75);
+  font-size: 11px;
+  line-height: 1.45;
+  color: #e0f2fe;
+}
+
+.sense-ia-dialog__setup-aside h4 {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #7dd3fc;
+}
+
+.sense-ia-dialog__setup-aside ol {
+  margin: 0;
+  padding-left: 1.2em;
+}
+
+.sense-ia-dialog__setup-aside code {
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 1px 4px;
+  border-radius: 4px;
+}

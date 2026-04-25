@@ -1,0 +1,12 @@
+/**
+ * [media] — parte 0114 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .delta-bars-pulse-wrap::before {
+    animation: none;
+    opacity: 0.4;
+  }
+}

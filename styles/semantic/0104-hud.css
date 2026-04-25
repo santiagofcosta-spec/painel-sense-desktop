@@ -1,0 +1,104 @@
+/**
+ * [hud] — parte 0104 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.radar-delta-gauge {
+  flex: 1 1 76px;
+  min-width: 72px;
+  max-width: 120px;
+  text-align: center;
+  animation: senseHudFloat calc(5.2s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+  will-change: transform;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+  /* Espaço para o % ficar abaixo do ponteiro, sem colidir */
+  padding-bottom: 12px;
+  overflow: visible;
+}
+
+.radar-delta-gauge:nth-child(2) {
+  animation-delay: calc(-2.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+.radar-delta-gauge__label {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.radar-delta-gauge__viz {
+  position: relative;
+  height: 58px;
+  overflow: visible;
+  transform-origin: 50% 82%;
+  will-change: transform;
+}
+
+/* Brilho diagonal que atravessa o arco — mesma ideia que .gatilho-idle-logo__shine::before, mais discreto. */
+.radar-delta-gauge__viz::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -12%;
+  right: -12%;
+  top: -8%;
+  bottom: 8%;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.34;
+  background: linear-gradient(
+    102deg,
+    transparent 0%,
+    transparent 36%,
+    rgba(255, 255, 255, 0.08) 48%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 52%,
+    transparent 64%,
+    transparent 100%
+  );
+  filter: blur(0.38px);
+  animation: speedGaugeShineSweep calc(4.8s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.radar-delta-gauge--pos .radar-delta-gauge__viz::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-pos-rgb), 0.09) 46%,
+    rgba(var(--speed-pos-rgb), 0.28) 50%,
+    rgba(var(--speed-pos-rgb), 0.09) 54%,
+    transparent 66%
+  );
+}
+
+.radar-delta-gauge--neg .radar-delta-gauge__viz::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-neg-rgb), 0.09) 46%,
+    rgba(var(--speed-neg-rgb), 0.26) 50%,
+    rgba(var(--speed-neg-rgb), 0.09) 54%,
+    transparent 66%
+  );
+}
+
+.radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  opacity: 0.22;
+  background: linear-gradient(
+    102deg,
+    transparent 38%,
+    rgba(var(--speed-neut-rgb), 0.06) 48%,
+    rgba(var(--speed-neut-rgb), 0.14) 50%,
+    rgba(var(--speed-neut-rgb), 0.06) 52%,
+    transparent 62%
+  );
+  animation-duration: calc(5.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+.radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz::before {
+  animation-delay: -2.4s;
+}

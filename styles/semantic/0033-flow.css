@@ -1,0 +1,11 @@
+/**
+ * [flow] — parte 0033 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--flow-row-gap);
+}

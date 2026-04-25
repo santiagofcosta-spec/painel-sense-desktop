@@ -1,0 +1,11 @@
+/**
+ * [hud] — parte 0099 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Primeiro bloco da coluna instrumentos: sem barra superior */
+.hud-col-instruments .hud-instruments-stack .hud-makers-preparo {
+  border-top: none;
+  padding-top: 4px;
+}

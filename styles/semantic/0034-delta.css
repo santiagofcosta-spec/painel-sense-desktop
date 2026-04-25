@@ -1,0 +1,138 @@
+/**
+ * [delta] — parte 0034 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Fluxo por ativo: mesma família visual que .delta-row, porém bem mais suave */
+.flow .flow-row.delta-row {
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+}
+
+.flow .flow-row.delta-row .lbl {
+  max-width: 56%;
+  text-transform: none;
+  letter-spacing: 0.03em;
+  font-size: var(--ui-small-size);
+}
+
+.flow .flow-row.delta-row > strong {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--ui-text-size);
+}
+
+/* Peles atenuadas (só neste bloco) */
+.flow .flow-row.delta-row--neut {
+  border-left-color: rgba(100, 116, 139, 0.65);
+  background: linear-gradient(90deg, rgba(71, 85, 105, 0.05) 0%, #0f1626 55%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.55);
+}
+
+.flow .flow-row.delta-row--buy {
+  border-left-color: rgba(14, 165, 233, 0.5);
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.06) 0%, rgba(15, 22, 38, 0.98) 58%);
+  box-shadow:
+    inset 0 0 14px rgba(56, 189, 248, 0.03),
+    0 0 6px rgba(14, 165, 233, 0.07);
+}
+
+.flow .flow-row.delta-row--sell {
+  border-left-color: rgba(251, 146, 60, 0.48);
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.05) 0%, rgba(15, 22, 38, 0.98) 58%);
+  box-shadow:
+    inset 0 0 14px rgba(251, 146, 60, 0.03),
+    0 0 6px rgba(251, 146, 60, 0.07);
+}
+
+.flow .flow-row.delta-row--buy-soft {
+  border-left-color: rgba(56, 189, 248, 0.28);
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.035) 0%, #0f1626 62%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+}
+
+.flow .flow-row.delta-row--sell-soft {
+  border-left-color: rgba(251, 146, 60, 0.26);
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.03) 0%, #0f1626 62%);
+  box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+}
+
+.flow .flow-row.delta-row--neut .lbl {
+  color: rgba(196, 208, 232, 0.95);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--buy .lbl,
+.flow .flow-row.delta-row--buy-soft .lbl {
+  color: rgba(186, 230, 253, 0.9);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--sell .lbl,
+.flow .flow-row.delta-row--sell-soft .lbl {
+  color: rgba(254, 215, 170, 0.88);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--neut > strong {
+  color: #d0dcee;
+}
+
+.flow .flow-row.delta-row--buy > strong {
+  color: rgba(186, 230, 253, 0.92);
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.18);
+}
+
+.flow .flow-row.delta-row--sell > strong {
+  color: rgba(254, 215, 170, 0.9);
+  text-shadow: 0 0 6px rgba(251, 146, 60, 0.16);
+}
+
+.flow .flow-row.delta-row--buy-soft > strong {
+  color: rgba(186, 230, 253, 0.78);
+  text-shadow: none;
+}
+
+.flow .flow-row.delta-row--sell-soft > strong {
+  color: rgba(254, 215, 170, 0.75);
+  text-shadow: none;
+}
+
+/* Pulso na linha — só viés Forte (intensidade um pouco maior) */
+.flow .flow-row.delta-row--buy-soft.flow-row--pulse {
+  animation: flowRowBuySoftPulse calc(2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.flow .flow-row.delta-row--sell-soft.flow-row--pulse {
+  animation: flowRowSellSoftPulse calc(2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes flowRowBuySoftPulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 22px rgba(56, 189, 248, 0.08),
+      0 0 14px rgba(14, 165, 233, 0.14),
+      0 0 22px rgba(14, 165, 233, 0.06);
+  }
+}
+
+@keyframes flowRowSellSoftPulse {
+  0%,
+  100% {
+    box-shadow: inset 0 0 12px rgba(15, 22, 38, 0.68);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 22px rgba(251, 146, 60, 0.075),
+      0 0 14px rgba(251, 146, 60, 0.12),
+      0 0 22px rgba(249, 115, 22, 0.055);
+  }
+}

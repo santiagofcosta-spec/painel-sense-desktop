@@ -1,0 +1,50 @@
+/**
+ * [misc] — parte 0043 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Medidor S/R no bloco Alvos / níveis (eco das barrinhas do EA) */
+/* --sr-flow: 0–1 no container = força global do fluxo (cor + glow mais fortes). */
+/* --sr-seg: 0–1 por segmento ativo = rampa neon da esq. p/ dir. (opcional). */
+.sr-meter {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+  --sr-flow: 0.5;
+}
+
+.sr-meter__seg {
+  display: inline-block;
+  width: 3px;
+  height: 10px;
+  border-radius: 1px;
+  flex-shrink: 0;
+  --sr-seg: 1;
+}
+
+.sr-meter--sup .sr-meter__seg--off {
+  background: rgba(34, 211, 238, 0.12);
+  box-shadow: none;
+}
+
+.sr-meter--sup .sr-meter__seg--on {
+  background: linear-gradient(180deg, #a5f3fc 0%, #22d3ee 45%, #0891b2 100%);
+  box-shadow:
+    0 0 calc(1px + 4px * var(--sr-flow, 0) * var(--sr-seg, 1)) rgba(34, 211, 238, calc(0.15 + 0.65 * var(--sr-flow, 0))),
+    0 0 calc(4px + 14px * var(--sr-flow, 0)) rgba(56, 240, 255, calc(0.12 + 0.48 * var(--sr-flow, 0)));
+  filter: saturate(calc(0.52 + 0.68 * var(--sr-flow, 0))) brightness(calc(0.72 + 0.38 * var(--sr-flow, 0) * (0.65 + 0.35 * var(--sr-seg, 1))));
+}
+
+.sr-meter--res .sr-meter__seg--off {
+  background: rgba(249, 115, 22, 0.12);
+}
+
+.sr-meter--res .sr-meter__seg--on {
+  background: linear-gradient(180deg, #fdba74 0%, #fb923c 45%, #c2410c 100%);
+  box-shadow:
+    0 0 calc(1px + 4px * var(--sr-flow, 0) * var(--sr-seg, 1)) rgba(251, 146, 60, calc(0.14 + 0.62 * var(--sr-flow, 0))),
+    0 0 calc(4px + 14px * var(--sr-flow, 0)) rgba(255, 120, 60, calc(0.1 + 0.45 * var(--sr-flow, 0)));
+  filter: saturate(calc(0.5 + 0.72 * var(--sr-flow, 0))) brightness(calc(0.7 + 0.4 * var(--sr-flow, 0) * (0.65 + 0.35 * var(--sr-seg, 1))));
+}

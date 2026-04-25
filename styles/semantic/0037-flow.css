@@ -1,0 +1,41 @@
+/**
+ * [flow] — parte 0037 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.flow .flow-row strong.flow-trend.flow-trend--sell-strong {
+  color: #fb7185 !important;
+  text-shadow:
+    0 0 4px rgba(251, 113, 133, 0.35),
+    0 0 10px rgba(239, 68, 68, 0.18);
+}
+
+.flow .flow-row strong.flow-trend.flow-trend--buy-strong {
+  color: #93c5fd !important;
+  text-shadow:
+    0 0 4px rgba(147, 197, 253, 0.35),
+    0 0 10px rgba(56, 189, 248, 0.15);
+}
+
+.flow .flow-row strong.flow-trend.flow-trend--lateral {
+  color: #fde047 !important;
+  text-shadow:
+    0 0 4px rgba(250, 204, 21, 0.34),
+    0 0 9px rgba(250, 204, 21, 0.14);
+  animation: flowTrendLateralPulse calc(2.45s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes flowTrendLateralPulse {
+  0%,
+  100% {
+    opacity: 0.96;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+    filter: brightness(1.08);
+  }
+}

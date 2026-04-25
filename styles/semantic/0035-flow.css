@@ -1,0 +1,26 @@
+/**
+ * [flow] — parte 0035 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Pulsada no texto do viés (Baixa Forte, Neutro, Alta fraca, …) */
+.flow .flow-row strong.flow-trend-label {
+  display: inline-block;
+  transform-origin: 50% 55%;
+  animation: flowTrendLabelPulse calc(2.15s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+@keyframes flowTrendLabelPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.86;
+    transform: scale(1.032);
+    filter: brightness(1.09);
+  }
+}

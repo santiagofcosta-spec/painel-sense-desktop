@@ -1,0 +1,19 @@
+/**
+ * [delta] — parte 0031 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Δ / Placar: barra de scroll oculta (roda do rato / touch) */
+.panel-bl .delta-panel,
+.panel-br .summary {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-bl .delta-panel::-webkit-scrollbar,
+.panel-br .summary::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

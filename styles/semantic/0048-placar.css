@@ -1,0 +1,18 @@
+/**
+ * [placar] — parte 0048 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.alert.placar {
+  border-color: #2a4a6a;
+  background: rgba(80, 160, 255, 0.1);
+  color: #b8d9ff;
+}
+
+.scoreboard {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
+}

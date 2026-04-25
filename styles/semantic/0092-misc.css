@@ -1,0 +1,120 @@
+/**
+ * [misc] — parte 0092 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Badge absorção (intensidade + lado) — acima da linha de texto */
+.abs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 22, 38, 0.92);
+}
+.abs-badge--compra {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+}
+.abs-badge--venda {
+  border-color: rgba(251, 146, 60, 0.35);
+  box-shadow: 0 0 10px rgba(251, 146, 60, 0.1);
+}
+.abs-badge--neutro {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+.abs-badge__lbl {
+  color: #e2e8f0;
+}
+.abs-badge__dots {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.abs-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(71, 85, 105, 0.75);
+}
+.abs-badge__dot--on {
+  background: #facc15;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.65);
+}
+
+/* Coluna AGR — PRESSÃO LEVE vs PESADO (proxy aggressionProxy) */
+.aggr-texture {
+  margin: 8px 0 2px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: rgba(8, 13, 22, 0.55);
+  border: 1px solid rgba(100, 116, 139, 0.22);
+}
+.aggr-texture__label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(148, 163, 184, 0.95);
+  margin-bottom: 5px;
+}
+.aggr-texture__bar {
+  display: flex;
+  width: 100%;
+  height: 7px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(30, 41, 59, 0.65);
+}
+.aggr-texture__fine {
+  flex: 0 0 auto;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.42), rgba(134, 239, 172, 0.8));
+  transition: width 0.35s ease;
+  will-change: width;
+}
+.aggr-texture__heavy {
+  flex: 0 0 auto;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.58), rgba(248, 113, 113, 0.88));
+  transition: width 0.35s ease;
+  will-change: width;
+}
+.aggr-texture__nums {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(186, 199, 226, 0.9);
+}
+
+/* Quando PESADO > LEVE: destaque + viés (Δ ou aggressionProxy.heavySide). */
+.aggr-texture__heavy-hint {
+  margin-top: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  min-height: 1.25em;
+}
+.aggr-texture__heavy-hint--buy {
+  color: rgba(134, 239, 172, 0.98);
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
+}
+.aggr-texture__heavy-hint--sell {
+  color: rgba(252, 165, 165, 0.98);
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.38);
+}
+.aggr-texture__heavy-hint--neutral {
+  color: rgba(186, 199, 226, 0.92);
+}
+.aggr-texture__heavy-hint--off {
+  visibility: hidden;
+}

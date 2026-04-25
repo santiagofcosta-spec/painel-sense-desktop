@@ -1,0 +1,37 @@
+/**
+ * [placar] — parte 0112 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.scoreboard--compact {
+  gap: 5px;
+  margin-bottom: 4px;
+}
+
+.scoreboard--compact .score {
+  padding: 4px 5px;
+  border-radius: 6px;
+}
+
+.scoreboard--compact .score .label {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.scoreboard--compact .score .num {
+  font-size: 15px;
+  margin-top: 1px;
+}
+
+.bar-wrap--compact {
+  height: 13px;
+  border-radius: 7px;
+  margin-top: 1px;
+}
+
+.meta-foot--compact {
+  font-size: 10px;
+  padding-top: 2px;
+  opacity: 0.92;
+}

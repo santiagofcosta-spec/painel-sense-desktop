@@ -1,0 +1,26 @@
+/**
+ * [levels] — parte 0040 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.levels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* Antes: max-height baixo escondia linhas (ex.: MELHOR VENDA) */
+  max-height: none;
+  overflow-y: visible;
+  padding-right: 4px;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.levels::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

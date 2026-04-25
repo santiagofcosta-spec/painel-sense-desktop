@@ -1,0 +1,109 @@
+/**
+ * [gatilho] — parte 0084 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.gatilho-idle-logo__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: var(--sense-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--sense-mask);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: calc(0.55 + var(--glow) * 0.35);
+}
+
+.gatilho-idle-logo--off .gatilho-idle-logo__shine {
+  display: none;
+}
+
+.gatilho-idle-logo__shine::before {
+  content: "";
+  position: absolute;
+  top: -35%;
+  bottom: -35%;
+  left: -45%;
+  width: 42%;
+  transform: translateX(-120%) skewX(-11deg);
+  background: linear-gradient(
+    102deg,
+    transparent 0%,
+    transparent 36%,
+    rgba(255, 255, 255, 0.14) 48%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.14) 52%,
+    transparent 64%,
+    transparent 100%
+  );
+  filter: blur(0.4px);
+  animation: gatilhoLogoShineSweep calc(4.8s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.gatilho-idle-logo--buy .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(57, 255, 20, 0.16) 46%,
+    rgba(57, 255, 20, 0.44) 50%,
+    rgba(57, 255, 20, 0.16) 54%,
+    transparent 66%
+  );
+}
+
+.gatilho-idle-logo--sell .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-neg-rgb), 0.16) 46%,
+    rgba(var(--speed-neg-rgb), 0.4) 50%,
+    rgba(var(--speed-neg-rgb), 0.16) 54%,
+    transparent 66%
+  );
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__shine {
+  opacity: calc(0.28 + var(--glow) * 0.25);
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 38%,
+    rgba(var(--speed-neut-rgb), 0.1) 48%,
+    rgba(var(--speed-neut-rgb), 0.22) 50%,
+    rgba(var(--speed-neut-rgb), 0.1) 52%,
+    transparent 62%
+  );
+  animation-duration: calc(5.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+@keyframes gatilhoLogoShineSweep {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  42% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 1;
+  }
+
+  48%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}

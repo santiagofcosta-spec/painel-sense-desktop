@@ -1,0 +1,95 @@
+/**
+ * [gatilho] — parte 0083 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/*
+ * Linhas horizontais animadas (estilo “scan”) — intensidade e velocidade com --glow / --flow-speed.
+ * Mesma máscara da logo; fica entre o PNG e o brilho diagonal.
+ */
+.gatilho-idle-logo__flow-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: var(--sense-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--sense-mask);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: calc(0.08 + var(--glow) * 0.78);
+}
+
+.gatilho-idle-logo--off .gatilho-idle-logo__flow-lines {
+  display: none;
+}
+
+.gatilho-idle-logo__flow-lines::before {
+  content: "";
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  top: -35%;
+  height: 170%;
+  transform-origin: 50% 50%;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 5px,
+    rgba(255, 255, 255, 0.07) 5px,
+    rgba(255, 255, 255, 0.07) 6px
+  );
+  animation: gatilhoFlowLinesScroll calc(var(--flow-speed, 2.85s) * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) linear infinite;
+  filter: blur(0.25px);
+}
+
+.gatilho-idle-logo--buy .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(5px - var(--glow) * 1.5px),
+    rgba(57, 255, 20, calc(0.12 + var(--glow) * 0.42)) calc(5px - var(--glow) * 1.5px),
+    rgba(57, 255, 20, calc(0.12 + var(--glow) * 0.42)) calc(6px - var(--glow) * 1.5px)
+  );
+}
+
+.gatilho-idle-logo--sell .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(5px - var(--glow) * 1.5px),
+    rgba(var(--speed-neg-rgb), calc(0.1 + var(--glow) * 0.4)) calc(5px - var(--glow) * 1.5px),
+    rgba(var(--speed-neg-rgb), calc(0.1 + var(--glow) * 0.4)) calc(6px - var(--glow) * 1.5px)
+  );
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__flow-lines {
+  opacity: calc(0.06 + var(--glow) * 0.45);
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 6px,
+    rgba(var(--speed-neut-rgb), 0.14) 6px,
+    rgba(var(--speed-neut-rgb), 0.14) 7px
+  );
+  animation-duration: calc(var(--flow-speed, 2.85s) * 1.15 * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+@keyframes gatilhoFlowLinesScroll {
+  0% {
+    transform: translateY(-14%) translateX(-6%);
+  }
+
+  100% {
+    transform: translateY(14%) translateX(6%);
+  }
+}

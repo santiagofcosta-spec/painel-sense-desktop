@@ -1,0 +1,38 @@
+/**
+ * [media] — parte 0105 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .radar-delta-gauge__viz {
+    animation: speedGaugeRingPulse calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite alternate;
+  }
+
+  .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz {
+    animation-delay: -0.66s;
+  }
+
+  .radar-delta-gauge--neut .radar-delta-gauge__viz,
+  .radar-delta-gauge--empty .radar-delta-gauge__viz {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+  }
+}
+
+/* Makers: brilho + pulso do arco mais lentos (não afeta o radar na coluna central) */
+@media (prefers-reduced-motion: no-preference) {
+  .hud-makers-delta .radar-delta-gauge__viz {
+    animation: speedGaugeRingPulse
+      calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra))
+      ease-in-out infinite alternate;
+  }
+
+  .hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz {
+    animation-delay: calc(-0.66s * var(--sense-makers-gauge-extra));
+  }
+
+  .hud-makers-delta .radar-delta-gauge--neut .radar-delta-gauge__viz,
+  .hud-makers-delta .radar-delta-gauge--empty .radar-delta-gauge__viz {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra));
+  }
+}

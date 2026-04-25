@@ -1,0 +1,22 @@
+/**
+ * [misc] — parte 0047 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #5a2a2a;
+  background: rgba(255, 60, 60, 0.12);
+  color: #ff9b9b;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.alert.ok {
+  border-color: #2a5a3a;
+  background: rgba(60, 255, 120, 0.08);
+  color: #9bffb8;
+}

@@ -1,0 +1,20 @@
+/**
+ * [hud] — parte 0066 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance::before {
+  animation: srDetectShineAcrossAbsorption calc(20s * var(--sense-anim-factor)) ease-in-out infinite alternate;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(251, 191, 36, 0.06) 35%,
+    rgba(253, 224, 71, 0.2) 50%,
+    rgba(251, 191, 36, 0.06) 65%,
+    transparent 100%
+  );
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}

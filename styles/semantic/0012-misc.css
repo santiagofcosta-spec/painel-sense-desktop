@@ -1,0 +1,184 @@
+/**
+ * [misc] — parte 0012 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.sense-ia-dialog__body--rich {
+  white-space: normal;
+  padding: 10px 2px;
+}
+
+.sense-ia-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sense-ia-card__confidence {
+  height: 7px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(51, 65, 85, 0.85);
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.sense-ia-card__confidence-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  transition: width 0.45s ease;
+}
+
+.sense-ia-card__confidence-track--alta .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #22c55e 0%, #86efac 100%);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.45);
+}
+
+.sense-ia-card__confidence-track--baixa .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #f43f5e 0%, #fda4af 100%);
+  box-shadow: 0 0 12px rgba(244, 63, 94, 0.42);
+}
+
+.sense-ia-card__confidence-track--lateral .sense-ia-card__confidence-fill {
+  background: linear-gradient(90deg, #64748b 0%, #cbd5e1 100%);
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.32);
+}
+
+.sense-ia-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sense-ia-dialog__bias,
+.sense-ia-dialog__conf {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(71, 85, 105, 0.75);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.sense-ia-dialog__bias--alta {
+  color: #bbf7d0;
+  border-color: rgba(34, 197, 94, 0.55);
+  background: rgba(21, 128, 61, 0.22);
+}
+
+.sense-ia-dialog__bias--baixa {
+  color: #fecdd3;
+  border-color: rgba(244, 63, 94, 0.6);
+  background: rgba(159, 18, 57, 0.22);
+}
+
+.sense-ia-dialog__bias--lateral {
+  color: #e2e8f0;
+  border-color: rgba(148, 163, 184, 0.55);
+  background: rgba(51, 65, 85, 0.24);
+}
+
+.sense-ia-dialog__conf {
+  color: #bae6fd;
+  border-color: rgba(56, 189, 248, 0.48);
+  background: rgba(8, 47, 73, 0.28);
+}
+
+.sense-ia-card__sec {
+  border: 1px solid rgba(51, 65, 85, 0.68);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.78) 0%, rgba(15, 23, 42, 0.48) 100%);
+  padding: 8px 10px;
+}
+
+.sense-ia-card__ttl {
+  margin: 0 0 6px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #93c5fd;
+}
+
+.sense-ia-card__txt {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #dbeafe;
+}
+
+.sense-ia-dialog__list {
+  margin: 0;
+  padding-left: 16px;
+  display: grid;
+  gap: 5px;
+}
+
+.sense-ia-dialog__list li {
+  color: #e2e8f0;
+}
+
+.sense-ia-dialog__none {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.sense-ia-dialog__empty {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar {
+  width: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-track {
+  background: rgba(12, 20, 34, 0.9);
+  border-radius: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(71, 85, 105, 0.9) 0%, rgba(51, 65, 85, 0.92) 100%);
+  border: 1px solid rgba(30, 41, 59, 0.9);
+  border-radius: 10px;
+}
+
+.sense-ia-dialog__body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(100, 116, 139, 0.95) 0%, rgba(71, 85, 105, 0.95) 100%);
+}
+
+.sense-ia-dialog__foot {
+  margin-top: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.sense-ia-dialog__link {
+  margin-left: 0.35em;
+  color: #94a8d4;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sense-ia-dialog__link:hover {
+  color: #c7d6f5;
+}
+
+.sense-ia-dialog__foot strong {
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.sense-ia-dialog__kbd {
+  display: inline;
+  padding: 0.1em 0.35em;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 0.95em;
+  color: #cbd5e1;
+  background: rgba(30, 41, 59, 0.85);
+  border-radius: 4px;
+}

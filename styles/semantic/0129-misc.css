@@ -1,0 +1,9 @@
+/**
+ * [misc] — parte 0129 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.regime-mercado--one.regime-mercado--flash {
+  animation: regimeMercadoFlash 0.34s ease-out forwards;
+}

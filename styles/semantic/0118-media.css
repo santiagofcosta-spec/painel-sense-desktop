@@ -1,0 +1,13 @@
+/**
+ * [media] — parte 0118 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .delta-bar-buy.delta-bar-over50,
+  .delta-bar-sell.delta-bar-over50 {
+    animation: none;
+    filter: brightness(1.12);
+  }
+}

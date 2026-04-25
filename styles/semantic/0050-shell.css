@@ -1,0 +1,27 @@
+/**
+ * [shell] — parte 0050 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.footer {
+  padding: 6px 10px;
+  border-top: 1px solid #1f2a44;
+  font-size: 11px;
+  color: var(--ui-label-muted);
+  flex-shrink: 0;
+}
+
+.status.error {
+  color: #ff8b8b;
+}
+
+.status.warning {
+  color: #fbbf24;
+}
+
+.hint-inline {
+  margin: 0;
+  color: var(--ui-label-muted);
+  font-size: 12px;
+}

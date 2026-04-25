@@ -1,0 +1,202 @@
+/**
+ * [misc] — parte 0131 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.regime-mercado__strip .regime-mercado__tag {
+  flex: 0 0 auto;
+}
+
+.regime-mercado__strip .regime-mercado__vies {
+  flex: 0 0 auto;
+  font-size: 11px;
+}
+
+.regime-mercado__strip .regime-mercado__conf {
+  flex: 0 0 auto;
+  margin-left: 0;
+}
+
+.regime-mercado__rotulo-inline {
+  flex: 1 1 100px;
+  min-width: 0;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 6px;
+  color: #e2e8f0;
+  font-weight: 600;
+  line-height: 1.28;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.regime-mercado__rotulo-desc {
+  min-width: 0;
+  flex: 1 1 12rem;
+  color: #e2e8f0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.regime-mercado__rotulo-tag {
+  flex: 0 0 auto;
+  font-size: 9px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 5px;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  background: rgba(30, 41, 59, 0.65);
+  color: #e2e8f0;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.regime-mercado__rotulo-tag--alta {
+  color: #bbf7d0;
+  border-color: rgba(52, 211, 153, 0.45);
+  background: rgba(6, 78, 59, 0.42);
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.14);
+}
+
+.regime-mercado__rotulo-tag--baixa {
+  color: #fecaca;
+  border-color: rgba(248, 113, 113, 0.5);
+  background: rgba(127, 29, 29, 0.35);
+  box-shadow: 0 0 10px rgba(248, 113, 113, 0.12);
+}
+
+.regime-mercado__rotulo-tag--neutro {
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.4);
+  background: rgba(51, 65, 85, 0.45);
+}
+
+.regime-mercado__rotulo-tag--lateral {
+  color: #fde68a;
+  border-color: rgba(250, 204, 21, 0.55);
+  background: rgba(113, 63, 18, 0.38);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.16);
+}
+
+/* Chip TEND_* no fim da 1.ª linha (slot antigo de ATR / Δtx). */
+.regime-mercado__strip .regime-mercado__rotulo-tag--strip {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.regime-mercado__strip .regime-mercado__code {
+  flex: 0 1 auto;
+  max-width: 42%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.regime-mercado__strip .regime-mercado__meta {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.regime-mercado__strip .regime-mercado__warn {
+  flex: 0 0 auto;
+}
+
+.regime-mercado__code {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.75);
+  color: #a5b4fc;
+  font-size: 10px;
+}
+
+.regime-mercado__warn {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+.regime-mercado__meta {
+  font-variant-numeric: tabular-nums;
+}
+
+.regime-rastreador {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(148, 163, 184, 0.22);
+}
+
+.regime-rastreador__title {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7dd3fc;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.regime-rastreador__line {
+  margin: 0 0 3px;
+  color: #94a3b8;
+  font-size: 9.5px;
+  line-height: 1.32;
+}
+
+.regime-rastreador__line--z {
+  color: #cbd5e1;
+}
+
+.regime-rastreador__basis {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.regime-rast__bz {
+  font-size: 18px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.regime-rast__bz--neut {
+  color: #94a3b8;
+}
+
+.regime-rast__bz--hi,
+.regime-rast__bz--midhi {
+  color: #fbbf24;
+}
+
+.regime-rast__bz--lo,
+.regime-rast__bz--midlo {
+  color: #38bdf8;
+}
+
+.regime-rastreador__basis-hint {
+  font-size: 9.5px;
+  color: #64748b;
+}
+
+.regime-rastreador--one {
+  margin-top: 3px;
+  padding-top: 3px;
+}
+
+.regime-rastreador__one {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  font-size: 9.5px;
+  line-height: 1.38;
+  letter-spacing: 0.01em;
+  color: #94a3b8;
+  overflow: visible;
+  white-space: normal;
+  word-break: break-word;
+}

@@ -1,0 +1,164 @@
+/**
+ * [gatilho] — parte 0071 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Gatilho operacional — botões (acendem só quando buyReady/sellReady) */
+.gatilho-hint {
+  margin-top: 8px;
+}
+
+/* Coluna AGR no HUD: menos respiro — liberta altura para Radar/Makers */
+.hud-cols > .hud-col:first-child .gatilho-hint {
+  margin-top: 5px;
+}
+
+.gatilho-wrap {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(47, 66, 100, 0.6);
+  position: relative;
+}
+
+/* COMPRA/VENDA ativos: menos espaço vertical; detalhes vêm primeiro no HTML. */
+.gatilho-wrap--hold {
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.gatilho-wrap--hold .gatilho-subtitle {
+  margin-bottom: 4px;
+}
+
+/*
+ * Repouso: título → motivos → BE (largura total) → termómetro + logo.
+ * Inline: --gatilho-idle-agg-scale (JS) escala em cima do lado base abaixo.
+ */
+.gatilho-wrap--idle {
+  --gatilho-idle-logo-scale: 2.32;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    min(64vw, 100%)
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: visible;
+  overflow-y: visible;
+  box-sizing: border-box;
+}
+
+/* Termômetro vertical (Preparo) — à esquerda, ligeiramente abaixo do topo */
+.gatilho-wrap--thermo-viz .gatilho-body {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.gatilho-body__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.gatilho-thermo-meter-wrap {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 24px;
+  padding-bottom: 0;
+  z-index: 1;
+}
+
+/* Uma % só: cor do lado dominante, alinhada às cápsulas C (ciano) / V (laranja). */
+.gatilho-thermo-pct {
+  margin-top: 4px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 10px;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  user-select: none;
+  transition:
+    color 0.22s ease,
+    text-shadow 0.22s ease,
+    filter 0.22s ease;
+}
+
+.gatilho-thermo-pct--buy .gatilho-thermo-pct__num {
+  color: rgba(125, 211, 252, 0.98);
+  text-shadow:
+    0 0 6px rgba(56, 189, 248, 0.5),
+    0 0 1px rgba(255, 255, 255, 0.2);
+  filter: brightness(1.02);
+}
+
+.gatilho-thermo-pct--sell .gatilho-thermo-pct__num {
+  color: rgba(253, 186, 116, 0.98);
+  text-shadow:
+    0 0 6px rgba(251, 146, 60, 0.42),
+    0 0 1px rgba(255, 247, 237, 0.2);
+  filter: brightness(1.02);
+}
+
+.gatilho-thermo-pct--neut .gatilho-thermo-pct__num {
+  color: rgba(148, 163, 184, 0.95);
+  text-shadow: 0 0 4px rgba(100, 116, 139, 0.25);
+  filter: brightness(0.98);
+}
+
+.gatilho-thermo-viz {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 22px;
+  animation: gatilhoThermoPulse calc(2.75s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-thermo-viz__cap {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  user-select: none;
+  transition:
+    font-size 0.22s ease,
+    color 0.22s ease,
+    text-shadow 0.22s ease,
+    filter 0.22s ease;
+}
+
+/* C: maior + mais brilho quando --thermo-pos → 1 (compra). */
+.gatilho-thermo-viz__cap--c {
+  --cap-c-weight: var(--thermo-pos, 0.5);
+  font-size: calc(6.25px + var(--cap-c-weight) * 5.5px);
+  color: rgba(125, 211, 252, calc(0.72 + var(--cap-c-weight) * 0.23));
+  text-shadow:
+    0 0 calc(4px + var(--cap-c-weight) * 9px) rgba(56, 189, 248, calc(0.28 + var(--cap-c-weight) * 0.62)),
+    0 0 calc(12px + var(--cap-c-weight) * 20px) rgba(56, 189, 248, calc(0.1 + var(--cap-c-weight) * 0.42)),
+    0 0 1px rgba(255, 255, 255, calc(0.06 + var(--cap-c-weight) * 0.32));
+  filter: brightness(calc(0.96 + var(--cap-c-weight) * 0.14));
+}
+
+/* V: maior + mais brilho quando pos → 0 (venda). */
+.gatilho-thermo-viz__cap--v {
+  --cap-v-weight: calc(1 - var(--thermo-pos, 0.5));
+  font-size: calc(6.25px + var(--cap-v-weight) * 5.5px);
+  color: rgba(253, 186, 116, calc(0.72 + var(--cap-v-weight) * 0.23));
+  text-shadow:
+    0 0 calc(4px + var(--cap-v-weight) * 9px) rgba(251, 146, 60, calc(0.26 + var(--cap-v-weight) * 0.62)),
+    0 0 calc(12px + var(--cap-v-weight) * 20px) rgba(251, 146, 60, calc(0.09 + var(--cap-v-weight) * 0.4)),
+    0 0 1px rgba(255, 247, 237, calc(0.06 + var(--cap-v-weight) * 0.28));
+  filter: brightness(calc(0.96 + var(--cap-v-weight) * 0.14));
+}

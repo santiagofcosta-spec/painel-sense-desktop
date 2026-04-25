@@ -1,0 +1,53 @@
+{
+  "name": "painel-sense-desktop",
+  "version": "1.0.0",
+  "author": "SENSE",
+  "description": "Painel desktop para dados do EA SENSE (Electron)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win",
+    "dist:dir": "electron-builder --win dir",
+    "sentiment:context": "node scripts/build-sentiment-context.js",
+    "sense-ia:ask": "node scripts/sense-ia-ask.js",
+    "security:fingerprint": "node scripts/security-tools.js fingerprint",
+    "security:sign": "node scripts/security-tools.js sign",
+    "css:semantic": "node scripts/split-css-semantic.js",
+    "css:verify": "node scripts/verify-semantic-size.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "pt.sense.painel.desktop",
+    "productName": "Painel SENSE",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist/**",
+      "!**/*.md",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/*.map"
+    ],
+    "asar": true,
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false
+    }
+  }
+}

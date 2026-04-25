@@ -1,0 +1,20 @@
+/**
+ * [shell] — parte 0011 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.sense-ia-dialog__body {
+  min-height: 5em;
+  max-height: min(58vh, 420px);
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(71, 85, 105, 0.82) rgba(12, 20, 34, 0.88);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  padding: 10px 0;
+  border-top: 1px solid rgba(51, 65, 85, 0.55);
+  border-bottom: 1px solid rgba(51, 65, 85, 0.55);
+}

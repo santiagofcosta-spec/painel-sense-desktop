@@ -1,0 +1,117 @@
+/**
+ * [misc] — parte 0101 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Delta — proxy tape / tamanho */
+.tape-proxy {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  background: rgba(8, 13, 22, 0.5);
+}
+.tape-proxy__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tape-proxy__tit {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(148, 163, 184, 0.98);
+}
+.tape-tier {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(100, 116, 139, 0.4);
+  color: #e2e8f0;
+}
+.tape-tier--fine {
+  border-color: rgba(56, 189, 248, 0.45);
+  color: #bae6fd;
+}
+.tape-tier--mid {
+  border-color: rgba(251, 191, 36, 0.42);
+  color: #fde68a;
+}
+.tape-tier--heavy {
+  border-color: rgba(251, 113, 133, 0.45);
+  color: #fecdd3;
+}
+.tape-tier--unk {
+  opacity: 0.75;
+}
+.tape-proxy__prints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-end;
+  min-height: 40px;
+}
+.tape-slot {
+  flex: 1 1 0;
+  min-width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  padding: 4px 4px 3px;
+  border-radius: 5px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(51, 65, 85, 0.45);
+  font-size: 9.5px;
+}
+.tape-slot--empty {
+  color: rgba(100, 116, 139, 0.85);
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.tape-slot__bar {
+  display: block;
+  width: 7px;
+  border-radius: 2px;
+  background: rgba(100, 116, 139, 0.55);
+}
+.tape-slot--buy .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.85));
+}
+.tape-slot--sell .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 0.2), rgba(251, 146, 60, 0.88));
+}
+.tape-slot--neut .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.75));
+}
+.tape-slot__v {
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+  font-size: 9px;
+}
+.tape-pill {
+  margin-top: 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #fde68a;
+  text-align: center;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(120, 53, 15, 0.35);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+}
+.tape-proxy__hint {
+  margin: 8px 0 0;
+  font-size: 9px;
+  line-height: 1.35;
+  color: rgba(148, 163, 184, 0.88);
+}
+.tape-proxy__hint code {
+  font-size: 8.5px;
+  color: rgba(186, 199, 226, 0.95);
+}

@@ -1,0 +1,1382 @@
+    0 0 12px rgba(255, 23, 68, 0.3) !important;
+}
+
+.hud-col-makers .hud-line--maker-neutro {
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.1) !important;
+}
+
+/* Radar — direção / virada (verde-vermelho neon) */
+.hud-line--radar-buy {
+  border-left-color: #39ff14 !important;
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 20px rgba(57, 255, 20, 0.06),
+    0 0 16px rgba(57, 255, 20, 0.2);
+}
+
+.hud-line--radar-buy .hud-v {
+  color: #b8ffc4 !important;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.85),
+    0 0 14px rgba(57, 255, 20, 0.4);
+}
+
+.hud-line--radar-sell {
+  border-left-color: #ff1744 !important;
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 20px rgba(255, 23, 68, 0.06),
+    0 0 16px rgba(255, 23, 68, 0.22);
+}
+
+.hud-line--radar-sell .hud-v {
+  color: #ffb4c0 !important;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.8),
+    0 0 14px rgba(255, 23, 68, 0.4);
+}
+
+.hud-line--radar-neutro {
+  border-left-color: #94a3b8 !important;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.12);
+}
+
+.hud-line--radar-neutro .hud-v {
+  color: #e2e8f0 !important;
+  text-shadow: none;
+}
+
+.hud-line--radar-divergent {
+  border-left-color: #facc15 !important;
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 20px rgba(250, 204, 21, 0.08),
+    0 0 14px rgba(250, 204, 21, 0.2);
+}
+
+.hud-line--radar-divergent .hud-v {
+  color: #fde68a !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+}
+
+.hud-line--radar-consensus {
+  border-left-color: #60a5fa !important;
+  background: linear-gradient(90deg, rgba(96, 165, 250, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: inset 0 0 14px rgba(96, 165, 250, 0.08);
+}
+
+.hud-line--radar-consensus .hud-v {
+  color: #bfdbfe !important;
+}
+
+.hud-line--radar-consensus-buy {
+  border-left-color: #39ff14 !important;
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: inset 0 0 14px rgba(57, 255, 20, 0.08);
+}
+
+.hud-line--radar-consensus-buy .hud-v {
+  color: #b8ffc4 !important;
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.35);
+}
+
+.hud-line--radar-consensus-sell {
+  border-left-color: #ff1744 !important;
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: inset 0 0 14px rgba(255, 23, 68, 0.09);
+}
+
+.hud-line--radar-consensus-sell .hud-v {
+  color: #ffb4c0 !important;
+  text-shadow: 0 0 8px rgba(255, 23, 68, 0.35);
+}
+
+.hud-line--radar-consensus-neutral {
+  border-left-color: #94a3b8 !important;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: inset 0 0 14px rgba(148, 163, 184, 0.08);
+}
+
+.hud-line--radar-consensus-neutral .hud-v {
+  color: #e2e8f0 !important;
+  text-shadow: none;
+}
+
+.hud-line--radar-consensus-divergent {
+  border-left-color: #facc15 !important;
+  background: linear-gradient(90deg, rgba(250, 204, 21, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 16px rgba(250, 204, 21, 0.1),
+    0 0 12px rgba(250, 204, 21, 0.16);
+}
+
+.hud-line--radar-consensus-divergent .hud-v {
+  color: #fde68a !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.35);
+}
+
+@keyframes radarConsensusPulse {
+  0%,
+  100% {
+    transform: translateY(0) translateZ(0) scale(1);
+    box-shadow:
+      inset 0 0 14px rgba(34, 197, 94, 0.1),
+      0 0 0 rgba(34, 197, 94, 0);
+    filter: brightness(1.01);
+  }
+  42% {
+    transform: translateY(-1px) translateZ(0) scale(1.008);
+    box-shadow:
+      inset 0 0 18px rgba(34, 197, 94, 0.14),
+      0 0 12px rgba(34, 197, 94, 0.2);
+    filter: brightness(1.06);
+  }
+  64% {
+    transform: translateY(0) translateZ(0) scale(1.002);
+  }
+}
+
+.hud-line--radar-consensus-pulse {
+  animation: radarConsensusPulse 1.45s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  border-left-width: 4px !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-line--radar-consensus-pulse {
+    animation: none;
+  }
+}
+
+/* Linha de consenso no mesmo padrão das demais (uma linha), com truncamento seguro. */
+.hud-col-makers .hud-line--radar-consensus {
+  align-items: center !important;
+  gap: 6px 8px !important;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-k {
+  flex: 0 0 auto !important;
+  margin-bottom: 0;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-v-wrap {
+  flex: 1 1 auto !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right !important;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-v {
+  display: block;
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3 !important;
+  text-align: right !important;
+}
+
+.hud-consensus-reactive-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  background: rgba(14, 116, 144, 0.18);
+  color: #67e8f9;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.hud-line--radar-flip-none {
+  border-left-color: #64748b !important;
+  opacity: 0.92;
+}
+
+.hud-line--radar-flip-none .hud-v {
+  color: #94a3b8 !important;
+  text-shadow: none;
+}
+
+/* Radar — picos (ciano) e persistência (laranja), como labels do MT5 */
+.hud-line--radar-picos {
+  border-left-color: #22d3ee !important;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.18);
+}
+
+.hud-line--radar-picos .hud-v {
+  color: #a5f3fc !important;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
+}
+
+.hud-line--radar-persist {
+  border-left-color: #fb923c !important;
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: 0 0 14px rgba(251, 146, 60, 0.2);
+}
+
+.hud-line--radar-persist .hud-v {
+  color: #fed7aa !important;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+}
+
+/* Saldos: + verde / − vermelho (neon suave) */
+.hud-line--radar-saldo-pos {
+  border-left-color: #4ade80 !important;
+  background: linear-gradient(90deg, rgba(74, 222, 128, 0.1) 0%, rgba(15, 22, 38, 0.95) 60%) !important;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.15);
+}
+
+.hud-line--radar-saldo-pos .hud-v {
+  color: #bbf7d0 !important;
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.35);
+}
+
+.hud-line--radar-saldo-neg {
+  border-left-color: #f472b6 !important;
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0.1) 0%, rgba(15, 22, 38, 0.95) 60%) !important;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.18);
+}
+
+.hud-line--radar-saldo-neg .hud-v {
+  color: #fbcfe8 !important;
+  text-shadow: 0 0 6px rgba(244, 114, 182, 0.35);
+}
+
+/* Absorção no Radar (abaixo de Últ. virada): só quando ativa — mesma caixa que as outras linhas */
+.hud-line--absorption.hud-line--absorption-compra {
+  border-left-color: #00bfff !important;
+  background: linear-gradient(90deg, rgba(0, 191, 255, 0.12) 0%, #0f1626 88%) !important;
+  box-shadow:
+    inset 0 0 14px rgba(0, 191, 255, 0.05),
+    0 0 12px rgba(0, 191, 255, 0.16);
+}
+
+.hud-line--absorption.hud-line--absorption-compra .hud-v {
+  color: #b8f4ff !important;
+  text-shadow: 0 0 8px rgba(0, 191, 255, 0.35);
+}
+
+.hud-line--absorption.hud-line--absorption-venda {
+  border-left-color: #e879f9 !important;
+  background: linear-gradient(90deg, rgba(232, 121, 249, 0.12) 0%, #0f1626 88%) !important;
+  box-shadow:
+    inset 0 0 14px rgba(232, 121, 249, 0.06),
+    0 0 12px rgba(217, 70, 239, 0.18);
+}
+
+.hud-line--absorption.hud-line--absorption-venda .hud-v {
+  color: #fce7f8 !important;
+  text-shadow: 0 0 8px rgba(232, 121, 249, 0.32);
+}
+
+.hud-line--absorption.hud-line--absorption-neut {
+  border-left-color: #fbbf24 !important;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, #0f1626 88%) !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.12);
+}
+
+.hud-line--absorption.hud-line--absorption-neut .hud-v {
+  color: #fde68a !important;
+}
+
+/* Absorção: texto longo — alinhar à esquerda e deixar quebrar em várias linhas */
+.hud-line--absorption {
+  min-height: 0 !important;
+}
+
+.hud-line--absorption .hud-v-wrap {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100%;
+}
+
+.hud-line--absorption .hud-v {
+  flex: 1 1 auto !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.38;
+  text-align: left;
+}
+
+/* Badge absorção (intensidade + lado) — acima da linha de texto */
+.abs-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 0 5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  background: rgba(15, 22, 38, 0.92);
+}
+.abs-badge--compra {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+}
+.abs-badge--venda {
+  border-color: rgba(251, 146, 60, 0.35);
+  box-shadow: 0 0 10px rgba(251, 146, 60, 0.1);
+}
+.abs-badge--neutro {
+  border-color: rgba(251, 191, 36, 0.35);
+}
+.abs-badge__lbl {
+  color: #e2e8f0;
+}
+.abs-badge__dots {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+.abs-badge__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(71, 85, 105, 0.75);
+}
+.abs-badge__dot--on {
+  background: #facc15;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.65);
+}
+
+/* Coluna AGR — PRESSÃO LEVE vs PESADO (proxy aggressionProxy) */
+.aggr-texture {
+  margin: 8px 0 2px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: rgba(8, 13, 22, 0.55);
+  border: 1px solid rgba(100, 116, 139, 0.22);
+}
+.aggr-texture__label {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(148, 163, 184, 0.95);
+  margin-bottom: 5px;
+}
+.aggr-texture__bar {
+  display: flex;
+  width: 100%;
+  height: 7px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(30, 41, 59, 0.65);
+}
+.aggr-texture__fine {
+  flex: 0 0 auto;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.42), rgba(134, 239, 172, 0.8));
+  transition: width 0.35s ease;
+  will-change: width;
+}
+.aggr-texture__heavy {
+  flex: 0 0 auto;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.58), rgba(248, 113, 113, 0.88));
+  transition: width 0.35s ease;
+  will-change: width;
+}
+.aggr-texture__nums {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 9.5px;
+  font-variant-numeric: tabular-nums;
+  color: rgba(186, 199, 226, 0.9);
+}
+
+/* Quando PESADO > LEVE: destaque + viés (Δ ou aggressionProxy.heavySide). */
+.aggr-texture__heavy-hint {
+  margin-top: 5px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  min-height: 1.25em;
+}
+.aggr-texture__heavy-hint--buy {
+  color: rgba(134, 239, 172, 0.98);
+  text-shadow: 0 0 8px rgba(34, 197, 94, 0.35);
+}
+.aggr-texture__heavy-hint--sell {
+  color: rgba(252, 165, 165, 0.98);
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.38);
+}
+.aggr-texture__heavy-hint--neutral {
+  color: rgba(186, 199, 226, 0.92);
+}
+.aggr-texture__heavy-hint--off {
+  visibility: hidden;
+}
+
+.hud-cols > .hud-col:first-child .aggr-texture--compact {
+  margin: 2px 0 20px;
+  padding: 3px 5px 8px;
+  box-sizing: border-box;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__label {
+  margin-bottom: 2px;
+  font-size: 8.5px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__bar {
+  height: 4px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__nums {
+  margin-top: 1px;
+  font-size: 8.5px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__heavy-hint {
+  margin-top: 3px;
+  font-size: 8.5px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap {
+  clear: both;
+  margin-top: 12px;
+  padding: 4px 0 8px;
+  border-top: 1px solid rgba(47, 66, 100, 0.5);
+  background: linear-gradient(180deg, rgba(13, 20, 34, 0.42) 0%, transparent 100%);
+  isolation: isolate;
+}
+
+/* HOLD ativo: subir bloco de botões + Preço/SL/TP para evitar corte inferior. */
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold {
+  margin-top: 4px;
+  padding-top: 2px;
+  padding-bottom: 4px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main {
+  margin-top: -6px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-btns {
+  justify-content: flex-end;
+  margin-top: -8px;
+  margin-bottom: 2px;
+  padding-right: 12px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-details-wrap {
+  margin-top: -4px;
+  margin-bottom: 0;
+  align-items: flex-end;
+  padding-right: 12px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-details {
+  padding: 4px 7px;
+  width: min(280px, 100%);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap .gatilho-subtitle {
+  margin: 0 0 6px;
+  padding: 0;
+  line-height: 1.35;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle .gatilho-lateral-alert-wrap,
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle .gatilho-breakeven-wrap,
+.hud-cols > .hud-col:first-child .gatilho-wrap--idle h4.gatilho-subtitle {
+  position: relative;
+  z-index: 2;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-body--hold-only-main {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: stretch;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-body--hold-only-main .gatilho-body__main {
+  min-width: 0;
+  width: 100%;
+  align-items: center;
+  margin-top: -28px !important;
+  gap: 1px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-btns {
+  width: min(280px, 100%);
+  justify-content: center;
+  /* Margem negativa puxava o bloco de preço/SL/TP para cima e sobreponha o botão. */
+  margin: -6px 0 8px !important;
+  padding-right: 0;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-details-wrap {
+  width: min(280px, 100%);
+  align-items: center;
+  margin: 6px 0 0 !important;
+  padding-right: 0;
+  gap: 3px;
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-details {
+  width: min(280px, 100%);
+}
+
+.hud-cols > .hud-col:first-child .gatilho-wrap--hold .gatilho-body--hold-only-main .gatilho-detail-row {
+  align-items: center;
+}
+
+/* % PICO / % Persist — arco “hero” maior; separador quase invisível */
+.hud-col-instruments .hud-makers-delta {
+  --radar-delta-gauge-svg-h-makers: 72px;
+  margin-top: 2px;
+  padding: 10px 0 8px;
+  border-top-color: rgba(74, 100, 140, 0.14);
+  position: relative;
+  z-index: 2;
+  min-height: 146px;
+}
+
+.hud-col-instruments .hud-makers-delta .radar-delta-gauges-wrap {
+  padding-bottom: 2px;
+}
+
+.hud-col-instruments .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__num {
+  font-size: 1.55rem;
+  letter-spacing: 0.03em;
+}
+
+/* Termómetro + logo — equilíbrio com Speed; logo um pouco maior (cap ~108px) */
+.hud-makers-preparo {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 3px 10px;
+  flex-wrap: wrap;
+  width: 100%;
+  min-width: 0;
+  margin-top: 0;
+  padding: 10px 3px 6px;
+  border-top: 1px solid rgba(74, 100, 140, 0.45);
+  box-sizing: border-box;
+  --gatilho-idle-logo-scale: 1.64;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    min(108px, 100%)
+  );
+  position: relative;
+  z-index: 1;
+  min-height: 120px;
+}
+
+/* Com gatilho ativo (COMPRA/VENDA), reduz só um pouco a escala para não “brigar” com o termómetro. */
+.hud-makers-preparo.hud-makers-preparo--hold {
+  --gatilho-idle-logo-scale: 1.48;
+}
+
+.hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
+  margin-top: 0;
+  align-self: flex-end;
+  padding-bottom: 0;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
+  height: 56px;
+  width: 16px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube {
+  border-radius: 8px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--up {
+  border-width: 0 6px 10px 6px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--down {
+  border-width: 10px 6px 0 6px;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--mid {
+  width: 8px;
+  height: 8px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz {
+  width: 21px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__cap {
+  font-size: 8.5px;
+}
+
+.hud-makers-preparo__logo {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 102px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-top: 6px;
+  margin-top: 2px;
+  box-sizing: border-box;
+}
+
+/* Coluna central: logo estável (sem variar box por agressão/idle), evitando "empurrar" o Speed. */
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo {
+  margin-top: 0;
+  animation: none;
+  width: calc(var(--gatilho-idle-logo-side) * 1.05);
+  height: auto;
+  min-height: calc(var(--gatilho-idle-logo-side) * 1.05);
+  flex: 0 0 auto;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__ia {
+  font-size: 10px;
+  letter-spacing: 0.38em;
+  margin-top: 0;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__ia-next {
+  font-size: 7.5px;
+  letter-spacing: 0.05em;
+  margin-top: -1px;
+}
+
+.hud-col-instruments .hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__art {
+  transform: none !important;
+  animation: none !important;
+}
+
+.hud-makers-preparo .gatilho-idle-logo .gatilho-idle-logo__img {
+  height: calc(var(--gatilho-idle-logo-side) * 1.05);
+  max-width: calc(var(--gatilho-idle-logo-side) * 1.05);
+  /*
+   * Modo seguro: slot fixo (sem reflow) + crescimento visual por AGR.
+   * O EA manda --gatilho-idle-agg-scale ~1.68..2.38; normalizamos por 1.85.
+   */
+  transform: scale(clamp(0.92, calc(var(--gatilho-idle-agg-scale, 1.85) / 1.85), 1.32));
+  transform-origin: 50% 72%;
+}
+
+/* Primeiro bloco da coluna instrumentos: sem barra superior */
+.hud-col-instruments .hud-instruments-stack .hud-makers-preparo {
+  border-top: none;
+  padding-top: 4px;
+}
+
+/* Flow — barrinha |z| dentro da linha do símbolo (mini / cheio); chip entre cheio e % TEND */
+.flow .flow-row--zline {
+  align-items: center;
+  gap: 8px;
+}
+
+.flow .flow-row--zline .lbl {
+  max-width: 38%;
+  flex-shrink: 0;
+}
+
+.flow .flow-row--zline .flow-row__zmid {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.flow .flow-row--zline > strong {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.flow-ztrack {
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(30, 41, 59, 0.75);
+  overflow: hidden;
+}
+
+.flow-ztrack__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  min-width: 2px;
+  transition: width 0.35s ease;
+}
+
+.flow-ztrack__fill--mini {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(56, 189, 248, 0.88));
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.22);
+}
+
+.flow-ztrack__fill--ref {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.35), rgba(167, 139, 250, 0.88));
+  box-shadow: 0 0 6px rgba(167, 139, 250, 0.22);
+}
+
+/* Fluxo por ativo (mini/ref): cor pelo sinal em ambas as linhas. */
+.flow-ztrack__fill--pos {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(56, 189, 248, 0.9));
+  box-shadow: 0 0 7px rgba(56, 189, 248, 0.26);
+}
+
+.flow-ztrack__fill--neg {
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.34), rgba(255, 23, 68, 0.9));
+  box-shadow: 0 0 7px rgba(255, 23, 68, 0.28);
+}
+
+.flow-ztrack__fill--neut {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.28), rgba(148, 163, 184, 0.62));
+  box-shadow: 0 0 5px rgba(148, 163, 184, 0.2);
+}
+
+.flow .flow-row.flow-row--proxy-chip {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 3px 6px 4px;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.flow-mini-ref-chip {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  line-height: 1.25;
+  border: 1px solid transparent;
+}
+
+.flow-mini-ref-chip--buy {
+  background: rgba(8, 47, 73, 0.65);
+  color: #bae6fd;
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.12);
+}
+
+.flow-mini-ref-chip--sell {
+  background: rgba(67, 20, 7, 0.55);
+  color: #ffedd5;
+  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 0 10px rgba(251, 146, 60, 0.15);
+}
+
+.flow-mini-ref-chip--div {
+  background: rgba(120, 53, 15, 0.4);
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.42);
+}
+
+.flow-mini-ref-chip--neut {
+  background: rgba(51, 65, 85, 0.65);
+  color: rgba(226, 232, 240, 0.92);
+  border-color: rgba(100, 116, 139, 0.45);
+}
+
+/* Delta — proxy tape / tamanho */
+.tape-proxy {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  background: rgba(8, 13, 22, 0.5);
+}
+.tape-proxy__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.tape-proxy__tit {
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(148, 163, 184, 0.98);
+}
+.tape-tier {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(100, 116, 139, 0.4);
+  color: #e2e8f0;
+}
+.tape-tier--fine {
+  border-color: rgba(56, 189, 248, 0.45);
+  color: #bae6fd;
+}
+.tape-tier--mid {
+  border-color: rgba(251, 191, 36, 0.42);
+  color: #fde68a;
+}
+.tape-tier--heavy {
+  border-color: rgba(251, 113, 133, 0.45);
+  color: #fecdd3;
+}
+.tape-tier--unk {
+  opacity: 0.75;
+}
+.tape-proxy__prints {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: flex-end;
+  min-height: 40px;
+}
+.tape-slot {
+  flex: 1 1 0;
+  min-width: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+  padding: 4px 4px 3px;
+  border-radius: 5px;
+  background: rgba(15, 23, 42, 0.65);
+  border: 1px solid rgba(51, 65, 85, 0.45);
+  font-size: 9.5px;
+}
+.tape-slot--empty {
+  color: rgba(100, 116, 139, 0.85);
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+.tape-slot__bar {
+  display: block;
+  width: 7px;
+  border-radius: 2px;
+  background: rgba(100, 116, 139, 0.55);
+}
+.tape-slot--buy .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.2), rgba(34, 211, 238, 0.85));
+}
+.tape-slot--sell .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 0.2), rgba(251, 146, 60, 0.88));
+}
+.tape-slot--neut .tape-slot__bar {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.2), rgba(148, 163, 184, 0.75));
+}
+.tape-slot__v {
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+  font-size: 9px;
+}
+.tape-pill {
+  margin-top: 8px;
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #fde68a;
+  text-align: center;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(120, 53, 15, 0.35);
+  border: 1px solid rgba(251, 191, 36, 0.28);
+}
+.tape-proxy__hint {
+  margin: 8px 0 0;
+  font-size: 9px;
+  line-height: 1.35;
+  color: rgba(148, 163, 184, 0.88);
+}
+.tape-proxy__hint code {
+  font-size: 8.5px;
+  color: rgba(186, 199, 226, 0.95);
+}
+
+/* Radar — medidores semicirculares (% PICO / % PERSIST); na coluna central: variante minimal (ponto no arco, sem feixe). */
+.radar-delta-gauges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+/* Relógio Pico+Persist (10s) — aparece só durante contagem no JSON. */
+.pp-clock {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  bottom: auto;
+  width: 52px;
+  height: 52px;
+  transform: translate(-50%, -50%) scale(1);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 4;
+  filter: drop-shadow(0 0 11px rgba(250, 204, 21, 0.48));
+  animation: ppClockPulse calc(1.2s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.pp-clock__svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.pp-clock__track {
+  fill: rgba(8, 13, 22, 0.74);
+  stroke: rgba(250, 204, 21, 0.24);
+  stroke-width: 8;
+}
+
+.pp-clock__ring {
+  fill: none;
+  stroke: #facc15;
+  stroke-width: 8;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.28s linear;
+  filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.88));
+}
+
+.pp-clock__core {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(1px);
+}
+
+.pp-clock__time {
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff5a6;
+  text-shadow:
+    0 0 8px rgba(250, 204, 21, 0.9),
+    0 0 14px rgba(250, 204, 21, 0.45);
+}
+
+.pp-clock__label {
+  margin-top: 2px;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  color: #ffe066;
+  text-transform: uppercase;
+}
+
+@keyframes ppClockPulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.035);
+    opacity: 0.94;
+  }
+}
+
+.radar-delta-gauge {
+  flex: 1 1 76px;
+  min-width: 72px;
+  max-width: 120px;
+  text-align: center;
+  animation: senseHudFloat calc(5.2s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+  will-change: transform;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.45));
+  /* Espaço para o % ficar abaixo do ponteiro, sem colidir */
+  padding-bottom: 12px;
+  overflow: visible;
+}
+
+.radar-delta-gauge:nth-child(2) {
+  animation-delay: calc(-2.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+.radar-delta-gauge__label {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.radar-delta-gauge__viz {
+  position: relative;
+  height: 58px;
+  overflow: visible;
+  transform-origin: 50% 82%;
+  will-change: transform;
+}
+
+/* Brilho diagonal que atravessa o arco — mesma ideia que .gatilho-idle-logo__shine::before, mais discreto. */
+.radar-delta-gauge__viz::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -12%;
+  right: -12%;
+  top: -8%;
+  bottom: 8%;
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+  opacity: 0.34;
+  background: linear-gradient(
+    102deg,
+    transparent 0%,
+    transparent 36%,
+    rgba(255, 255, 255, 0.08) 48%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.08) 52%,
+    transparent 64%,
+    transparent 100%
+  );
+  filter: blur(0.38px);
+  animation: speedGaugeShineSweep calc(4.8s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.radar-delta-gauge--pos .radar-delta-gauge__viz::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-pos-rgb), 0.09) 46%,
+    rgba(var(--speed-pos-rgb), 0.28) 50%,
+    rgba(var(--speed-pos-rgb), 0.09) 54%,
+    transparent 66%
+  );
+}
+
+.radar-delta-gauge--neg .radar-delta-gauge__viz::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-neg-rgb), 0.09) 46%,
+    rgba(var(--speed-neg-rgb), 0.26) 50%,
+    rgba(var(--speed-neg-rgb), 0.09) 54%,
+    transparent 66%
+  );
+}
+
+.radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  opacity: 0.22;
+  background: linear-gradient(
+    102deg,
+    transparent 38%,
+    rgba(var(--speed-neut-rgb), 0.06) 48%,
+    rgba(var(--speed-neut-rgb), 0.14) 50%,
+    rgba(var(--speed-neut-rgb), 0.06) 52%,
+    transparent 62%
+  );
+  animation-duration: calc(5.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+.radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz::before {
+  animation-delay: -2.4s;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .radar-delta-gauge__viz {
+    animation: speedGaugeRingPulse calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite alternate;
+  }
+
+  .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz {
+    animation-delay: -0.66s;
+  }
+
+  .radar-delta-gauge--neut .radar-delta-gauge__viz,
+  .radar-delta-gauge--empty .radar-delta-gauge__viz {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+  }
+}
+
+/* Makers: brilho + pulso do arco mais lentos (não afeta o radar na coluna central) */
+@media (prefers-reduced-motion: no-preference) {
+  .hud-makers-delta .radar-delta-gauge__viz {
+    animation: speedGaugeRingPulse
+      calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra))
+      ease-in-out infinite alternate;
+  }
+
+  .hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz {
+    animation-delay: calc(-0.66s * var(--sense-makers-gauge-extra));
+  }
+
+  .hud-makers-delta .radar-delta-gauge--neut .radar-delta-gauge__viz,
+  .hud-makers-delta .radar-delta-gauge--empty .radar-delta-gauge__viz {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra));
+  }
+}
+
+.hud-makers-delta .radar-delta-gauge__viz::before {
+  animation: speedGaugeShineSweepMakers var(--makers-shine-cycle) linear infinite;
+}
+
+.hud-makers-delta .radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.hud-makers-delta .radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  animation: speedGaugeShineSweepMakers var(--makers-shine-cycle-neut) linear infinite;
+}
+
+/* Feixe contido em cada medidor: sem vazar para o espaço entre % Pico e % Persist */
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(1) .radar-delta-gauge__viz::before {
+  left: -4%;
+  right: 0;
+}
+
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz::before {
+  left: 0;
+  right: -4%;
+  /* Metade do ciclo: feixes alternados, sem brilho acumulado no vão entre os medidores */
+  animation-delay: calc(var(--makers-shine-cycle) * -0.5);
+}
+
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2).radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2).radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  animation-delay: calc(var(--makers-shine-cycle-neut) * -0.5);
+}
+
+.hud-makers-delta .pp-clock {
+  animation: ppClockPulse
+    calc(1.2s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra)) ease-in-out infinite;
+}
+
+@keyframes speedGaugeRingPulse {
+  0% {
+    transform: scale(1) rotate(-0.38deg);
+  }
+
+  100% {
+    transform: scale(1.016) rotate(0.42deg);
+  }
+}
+
+@keyframes speedGaugeShineSweep {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.88;
+  }
+
+  42% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0.88;
+  }
+
+  48%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}
+
+/* Coluna Makers: o feixe ocupa ~82% do ciclo (lento); opacidade mais suave */
+@keyframes speedGaugeShineSweepMakers {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.52;
+  }
+
+  82% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0.52;
+  }
+
+  92%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-delta-gauge {
+    animation: none;
+  }
+
+  .radar-delta-gauge__viz {
+    animation: none !important;
+  }
+
+  .radar-delta-gauge__viz::before {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+.radar-delta-gauge__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 58px;
+  display: block;
+  overflow: visible;
+}
+
+.radar-delta-gauge__track {
+  stroke: rgba(148, 163, 184, 0.28);
+  stroke-width: 3.5;
+}
+
+.radar-delta-gauge__fill {
+  stroke: currentColor;
+  stroke-width: 5;
+  transition:
+    stroke-dasharray 0.45s cubic-bezier(0.33, 1, 0.68, 1),
+    stroke 0.25s ease;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.radar-delta-gauge__needle {
+  stroke: currentColor;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.radar-delta-gauge__pivot {
+  fill: #e2e8f0;
+  stroke: #334155;
+  stroke-width: 0.6;
+}
+
+.radar-delta-gauge__num {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #e2e8f0;
+  text-shadow: 0 0 8px rgba(148, 163, 184, 0.35);
+  pointer-events: none;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.radar-delta-gauge--pos {
+  color: var(--speed-pos);
+}
+
+.radar-delta-gauge--pos .radar-delta-gauge__num {
+  color: var(--speed-pos-soft);
+  text-shadow: 0 0 8px rgba(var(--speed-pos-rgb), 0.4);
+}
+
+.radar-delta-gauge--neg {
+  color: var(--speed-neg);
+}
+
+.radar-delta-gauge--neg .radar-delta-gauge__num {
+  color: var(--speed-neg-soft);
+  text-shadow: 0 0 8px rgba(var(--speed-neg-rgb), 0.38);
+}
+
+.radar-delta-gauge--neut {
+  color: var(--speed-neut);
+}
+
+.radar-delta-gauge--neut .radar-delta-gauge__num {
+  color: var(--speed-neut-num);
+  text-shadow: none;
+}
+
+.radar-delta-gauge--empty {
+  color: #64748b;
+}
+
+.radar-delta-gauge--empty .radar-delta-gauge__num {
+  color: #94a3b8;
+}
+
+/* Δ — pressão rápida (●), pressão forte, barras */
+.delta-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+/* Bloco Δ agressor: mais compacto nas linhas */
+.panel-bl .delta-panel {
+  gap: 5px;
+  padding-bottom: 8px;
+}
+
+.panel-bl .delta-line {
+  min-height: 2.1rem;
+  padding: 6px 8px;
+  font-size: 11.5px;
+  line-height: 1.32;
+}
+
+.panel-bl .delta-row {
+  min-height: 2rem;
+  padding: 4px 6px;
+  gap: 8px;
+}
+
+.panel-bl .delta-row .lbl {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.panel-bl .delta-hint--independencia {
+  margin-top: 5px;
+  padding-top: 6px;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+/* Linha PLACAR … e linha ΔAgr: mesma caixa (evita texto “fora” do quadrado no flex) */
+.placar-big,
+.delta-line {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b8d9ff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(40, 90, 160, 0.15);
+  border: 1px solid #2a4a6a;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.4;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 2.65rem;
+  width: 100%;
+}
+
+/* Placar: caixa da linha um pouco mais baixa para caber BUY/SELL + barrinha sem scroll */
+.panel-br .placar-big {
+  min-height: 2.1rem;
+  padding: 6px 8px;
+  flex-shrink: 0;
+}
+
+/* Cabeçalho: só linha PLACAR; bússola vai abaixo de BUY/SELL + barra (ver .placar-ptax-slot) */
+.placar-head {
+  display: flex;
+  flex-direction: column;

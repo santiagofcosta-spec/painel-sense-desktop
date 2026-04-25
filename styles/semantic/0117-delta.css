@@ -1,0 +1,64 @@
+/**
+ * [delta] — parte 0117 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.delta-bar-buy {
+  background: linear-gradient(
+    180deg,
+    var(--delta-press-buy-soft) 0%,
+    var(--delta-press-buy-mid) 45%,
+    var(--delta-press-buy-deep) 100%
+  );
+  min-width: 2px;
+  transition: width 0.2s ease;
+}
+
+.delta-bar-sell {
+  background: linear-gradient(
+    180deg,
+    var(--delta-press-sell-soft) 0%,
+    var(--delta-press-sell-mid) 45%,
+    var(--delta-press-sell-deep) 100%
+  );
+  min-width: 2px;
+  transition: width 0.2s ease;
+}
+
+/* Lado que passa de 50% da barra — pulsar (brilho orbital continua no .delta-bars-pulse-wrap) */
+.delta-bar-buy.delta-bar-over50 {
+  animation: deltaBarBuyPulse calc(1.05s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.delta-bar-sell.delta-bar-over50 {
+  animation: deltaBarSellPulse calc(1.05s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+@keyframes deltaBarBuyPulse {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+    box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    filter: brightness(1.22) saturate(1.08);
+    box-shadow:
+      inset 0 0 26px rgba(255, 255, 255, 0.18),
+      inset 0 -2px 14px rgba(var(--delta-press-buy-rgb), 0.5);
+  }
+}
+
+@keyframes deltaBarSellPulse {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+    box-shadow: inset 0 0 16px rgba(255, 255, 255, 0.06);
+  }
+  50% {
+    filter: brightness(1.22) saturate(1.08);
+    box-shadow:
+      inset 0 0 26px rgba(255, 255, 255, 0.18),
+      inset 0 -2px 14px rgba(var(--delta-press-sell-rgb), 0.48);
+  }
+}

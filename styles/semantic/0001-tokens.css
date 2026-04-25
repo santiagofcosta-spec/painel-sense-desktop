@@ -1,0 +1,91 @@
+/**
+ * [tokens] — parte 0001 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+* {
+  box-sizing: border-box;
+}
+
+/*
+ * % Pico / % Persist (Makers): arcos um pouco maiores que o Radar base (58px), sem ir ao 76px antigo.
+ * Logo do gatilho em repouso: variável à parte (76px × escala).
+ */
+:root {
+  --radar-delta-gauge-svg-h-makers: 66px;
+  --gatilho-idle-logo-gauge-baseline: 76px;
+  --gatilho-idle-logo-scale: 1.92;
+  --ui-gap: 6px;
+  --ui-panel-padding: 7px;
+  --ui-panel-radius: 9px;
+  --ui-title-size: 11px;
+  --ui-text-size: 11.5px;
+  --ui-small-size: 10px;
+  --grid-gap: 5px;
+  --flow-row-gap: 4px;
+  /* Secundário sobre #070b12 — mais legível que #5c6a8a / #6a7a9a */
+  --ui-text-muted: #99abc9;
+  --ui-label-muted: #a4b3cf;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * var(--gatilho-idle-logo-scale)),
+    48vw
+  );
+
+  --speed-pos: #38bdf8;
+  --speed-pos-soft: #7dd3fc;
+  --speed-pos-rgb: 56, 189, 248;
+
+  --speed-neg: #e879f9;
+  --speed-neg-soft: #f0abfc;
+  --speed-neg-rgb: 232, 121, 249;
+
+  --speed-neut: #94a3b8;
+  --speed-neut-num: #e2e8f0;
+  --speed-neut-rgb: 148, 163, 184;
+
+  /* Cartões placar (BUY/SELL) — barra de força reutiliza a mesma família */
+  --placar-score-buy-border: #1e4d3a;
+  --placar-score-buy-glow: rgba(0, 255, 140, 0.42);
+  --placar-score-buy-mid: #22c55e;
+  --placar-score-buy-light: #86efac;
+
+  --placar-score-sell-border: #4d1e2a;
+  --placar-score-sell-glow: rgba(255, 60, 80, 0.48);
+  --placar-score-sell-mid: #ff3c50;
+  --placar-score-sell-light: #fda4af;
+
+  /* Bloco Δ: barras e % — mesma família que .delta-row (rápida / forte), não o radar % Pico·Persist */
+  --delta-press-buy-soft: #7dd3fc;
+  --delta-press-buy-mid: #38bdf8;
+  --delta-press-buy-deep: #0284c7;
+  --delta-press-buy-rgb: 56, 189, 248;
+
+  --delta-press-sell-soft: #fdba74;
+  --delta-press-sell-mid: #fb923c;
+  --delta-press-sell-deep: #c2410c;
+  --delta-press-sell-rgb: 251, 146, 60;
+
+  /* Multiplicador global (>1 = mais lento). */
+  --sense-anim-factor: 2.05;
+  /*
+   * Extra em brilhos que atravessam o arco, medidores speed, barras Δ agressor
+   * e pontos de sequência — estes costumavam parecer mais rápidos que o resto.
+   */
+  --sense-glow-sweep-extra: 1.65;
+  /* Alvos / níveis: sombras pulsantes — mais lentas e discretas */
+  --sense-levels-pulse-extra: 1.9;
+  /* Coluna Makers só: pulso do arco / relógio P+P */
+  --sense-makers-gauge-extra: 1.55;
+  /*
+   * Makers só: feixe de luz (esq.→dir.) nos dois medidores % Pico e % Persist —
+   * mais lento que o pulso do arco; não afeta o radar central.
+   */
+  --sense-makers-shine-sweep-extra: 4.1;
+}
+
+/* Modo focado em latência: corta animações decorativas para liberar CPU/GPU ao render dos ticks. */
+html.realtime-optimized {
+  --sense-glow-sweep-extra: 6.5;
+  --sense-levels-pulse-extra: 6.5;
+  --sense-makers-gauge-extra: 5.5;
+  --sense-makers-shine-sweep-extra: 12;
+}

@@ -1,0 +1,92 @@
+/**
+ * [hud] — parte 0106 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-makers-delta .radar-delta-gauge__viz::before {
+  animation: speedGaugeShineSweepMakers var(--makers-shine-cycle) linear infinite;
+}
+
+.hud-makers-delta .radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.hud-makers-delta .radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  animation: speedGaugeShineSweepMakers var(--makers-shine-cycle-neut) linear infinite;
+}
+
+/* Feixe contido em cada medidor: sem vazar para o espaço entre % Pico e % Persist */
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(1) .radar-delta-gauge__viz::before {
+  left: -4%;
+  right: 0;
+}
+
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2) .radar-delta-gauge__viz::before {
+  left: 0;
+  right: -4%;
+  /* Metade do ciclo: feixes alternados, sem brilho acumulado no vão entre os medidores */
+  animation-delay: calc(var(--makers-shine-cycle) * -0.5);
+}
+
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2).radar-delta-gauge--neut .radar-delta-gauge__viz::before,
+.hud-makers-delta .radar-delta-gauges .radar-delta-gauge:nth-child(2).radar-delta-gauge--empty .radar-delta-gauge__viz::before {
+  animation-delay: calc(var(--makers-shine-cycle-neut) * -0.5);
+}
+
+.hud-makers-delta .pp-clock {
+  animation: ppClockPulse
+    calc(1.2s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra) * var(--sense-makers-gauge-extra)) ease-in-out infinite;
+}
+
+@keyframes speedGaugeRingPulse {
+  0% {
+    transform: scale(1) rotate(-0.38deg);
+  }
+
+  100% {
+    transform: scale(1.016) rotate(0.42deg);
+  }
+}
+
+@keyframes speedGaugeShineSweep {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.88;
+  }
+
+  42% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0.88;
+  }
+
+  48%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}
+
+/* Coluna Makers: o feixe ocupa ~82% do ciclo (lento); opacidade mais suave */
+@keyframes speedGaugeShineSweepMakers {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 0.52;
+  }
+
+  82% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0.52;
+  }
+
+  92%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}

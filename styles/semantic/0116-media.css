@@ -1,0 +1,11 @@
+/**
+ * [media] — parte 0116 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .delta-bars-inner {
+    animation: none;
+  }
+}

@@ -1,0 +1,11 @@
+/**
+ * [media] — parte 0090 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-line--radar-consensus-pulse {
+    animation: none;
+  }
+}

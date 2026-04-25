@@ -1,0 +1,231 @@
+================================================================================
+  FORMATO DO ARQUIVO dashboard.json — Painel SENSE (desktop)
+  Codificação: UTF-8 (sem BOM recomendado para MQL5).
+  O painel lê o arquivo a cada ~0,5 s; o EA pode sobrescrever a cada tick ou 1 s.
+================================================================================
+
+REFERÊNCIA RÁPIDA (alinhada ao código)
+------------------------------------
+  • Exemplo completo estável:  painel-sense-desktop/data/dashboard.json (schema 6).
+  • JSON mínimo no MQL5:       SENSE_DashboardWriter.mqh → SenseDashboardJsonMinimalStable
+  • Validação única (Node + UI): painel-sense-desktop/dashboard-guard.js
+    (não duplicar regras noutros sítios)
+
+VERSÃO DO FORMATO (schemaVersion)
+---------------------------------
+  Campo no JSON raiz (recomendado explícito):
+
+    "schemaVersion": número inteiro (hoje: use 6 para funcionalidade completa)
+
+  • 1–4 : legado / parcial; o painel tenta desenhar o que existir.
+  • 5   : HUD completo (agr, radar, makers, flow, delta, etc.) sem bloco
+          "Gatilho operacional" (o painel não mostra gatilho se v < 6).
+  • 6+  : inclui Gatilho operacional — objeto raiz "gatilhoOperacional" com
+          buyReady, sellReady, buyBlockReason, sellBlockReason, consenso,
+          consensoSegRestantesCompra/Venda, msOk*, etc. (ver renderer.js e EA).
+
+  Campos usuais em schema ≥2:
+    placarLine — string igual ao texto "PLACAR: ..." do HUD
+    flow — objeto com zMini, zRef, ntslZ, trendDir (números)
+  delta (schema ≥3): streak, hammer, buyPct, sellPct, deltaPct, buyVol, sellVol
+
+CAMPOS QUE O PAINEL USA HOJE (obrigatórios para aparecer tudo)
+---------------------------------------------------------------
+  alert (string)
+    Texto do banner de alerta (ex.: "ALERTA: RESISTÊNCIA DETECTADA").
+    Se string vazia "", o painel mostra estado "sem alerta" (verde suave).
+
+  buy (número inteiro)
+    Contador / placar BUY (ex.: placar estatístico do EA).
+
+  sell (número inteiro)
+    Contador / placar SELL.
+
+  strengthPct (número 0 a 100)
+    Preenchimento da barra horizontal (força visual do sinal / resistência).
+    Valores fora do intervalo são limitados a 0–100.
+
+  levels (array)
+    Lista de linhas para o painel "superior direito".
+    Cada item é um objeto:
+      label (string) — nome exibido à esquerda (ex.: "A2 (+)", "Alvo H4").
+      value (string ou número) — valor exibido à direita (preço formatado).
+
+EXEMPLO MÍNIMO VÁLIDO
+---------------------
+{
+  "schemaVersion": 1,
+  "alert": "ALERTA: RESISTÊNCIA DETECTADA",
+  "buy": 0,
+  "sell": 5,
+  "strengthPct": 72,
+  "levels": [
+    { "label": "A2 (+)", "value": "5.054,50" },
+    { "label": "A1 (+)", "value": "5.053,50" }
+  ]
+}
+
+CAMPOS OPCIONAIS (RESERVADOS PARA O EA — O PAINEL PODE IGNORAR POR ENQUANTO)
+----------------------------------------------------------------------------
+  meta (objeto)
+    symbol      — string, ex. "WIN$"
+    timeframe   — string, ex. "M1"
+    serverTime  — string ISO ou texto livre com horário do servidor
+    eaVersion   — string da versão do robô
+
+  gatilhoOperacional (objeto, schema ≥6)
+    buyReady, sellReady — boolean
+    buyBlockReason, sellBlockReason — strings (motivos de bloqueio)
+    consensoSegundos, consensoSegRestantesCompra/Venda — números
+    consensoCompraAtivo, consensoVendaAtivo, msOkCompra, msOkVenda — boolean
+    (preços/SL/TP: vários nomes aceites — ver pickGatilhoTradeFields em renderer.js)
+    breakeven (objeto, opcional) — com emOperacao ou ativo truthy mostra no Gatilho
+      (abaixo da linha Compra/Venda): preços BE 40% e 50% (entrada→TP) e, ao cruzar
+      níveis ou disparado=true, a mensagem BREAKEVEN ATIVADO. Campos:
+      emOperacao ou ativo — boolean (o EA pode exportar string "true"; aceita em_operacao)
+      lado ou side — "buy"|"compra"|"sell"|"venda" (ou ladoCompra / ladoVenda)
+      preco40, preco50 — opcional (EA já calculado); senão entrada + tp para derivar
+      entrada, entry, tp, takeProfit — números quando sem preco40/preco50
+      disparado ou breakevenAtivado — true quando o EA já moveu o stop ao BE
+      nivelDisparado — 40 ou 50 (opcional)
+      precoAtual ou last — opcional; o painel infere disparo se cruzar 40%/50%
+
+  EA (MQL): SenseDashboardInsertBreakevenInGatilho insere o objeto após
+  "msOkVenda":false ou "msOkVenda":true (versões antigas só procuravam :false).
+
+  Regra recomendada para entrada automática: em gatilhoOperacional, só exportar
+  buyReady=true quando o lado COMPRA estiver além dos outros filtros E o bloco
+  regimeMercado indicar regime de compra confiável; idem sellReady com regime
+  de venda. Caso contrário, manter buyReady/sellReady=false e opcionalmente
+  acrescentar o motivo em buyBlockReason/sellBlockReason (ex.: regime não
+  confiável). O painel desktop também exige confiança por lado para acionar o
+  timer do botão COMPRA/VENDA e para o termómetro, alinhado a regimeMercado.
+
+  regimeMercado (objeto, opcional — ver mql-include/SENSE_RegimeTracker.mqh)
+    ativo — boolean (false omite o bloco na UI)
+    vies — "compra"|"venda"|"neutro"
+    codigo — string snake_case (ex.: tendencia_baixa)
+    confianca — número 0–1 (força global / |Z| do regime)
+    confiancaCompra, confiancaVenda — números 0–1 (preferencial; fiabilidade por lado)
+    regimeCompraConfiavel, regimeVendaConfiavel — boolean (EA calcula com
+      SENSE_REGIME_CONFIAVEL_MIN no .mqh, default 0,45)
+    regimeConfiavelMin — número 0–1 (limiar efetivo em runtime; default 0,45)
+    rastreador — objeto opcional (basis, janela, etc.)
+
+  linhasExtras (array de objetos)
+    Mesmo formato que "levels", para futura segunda coluna ou exportação.
+
+  srDetectBuyPts, srDetectSellPts, srDetectLeader (opcional)
+    Mini placar SR (bloco Alvos / níveis). Se |B−V| > 5 (vantagem extrema) e
+    absorption (string) indicar o lado oposto ("Compradores absorvendo" com venda
+    à frente, ou "Vendedores absorvendo" com compra à frente), a linha SR mostra
+    sufixo "· abs. compr." / "· abs. venda" e animação âmbar distinta.
+
+  absorption (string, opcional)
+    Texto da absorção (ex.: "ABSORCAO: Compradores absorvendo -> VENDAS").
+    absorptionIntensity (opcional, raiz) — inteiro 1–3; fixa o badge de intensidade
+    na UI quando exportado (senão o painel infere palavras como "muito", "fraca").
+
+  aggressionProxy (objeto, opcional, raiz) — camada visual em AGR «PRESSÃO» (LEVE vs PESADO)
+    finePct, heavyPct — números 0–100 (soma ~100); sem estes o painel estima a
+    partir do texto da linha aggression.
+
+  proxyTape (objeto, opcional, raiz) — tape / tamanho no bloco Δ (painel desktop)
+    tier — string ou número (ex.: "miudo", "pesado", "misto" ou 1/3);
+    lastPrints — array de objetos { side|lado, vol|v|volume } para as colunas de
+      últimos prints (alternativa: delta.printsLast no bloco delta);
+    largePrintAlertSec ou largePrintSegundos — opcional, mostra aviso "PRINT FORTE".
+
+  delta.printsLast (opcional) — mesmo papel que proxyTape.lastPrints.
+  delta.tapeTier, delta.printMix, delta.largePrintSec — aceites como fonte do tier
+    e do temporizador de print forte.
+
+  flow.zMini, flow.zRef — já usuais; o painel desenha uma barrinha |z| (0–3) dentro
+    de cada linha do mini e do cheio, e o chip Alinhados/Divergentes entre o cheio
+    e «% da TEND.», como proxy visual (sem alterar o trading).
+
+  ptaxBussola (objeto, opcional) — painel "Bússola PTAX"
+    Exportar no gráfico USD/BRL (ou onde calcule VWAP spot). Valores em R$/US$
+    (ex.: 5.2345). Não substitui a PTAX oficial do Banco Central.
+    vwapSpot0     — número, VWAP do spot no dia
+    spotLast      — número, spot (mid ou último) atual
+    vwapSpotD1    — opcional, VWAP de ontem ou ptaxOficialD1 (PTAX oficial D-1)
+    mediasJanelas — opcional, array de até 4 números ou null (média de cada
+                    janela já fixada; o painel projeta as janelas restantes com spotLast)
+    janelasConcluidas — opcional 0–4 (se omitido, infere-se de mediasJanelas)
+    modoVies      — opcional: "reversao" (padrão) ou "momentum"
+    spreadEstimado — opcional, largura da faixa em torno da estimativa
+    enabled       — opcional false para ocultar o cálculo (mostra hint)
+    PTAX BC (opcional, exportar pelo EA a partir da API Olinda / boletins):
+    bcPtaxMedia   — número, média (compra+venda)/2 já calculada no EA, OU
+    bcPtaxCompra  — + bcPtaxVenda (ambos números) para o painel calcular a média
+    bcPtaxNota    — opcional, texto curto (ex.: "prévias", "fechamento") na linha BC
+    bcPtaxAutoFetch — opcional false: desliga a atualização automática via API Olinda
+                      no painel desktop (senão o main process preenche bcPtaxMedia a ~1 min)
+
+  Tempo real (EA no MT5)
+    • Ficheiros na raiz do projeto: SENSE_PtaxRealtime.mqh (VWAP M1 + JSON),
+      SENSE_PtaxDashboard_EA.mq5 (timer ~250 ms grava MQL5\Files\dashboard.json).
+    • Breakeven 40%/50% em tempo real: SENSE_DashboardWriter.mqh expõe
+      SenseDashboardBreakevenJsonFromPosition (posição aberta na conta) e
+      SenseDashboardInsertBreakevenInGatilho — o EA PTAX já junta isto ao JSON
+      mínimo; use InpBreakevenSymbolContem (ex. WIN) se tiveres vários símbolos.
+    • Copie os .mqh para MQL5\Include\ ou para a pasta do .mq5; compile o EA.
+    • Gráfico do par USD/BRL (ou defina InpPtaxSymbol). Não use dois EAs a
+      gravar o mesmo ficheiro. Se já tens um EA que grava o JSON completo,
+      chama SenseDashboardInsertBreakevenInGatilho no teu JSON base e/ou
+      SensePtaxBuildJsonObject + SenseDashboardInsertPtaxBussola antes
+      de SenseDashboardTryWrite (ver SENSE_DashboardWriter.mqh).
+
+ONDE GRAVAR NO METATRADER 5
+---------------------------
+  Pasta: MQL5\Files\  do terminal (cada instalação tem um ID de pasta).
+  Nome sugerido: dashboard.json
+  No painel desktop: copie config.example.json para config.json e aponte
+  "dataFile" para o caminho completo desse arquivo.
+
+UM SÓ ESCRITOR (evitar sobreposição)
+------------------------------------
+  O painel lê um único ficheiro. Se vários EAs ou gráficos gravarem o MESMO
+  dashboard.json, quem escrever por último ganha — o painel pode “piscar” ou
+  parecer desalinhado com o gráfico que estás a ver.
+
+  Regra acordada: apenas UM EA exporta para esse caminho. Nos outros gráficos:
+  desativar a gravação do JSON, remover o EA duplicado, ou usar outro nome de
+  ficheiro (outro painel só se configurares outro dataFile).
+
+BOAS PRÁTICAS NO MQL5
+---------------------
+  1) Gerar o JSON em string e gravar com FileOpen/FileWriteString/FileClose.
+  2) Evitar arquivo pela metade: gravar em arquivo temporário e renomear,
+     ou escrever de uma vez só em modo truncar.
+  3) Manter o JSON pequeno (só o necessário para o painel) para leitura rápida.
+
+GUARD NO MQL5 (um só gráfico grava — include pronto)
+-----------------------------------------------------
+  Ficheiros na raiz do projeto Código Sense:
+    SENSE_DashboardExportGuard.mqh
+    SENSE_DashboardWriter.mqh   (gravação + JSON mínimo estável)
+
+  Copie os dois para a mesma pasta do teu .mq5 OU para:
+    <Terminal MT5>\MQL5\Include\
+
+  O EA que grava o painel é o teu (não tem de ser o SENSE_Fresh). No EA certo:
+    #include dos .mqh acima e chame SenseDashboardMayExport / SenseDashboardTryWrite
+    antes de gravar (ver comentários nos ficheiros).
+
+  Outro EA (manual): no topo #include <SENSE_DashboardExportGuard.mqh> ou use
+  SenseDashboardTryWrite(...) de SENSE_DashboardWriter.mqh antes de gravar.
+
+  Inputs típicos (nomes podem variar):
+    input bool ExportarPainelDashboard = false;
+    input long Magic_Exporta_Painel   = 20241201; // -1 = não filtra por magic
+
+  No início da função que faz FileOpen(... "dashboard.json" ...) / FileWrite:
+    if(!SenseDashboardMayExport(ExportarPainelDashboard, Number_Magic, Magic_Exporta_Painel))
+       return;
+
+  Gráfico fonte: export=true e Magic_Exporta_Painel = Number_Magic.
+  Outros gráficos: export=false OU Number_Magic diferente de Magic_Exporta_Painel.
+
+================================================================================

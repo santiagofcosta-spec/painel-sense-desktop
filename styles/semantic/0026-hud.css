@@ -1,0 +1,20 @@
+/**
+ * [hud] — parte 0026 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.panel-hud .hud-block {
+  flex: 0 1 auto;
+  min-height: min-content;
+  padding-top: 0;
+  padding-bottom: 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.panel-hud .hud-block::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}

@@ -1,0 +1,117 @@
+/**
+ * [shell] — parte 0005 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #070b12;
+  color: #e8f0ff;
+  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow: hidden;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2a44;
+  background: #0a101c;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.data-banner {
+  display: none;
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1.45;
+  color: #fecaca;
+  background: linear-gradient(90deg, #3f1d1d 0%, #2a1212 100%);
+  border-bottom: 1px solid #7f1d1d;
+}
+
+.data-banner.data-banner--show {
+  display: block;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: block;
+  height: 30px;
+  width: auto;
+  max-width: min(220px, 42vw);
+  object-fit: contain;
+  mix-blend-mode: lighten;
+  opacity: 0.95;
+  filter:
+    drop-shadow(0 0 6px rgba(130, 180, 255, 0.25))
+    drop-shadow(0 0 12px rgba(90, 120, 220, 0.12));
+}
+
+.hint {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+  color: #b4c3df;
+}
+
+/* Caminho do JSON — canto superior direito. (SENSE IA: clique na logo central do HUD.) */
+.topbar__tail {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-left: auto;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.btn-pick-json {
+  flex-shrink: 0;
+  margin-left: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #dbe8ff;
+  background: rgba(30, 58, 95, 0.55);
+  border: 1px solid rgba(100, 140, 200, 0.45);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-pick-json:hover {
+  background: rgba(40, 80, 130, 0.65);
+  border-color: rgba(130, 170, 230, 0.55);
+}
+
+.btn-pick-json:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}

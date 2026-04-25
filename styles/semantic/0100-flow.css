@@ -1,0 +1,122 @@
+/**
+ * [flow] — parte 0100 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Flow — barrinha |z| dentro da linha do símbolo (mini / cheio); chip entre cheio e % TEND */
+.flow .flow-row--zline {
+  align-items: center;
+  gap: 8px;
+}
+
+.flow .flow-row--zline .lbl {
+  max-width: 38%;
+  flex-shrink: 0;
+}
+
+.flow .flow-row--zline .flow-row__zmid {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.flow .flow-row--zline > strong {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.flow-ztrack {
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(30, 41, 59, 0.75);
+  overflow: hidden;
+}
+
+.flow-ztrack__fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  min-width: 2px;
+  transition: width 0.35s ease;
+}
+
+.flow-ztrack__fill--mini {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(56, 189, 248, 0.88));
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.22);
+}
+
+.flow-ztrack__fill--ref {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.35), rgba(167, 139, 250, 0.88));
+  box-shadow: 0 0 6px rgba(167, 139, 250, 0.22);
+}
+
+/* Fluxo por ativo (mini/ref): cor pelo sinal em ambas as linhas. */
+.flow-ztrack__fill--pos {
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.35), rgba(56, 189, 248, 0.9));
+  box-shadow: 0 0 7px rgba(56, 189, 248, 0.26);
+}
+
+.flow-ztrack__fill--neg {
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.34), rgba(255, 23, 68, 0.9));
+  box-shadow: 0 0 7px rgba(255, 23, 68, 0.28);
+}
+
+.flow-ztrack__fill--neut {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.28), rgba(148, 163, 184, 0.62));
+  box-shadow: 0 0 5px rgba(148, 163, 184, 0.2);
+}
+
+.flow .flow-row.flow-row--proxy-chip {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  min-height: 0;
+  padding: 3px 6px 4px;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.flow-mini-ref-chip {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  line-height: 1.25;
+  border: 1px solid transparent;
+}
+
+.flow-mini-ref-chip--buy {
+  background: rgba(8, 47, 73, 0.65);
+  color: #bae6fd;
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.12);
+}
+
+.flow-mini-ref-chip--sell {
+  background: rgba(67, 20, 7, 0.55);
+  color: #ffedd5;
+  border-color: rgba(251, 146, 60, 0.5);
+  box-shadow: 0 0 10px rgba(251, 146, 60, 0.15);
+}
+
+.flow-mini-ref-chip--div {
+  background: rgba(120, 53, 15, 0.4);
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.42);
+}
+
+.flow-mini-ref-chip--neut {
+  background: rgba(51, 65, 85, 0.65);
+  color: rgba(226, 232, 240, 0.92);
+  border-color: rgba(100, 116, 139, 0.45);
+}

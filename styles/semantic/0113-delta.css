@@ -1,0 +1,53 @@
+/**
+ * [delta] — parte 0113 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.delta-line {
+  flex-shrink: 0;
+}
+
+.delta-bars {
+  margin-top: 2px;
+}
+
+/* Brilho que “corre” ao redor das barras (efeito pulsar) */
+.delta-bars-pulse-wrap {
+  position: relative;
+  padding: 2px;
+  border-radius: 10px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.delta-bars-pulse-wrap::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 50%;
+  width: 220%;
+  height: 220%;
+  margin-left: -110%;
+  margin-top: -110%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(var(--delta-press-buy-rgb), 0.7) 52deg,
+    rgba(var(--delta-press-buy-rgb), 0.4) 88deg,
+    rgba(var(--speed-neut-rgb), 0.28) 132deg,
+    rgba(251, 191, 36, 0.28) 176deg,
+    rgba(var(--delta-press-sell-rgb), 0.7) 238deg,
+    rgba(var(--delta-press-sell-rgb), 0.45) 288deg,
+    transparent 360deg
+  );
+  animation: deltaBarsGlowOrbit calc(2.8s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) linear infinite;
+  filter: blur(0.5px);
+}
+
+@keyframes deltaBarsGlowOrbit {
+  to {
+    transform: rotate(360deg);
+  }
+}

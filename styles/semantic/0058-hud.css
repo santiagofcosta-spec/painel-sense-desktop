@@ -1,0 +1,105 @@
+/**
+ * [hud] — parte 0058 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Avanço/recuo: acelera o pulso; em “hot” + keyframes mais fortes (exceto PERSIST em recuo = mescla) */
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-motion--advance .radar-delta-gauge__dot {
+  animation-duration: calc(1.62s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-motion--advance.radar-delta-motion--hot.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  animation-name: radarDeltaDotPulsePosHot;
+  animation-duration: calc(1.02s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-motion--advance.radar-delta-motion--hot.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  animation-name: radarDeltaDotPulseNegHot;
+  animation-duration: calc(1.02s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-motion--advance.radar-delta-motion--hot.radar-delta-gauge--neut .radar-delta-gauge__dot,
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-motion--advance.radar-delta-motion--hot.radar-delta-gauge--empty .radar-delta-gauge__dot {
+  animation-name: radarDeltaDotPulseNeutHot;
+  animation-duration: calc(1.02s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede .radar-delta-gauge__dot {
+  animation-duration: calc(1.45s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  /* Recuo: bolinha em cor oposta ao arco (arco mantém cor predominante). */
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNeg;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePos;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNegHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePosHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neut .radar-delta-gauge__dot,
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-pico.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--empty .radar-delta-gauge__dot {
+  animation-name: radarDeltaDotPulseNeutHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-gauge--neut .radar-delta-gauge__dot,
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-gauge--empty .radar-delta-gauge__dot {
+  animation-name: radarDeltaDotPulseRecuoMix;
+  animation-duration: calc(1.88s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNeg;
+  animation-duration: calc(1.88s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePos;
+  animation-duration: calc(1.88s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neut .radar-delta-gauge__dot,
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--empty .radar-delta-gauge__dot {
+  animation-duration: calc(1.15s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNegHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--kind-persist.radar-delta-motion--recede.radar-delta-motion--hot.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePosHot;
+  animation-duration: calc(1.05s * var(--sense-anim-factor));
+}
+
+/* Latch do recuo: bolinha mantém cor oposta até voltar a avançar. */
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-dot--recede-latched.radar-delta-gauge--pos .radar-delta-gauge__dot {
+  fill: var(--speed-neg);
+  animation-name: radarDeltaDotPulseNeg;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge.radar-delta-dot--recede-latched.radar-delta-gauge--neg .radar-delta-gauge__dot {
+  fill: var(--speed-pos);
+  animation-name: radarDeltaDotPulsePos;
+}

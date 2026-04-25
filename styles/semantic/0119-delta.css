@@ -1,0 +1,213 @@
+/**
+ * [delta] — parte 0119 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.delta-pct-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.delta-pct-row .pct-buy {
+  color: var(--delta-press-buy-soft);
+  text-shadow: 0 0 10px rgba(var(--delta-press-buy-rgb), 0.35);
+}
+
+.delta-pct-row .pct-sell {
+  color: var(--delta-press-sell-soft);
+  text-shadow: 0 0 10px rgba(var(--delta-press-sell-rgb), 0.35);
+}
+
+.delta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #0f1626;
+  border: 1px solid rgba(47, 66, 100, 0.45);
+  border-left-width: 2px;
+  min-height: 2.35rem;
+  box-sizing: border-box;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.delta-row .dot {
+  font-size: 16px;
+}
+
+.delta-row--neut {
+  border-left-color: #475569;
+  background: linear-gradient(90deg, rgba(71, 85, 105, 0.12) 0%, #0f1626 50%);
+  box-shadow: inset 0 0 16px rgba(15, 22, 38, 0.8);
+}
+
+/* Compra — azul neon forte */
+.delta-row--buy {
+  border-left-color: #0ea5e9;
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.18) 0%, rgba(15, 22, 38, 0.96) 55%);
+  box-shadow:
+    inset 0 0 22px rgba(56, 189, 248, 0.08),
+    0 0 14px rgba(14, 165, 233, 0.22);
+}
+
+.delta-row--buy .lbl {
+  color: #7dd3fc;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+}
+
+.delta-row--buy .streak-txt,
+.delta-row--buy .hammer {
+  color: #bae6fd;
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.45),
+    0 0 16px rgba(14, 165, 233, 0.2);
+}
+
+.delta-row--buy .dot-buy {
+  color: #38bdf8 !important;
+  text-shadow:
+    0 0 10px rgba(56, 189, 248, 0.9),
+    0 0 18px rgba(14, 165, 233, 0.5) !important;
+}
+
+/* Venda — laranja neon */
+.delta-row--sell {
+  border-left-color: #fb923c;
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.16) 0%, rgba(15, 22, 38, 0.96) 55%);
+  box-shadow:
+    inset 0 0 22px rgba(251, 146, 60, 0.07),
+    0 0 14px rgba(251, 146, 60, 0.2);
+}
+
+.delta-row--sell .lbl {
+  color: #fdba74;
+  text-shadow: 0 0 10px rgba(251, 146, 60, 0.35);
+}
+
+.delta-row--sell .streak-txt,
+.delta-row--sell .hammer {
+  color: #fed7aa;
+  text-shadow:
+    0 0 8px rgba(251, 146, 60, 0.42),
+    0 0 16px rgba(249, 115, 22, 0.18);
+}
+
+.delta-row--sell .dot-sell {
+  color: #fb923c !important;
+  text-shadow:
+    0 0 10px rgba(251, 146, 60, 0.85),
+    0 0 18px rgba(234, 88, 12, 0.45) !important;
+}
+
+/* Só COMPRA/VENDA na rápida (sem pulso) — cor fraca, elegante */
+.delta-row--buy-soft {
+  border-left-color: rgba(56, 189, 248, 0.42);
+  background: linear-gradient(90deg, rgba(56, 189, 248, 0.065) 0%, #0f1626 60%);
+  box-shadow: inset 0 0 20px rgba(15, 22, 38, 0.75);
+}
+
+.delta-row--buy-soft .lbl {
+  color: rgba(125, 211, 252, 0.72);
+  text-shadow: none;
+}
+
+.delta-row--buy-soft .streak-txt {
+  color: rgba(186, 230, 253, 0.82);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.12);
+}
+
+.delta-row--buy-soft .dot-buy {
+  color: rgba(56, 189, 248, 0.78) !important;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.28) !important;
+}
+
+.delta-row--sell-soft {
+  border-left-color: rgba(251, 146, 60, 0.4);
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.06) 0%, #0f1626 60%);
+  box-shadow: inset 0 0 20px rgba(15, 22, 38, 0.75);
+}
+
+.delta-row--sell-soft .lbl {
+  color: rgba(253, 186, 116, 0.68);
+  text-shadow: none;
+}
+
+.delta-row--sell-soft .streak-txt {
+  color: rgba(254, 215, 170, 0.78);
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.1);
+}
+
+.delta-row--sell-soft .dot-sell {
+  color: rgba(251, 146, 60, 0.75) !important;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.26) !important;
+}
+
+.delta-row .lbl {
+  flex: 0 0 auto;
+  max-width: 48%;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.22;
+}
+
+.delta-row--neut .lbl {
+  color: #8b9dc3;
+}
+
+.streak-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ● defesa no fluxo: pulso contínuo (leve) — não fica estática */
+.streak-wrap--pulse .dot-buy,
+.streak-wrap--pulse .dot-sell {
+  display: inline-block;
+  animation: streakDotPulseSoft calc(1.5s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Casos extremos / flag do EA: pulso mais forte (sobrepõe o --pulse) */
+.streak-wrap--blink .dot-buy,
+.streak-wrap--blink .dot-sell {
+  display: inline-block;
+  animation: streakDotPulse calc(1s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+@keyframes streakDotPulseSoft {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 0.78;
+    transform: scale(1.14);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes streakDotPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.28;
+    transform: scale(1.08);
+  }
+}

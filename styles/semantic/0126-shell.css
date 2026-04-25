@@ -1,0 +1,12 @@
+/**
+ * [shell] — parte 0126 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.ptax-bussola__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}

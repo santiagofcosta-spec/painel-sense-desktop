@@ -1,0 +1,35 @@
+/**
+ * [media] — parte 0111 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .placar-ptax__compass.ptax-compass {
+    animation: ptaxCompassCardGlow 3.8s ease-in-out infinite;
+  }
+
+  .placar-ptax--bias-baixa .placar-ptax__compass.ptax-compass {
+    animation: ptaxCompassCardGlowSell 3.8s ease-in-out infinite;
+  }
+
+  .placar-ptax--bias-neutra .placar-ptax__compass.ptax-compass {
+    animation: ptaxCompassCardGlowNeut 3.8s ease-in-out infinite;
+  }
+
+  .placar-ptax__compass .ptax-compass__ring {
+    animation: ptaxCompassRingBreath 3s ease-in-out infinite;
+  }
+
+  .placar-ptax__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicro 4.5s ease-in-out infinite;
+  }
+
+  .placar-ptax--bias-baixa .placar-ptax__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicroSell 4.5s ease-in-out infinite;
+  }
+
+  .placar-ptax--bias-neutra .placar-ptax__compass .ptax-compass__needle {
+    animation: ptaxCompassNeedleMicroNeut 4.5s ease-in-out infinite;
+  }
+}

@@ -1,0 +1,22 @@
+/**
+ * [media] — parte 0059 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__dot {
+    animation: none !important;
+    transform: none;
+    filter: drop-shadow(0 0 6px rgba(var(--speed-pos-rgb), 0.5));
+  }
+
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--neg .radar-delta-gauge__dot {
+    filter: drop-shadow(0 0 6px rgba(var(--speed-neg-rgb), 0.48));
+  }
+
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--empty .radar-delta-gauge__dot,
+  .hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge--neut .radar-delta-gauge__dot {
+    filter: drop-shadow(0 0 5px rgba(var(--speed-neut-rgb), 0.45));
+  }
+}

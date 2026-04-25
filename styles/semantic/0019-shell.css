@@ -1,0 +1,25 @@
+/**
+ * [shell] — parte 0019 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.path {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  margin-left: 0;
+  max-width: min(38%, 280px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.path.path--bad {
+  color: #f87171;
+  max-width: min(92%, 720px);
+}
+
+.path.path--cloud {
+  color: #fbbf24;
+  max-width: min(92%, 720px);
+}

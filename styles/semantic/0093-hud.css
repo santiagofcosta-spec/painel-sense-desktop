@@ -1,0 +1,26 @@
+/**
+ * [hud] — parte 0093 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-cols > .hud-col:first-child .aggr-texture--compact {
+  margin: 2px 0 20px;
+  padding: 3px 5px 8px;
+  box-sizing: border-box;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__label {
+  margin-bottom: 2px;
+  font-size: 8.5px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__bar {
+  height: 4px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__nums {
+  margin-top: 1px;
+  font-size: 8.5px;
+}
+.hud-cols > .hud-col:first-child .aggr-texture--compact .aggr-texture__heavy-hint {
+  margin-top: 3px;
+  font-size: 8.5px;
+}

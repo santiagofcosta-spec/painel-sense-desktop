@@ -1,0 +1,536 @@
+/**
+ * [hud] — parte 0060 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__num {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  margin: 0;
+  padding: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-makers-delta .radar-delta-gauges--minimal .radar-delta-gauge__label {
+  order: 3;
+  margin: 0;
+  padding: 0;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.78);
+  line-height: 1.2;
+}
+
+.hud-aggr-row {
+  display: flex;
+  flex-wrap: wrap;
+  /* Mesma altura na linha: caixa de texto e coluna valor+barras esticam e centram o conteúdo dentro */
+  align-items: center;
+  gap: 6px 8px;
+}
+
+/* Medidor à direita da caixa AGR — ocupa o resto da coluna */
+.hud-aggr-row > .hud-flow-meter-stack {
+  flex: 1 1 auto;
+  min-width: 0;
+  justify-content: center;
+}
+
+.hud-aggr {
+  margin: 0;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(20, 35, 60, 0.45);
+  border: 1px solid #2a3f64;
+  font-size: 10.5px;
+  line-height: 1.22;
+  word-break: break-word;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  /* Caixa mais curta na horizontal — sobra espaço para as barrinhas maiores */
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: min(180px, 45%);
+  align-self: center;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+}
+
+/* Valor acima das barrinhas — coluna com a mesma altura da caixa AGR; conteúdo centrado no eixo vertical */
+.hud-flow-meter-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex-shrink: 0;
+  align-self: stretch;
+  min-height: 0;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__top {
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.hud-aggr-row--buy .hud-flow-meter__top {
+  color: #d4ffd9;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.45),
+    0 0 12px rgba(57, 255, 20, 0.15);
+}
+
+.hud-aggr-row--sell .hud-flow-meter__top {
+  color: #ffd6dc;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.5),
+    0 0 12px rgba(255, 23, 68, 0.18);
+}
+
+.hud-aggr-row--neutro .hud-flow-meter__top,
+.hud-aggr-row--off .hud-flow-meter__top {
+  color: #cbd5e1;
+  text-shadow: none;
+}
+
+/* Barrinhas AGR: segmentos mais altos/largos que o texto compacto ao lado */
+.hud-flow-meter-stack--agr .hud-flow-meter {
+  height: 46px;
+  gap: 5px;
+  padding: 0 2px;
+  align-items: flex-end;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__seg {
+  width: 10px;
+  height: 42px;
+  border-radius: 2px;
+}
+
+/* AGR: barrinhas exatamente no meio da linha; valor fica acima sem empurrar para baixo */
+.hud-flow-meter-stack--agr {
+  position: relative;
+  justify-content: center;
+  min-width: max-content;
+  padding-top: 0;
+}
+
+.hud-flow-meter-stack--agr .hud-flow-meter__top {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, calc(-100% - 34px));
+  margin: 0;
+  pointer-events: none;
+}
+
+/* Com medidor: menos “glow” no texto — a intensidade passa às barrinhas */
+.hud-aggr--buy.hud-aggr--with-meter {
+  text-shadow: 0 0 5px rgba(57, 255, 20, 0.35);
+  box-shadow:
+    inset 0 0 14px rgba(57, 255, 20, 0.06),
+    0 0 10px rgba(57, 255, 20, 0.14);
+}
+
+.hud-aggr--sell.hud-aggr--with-meter {
+  text-shadow: 0 0 5px rgba(255, 23, 68, 0.35);
+  box-shadow:
+    inset 0 0 14px rgba(255, 23, 68, 0.06),
+    0 0 10px rgba(255, 23, 68, 0.14);
+}
+
+/* Medidor de fluxo (12 segmentos) — após AGR / Direção radar */
+.hud-flow-meter {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+  padding: 0 2px;
+}
+
+.hud-flow-meter__seg {
+  width: 4px;
+  height: 10px;
+  border-radius: 2px;
+  background: rgba(45, 55, 72, 0.95);
+  box-sizing: border-box;
+}
+
+.hud-flow-meter--buy .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #7dffb0 0%, #39ff14 55%, #20c040 100%);
+  box-shadow: 0 0 6px rgba(57, 255, 20, 0.55);
+}
+
+.hud-flow-meter--sell .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #ff8a9a 0%, #ff1744 55%, #c41430 100%);
+  box-shadow: 0 0 6px rgba(255, 23, 68, 0.5);
+}
+
+.hud-flow-meter--neutral .hud-flow-meter__seg--on {
+  background: linear-gradient(180deg, #a8b8d8 0%, #7c8db0 100%);
+  box-shadow: 0 0 5px rgba(148, 163, 184, 0.45);
+}
+
+.hud-line .hud-v-wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  justify-content: flex-end;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: right;
+}
+
+.hud-line .hud-v {
+  flex: 1 1 120px;
+  min-width: 0;
+}
+
+/* Agressão — neon (texto completo, como no MT5) */
+.hud-aggr--buy {
+  border-color: rgba(57, 255, 20, 0.55);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.14) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 24px rgba(57, 255, 20, 0.08),
+    0 0 18px rgba(57, 255, 20, 0.22);
+  color: #d4ffd9;
+  text-shadow:
+    0 0 8px rgba(57, 255, 20, 0.55),
+    0 0 20px rgba(57, 255, 20, 0.2);
+}
+
+.hud-aggr--sell {
+  border-color: rgba(255, 23, 68, 0.55);
+  background: linear-gradient(135deg, rgba(255, 23, 68, 0.14) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 24px rgba(255, 23, 68, 0.08),
+    0 0 18px rgba(255, 23, 68, 0.24);
+  color: #ffd6dc;
+  text-shadow:
+    0 0 8px rgba(255, 23, 68, 0.5),
+    0 0 20px rgba(255, 23, 68, 0.2);
+}
+
+.hud-aggr--neutro {
+  border-color: #64748b;
+  color: #cbd5e1;
+  text-shadow: none;
+}
+
+.hud-aggr--off {
+  border-color: #475569;
+  opacity: 0.9;
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+.hud-aggr-day {
+  margin-top: 5px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #2a3f64;
+  background: rgba(20, 35, 60, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
+.hud-aggr-day__k {
+  color: #8b9dc3;
+  white-space: nowrap;
+}
+
+.hud-aggr-day__v {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.hud-aggr-day--buy {
+  border-color: rgba(57, 255, 20, 0.45);
+  background: linear-gradient(135deg, rgba(57, 255, 20, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(57, 255, 20, 0.05),
+    0 0 12px rgba(57, 255, 20, 0.14);
+}
+
+.hud-aggr-day--buy .hud-aggr-day__v {
+  color: #b8ffc4;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.75),
+    0 0 14px rgba(57, 255, 20, 0.34);
+}
+
+.hud-aggr-day--buy .hud-aggr-day__k {
+  color: #b8ffc4;
+  text-shadow:
+    0 0 4px rgba(57, 255, 20, 0.35),
+    0 0 10px rgba(57, 255, 20, 0.12);
+}
+
+.hud-aggr-day--sell {
+  border-color: rgba(255, 23, 68, 0.45);
+  background: linear-gradient(135deg, rgba(255, 23, 68, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(255, 23, 68, 0.05),
+    0 0 12px rgba(255, 23, 68, 0.15);
+}
+
+.hud-aggr-day--sell .hud-aggr-day__v {
+  color: #ffb4c0;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.72),
+    0 0 14px rgba(255, 23, 68, 0.32);
+}
+
+.hud-aggr-day--sell .hud-aggr-day__k {
+  color: #ffb4c0;
+  text-shadow:
+    0 0 4px rgba(255, 23, 68, 0.34),
+    0 0 10px rgba(255, 23, 68, 0.12);
+}
+
+.hud-aggr-day--alert {
+  border-color: rgba(250, 204, 21, 0.5);
+  background: linear-gradient(135deg, rgba(250, 204, 21, 0.1) 0%, rgba(20, 35, 60, 0.5) 100%);
+  box-shadow:
+    inset 0 0 18px rgba(250, 204, 21, 0.05),
+    0 0 12px rgba(250, 204, 21, 0.16);
+}
+
+.hud-aggr-day--alert .hud-aggr-day__v {
+  color: #fde047;
+  text-shadow:
+    0 0 8px rgba(250, 204, 21, 0.85),
+    0 0 16px rgba(250, 204, 21, 0.38);
+  animation: hudAggrDayAlertPulse calc(1.45s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.hud-aggr-day--alert .hud-aggr-day__k {
+  color: #fde047;
+  text-shadow:
+    0 0 5px rgba(250, 204, 21, 0.45),
+    0 0 11px rgba(250, 204, 21, 0.16);
+}
+
+.hud-aggr-day--off {
+  border-color: #475569;
+  background: rgba(20, 35, 60, 0.35);
+}
+
+.hud-aggr-day--off .hud-aggr-day__v {
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+.hud-aggr-day--off .hud-aggr-day__k {
+  color: #94a3b8;
+  text-shadow: none;
+}
+
+/* Placar SR (discreto) — Sup+Melhor compra vs Res+Melhor venda (detect.) — bloco Placar */
+.hud-sr-detect {
+  margin-top: 5px;
+  padding: 3px 7px;
+  border-radius: 5px;
+  font-size: 10px;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  align-self: flex-start;
+  opacity: 0.88;
+}
+
+/* Trilho: no modo forte o texto fica absolute aqui dentro — precisa altura mínima */
+.hud-sr-detect__track {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect__moving {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.hud-sr-detect__text {
+  display: inline-block;
+  position: relative;
+  z-index: 1;
+}
+
+.hud-sr-detect__score {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #e5eefc;
+  background: rgba(8, 15, 30, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Texto longo (Suporte/Resistência máx. detect.) — mantém uma linha legível */
+.hud-sr-detect--lead-max {
+  font-size: 9px;
+  padding: 2px 6px;
+  letter-spacing: 0.01em;
+}
+
+/* Base = placar apertado (vantagem 0–1 pt) — mesmo tom “suave” de antes */
+.hud-sr-detect--buy {
+  color: #a7f3d0;
+  background: rgba(57, 255, 20, 0.05);
+  border: 1px solid rgba(57, 255, 20, 0.2);
+}
+
+.hud-sr-detect--sell {
+  color: #fecdd3;
+  background: rgba(255, 23, 68, 0.05);
+  border: 1px solid rgba(255, 23, 68, 0.22);
+}
+
+/* Vantagem média (2–4 pts): mais saturado; forte só acima de 4 pts */
+.hud-sr-detect--buy.hud-sr-detect--lead-mid {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.14);
+  border-color: rgba(52, 211, 153, 0.45);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.18);
+  opacity: 0.95;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-mid {
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.14);
+  border-color: rgba(251, 113, 133, 0.48);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.2);
+  opacity: 0.95;
+}
+
+/* Vantagem forte (>4 pts, ou seja ≥5): fundo + texto + luz “correndo” no fundo (gradiente animado) */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong .hud-sr-detect__track,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong .hud-sr-detect__track {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 1.35em;
+  text-align: left;
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong {
+  position: relative;
+  overflow: hidden;
+  color: #4ade80;
+  background: linear-gradient(
+    110deg,
+    rgba(6, 95, 70, 0.78) 0%,
+    rgba(16, 185, 129, 0.42) 22%,
+    rgba(74, 222, 128, 0.65) 48%,
+    rgba(16, 185, 129, 0.42) 74%,
+    rgba(6, 95, 70, 0.78) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(52, 211, 153, 0.75);
+  text-shadow:
+    0 0 12px rgba(74, 222, 128, 0.55),
+    0 0 2px rgba(6, 78, 59, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(52, 211, 153, 0.35);
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* Movimento do texto: controlado em JS (renderer) — keyframes + var() falham no Electron */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong .hud-sr-detect__moving,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong .hud-sr-detect__moving {
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* Só com vantagem > 5 (≥6): texto bem vivo + pulso de luz (sombra; sem clip que apaga o fill) */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  color: #ecfdf5;
+  text-shadow:
+    0 0 10px rgba(74, 222, 128, 0.65),
+    0 0 2px rgba(6, 78, 59, 0.85);
+  animation: srMaxTextGlowBuy calc(2.6s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform;
+}
+
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--lead-max .hud-sr-detect__text {
+  color: #fff1f2;
+  text-shadow:
+    0 0 10px rgba(251, 113, 133, 0.6),
+    0 0 2px rgba(88, 28, 28, 0.85);
+  animation: srMaxTextGlowSell calc(2.6s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes srMaxTextGlowBuy {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px rgba(74, 222, 128, 0.45),
+      0 0 18px rgba(52, 211, 153, 0.35),
+      0 0 2px rgba(6, 78, 59, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 6px rgba(255, 255, 255, 0.55),
+      0 0 20px rgba(190, 242, 100, 0.75),
+      0 0 28px rgba(74, 222, 128, 0.55),
+      0 0 2px rgba(6, 78, 59, 0.75);
+  }
+}
+
+@keyframes srMaxTextGlowSell {
+  0%,
+  100% {
+    text-shadow:
+      0 0 8px rgba(251, 113, 133, 0.45),
+      0 0 18px rgba(244, 63, 94, 0.35),
+      0 0 2px rgba(88, 28, 28, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.45),
+      0 0 22px rgba(251, 113, 133, 0.8),
+      0 0 30px rgba(251, 113, 133, 0.45),
+      0 0 2px rgba(88, 28, 28, 0.75);
+  }
+}

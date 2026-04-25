@@ -1,0 +1,1382 @@
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
+  background: linear-gradient(95deg, #ca8a04 0%, #eab308 38%, #fde047 50%, #eab308 62%, #a16207 100%);
+  background-size: 200% 100%;
+  border: 1px solid #facc15;
+  box-shadow:
+    0 0 4px rgba(250, 204, 21, 0.28),
+    0 0 10px rgba(234, 179, 8, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  animation: gatilhoLateralPulse calc(2.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Viés alinhado ao gatilho (compra↔alta, venda↔baixa) — verde, sem competir com o dourado do CUIDADO. */
+.gatilho-lateral-alert--direcao-ok {
+  color: #ecfdf5;
+  text-shadow: 0 0 1px rgba(167, 243, 208, 0.45);
+  background: linear-gradient(95deg, #14532d 0%, #15803d 32%, #22c55e 50%, #15803d 68%, #14532d 100%);
+  background-size: 200% 100%;
+  border: 1px solid rgba(74, 222, 128, 0.55);
+  box-shadow:
+    0 0 4px rgba(34, 197, 94, 0.22),
+    0 0 10px rgba(22, 163, 74, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  animation: gatilhoLateralPulse calc(2.8s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Termômetro “Preparo”: escalas frio → pronto (e buy/sell/mixed); sem pulso dourado do CUIDADO. */
+.gatilho-lateral-alert.gatilho-thermo {
+  animation: gatilhoThermoPulse calc(2.75s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Motivo de bloqueio (por que não validou) — tom âmbar suave; sem azul/vermelho do termômetro compra/venda. */
+.gatilho-lateral-alert--reason-info {
+  color: #e8eaf0;
+  text-shadow: 0 0 1px rgba(15, 23, 42, 0.45);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.22) 0%, rgba(55, 42, 12, 0.65) 42%, rgba(15, 22, 38, 0.92) 100%);
+  background-size: 100% 100%;
+  border: 1px solid rgba(251, 191, 36, 0.45);
+  box-shadow:
+    0 0 5px rgba(251, 191, 36, 0.2),
+    0 0 10px rgba(234, 179, 8, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  animation: gatilhoReasonInfoPulse calc(3.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/*
+ * Faixa única COMPRA/VENDA: DEVE vir depois de .gatilho-lateral-alert (inline-block + nowrap),
+ * senão o texto vira uma linha gigante, empurra a logo e pode esconder os botões COMPRA/VENDA.
+ */
+.gatilho-lateral-alert.gatilho-compact-reason {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  text-align: left;
+  border-radius: 6px;
+  max-width: 100%;
+  line-height: 1.25;
+  padding: 2px 6px;
+  font-size: 9.5px;
+  box-sizing: border-box;
+}
+
+.gatilho-lateral-alert.gatilho-compact-reason.gatilho-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 2px 6px;
+}
+
+.gatilho-check-line {
+  display: block;
+  line-height: 1.05;
+}
+
+.gatilho-check-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 4px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: rgba(15, 23, 42, 0.2);
+  font-weight: 700;
+}
+
+.gatilho-check-dot {
+  font-size: 8px;
+  line-height: 1;
+  transform: translateY(-0.5px);
+}
+
+.gatilho-check-item--pending {
+  color: #94a3b8;
+  border-color: rgba(148, 163, 184, 0.28);
+  background: rgba(15, 23, 42, 0.18);
+}
+
+.gatilho-check-item--ok {
+  color: #fef3c7;
+}
+
+.gatilho-check-item--warm {
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.48);
+  background: rgba(120, 53, 15, 0.3);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.16);
+}
+
+.gatilho-check-item--ready {
+  color: #d1fae5;
+  border-color: rgba(16, 185, 129, 0.55);
+  background: rgba(6, 78, 59, 0.34);
+  box-shadow: 0 0 7px rgba(16, 185, 129, 0.2);
+}
+
+.gatilho-check-hc {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #cffafe;
+  border: 1px solid rgba(34, 211, 238, 0.55);
+  background: linear-gradient(90deg, rgba(8, 47, 73, 0.92) 0%, rgba(8, 145, 178, 0.78) 100%);
+}
+
+@keyframes gatilhoReasonInfoPulse {
+  0%,
+  100% {
+    filter: brightness(1) saturate(0.94);
+  }
+  50% {
+    filter: brightness(1.07) saturate(1.03);
+  }
+}
+
+.gatilho-lateral-alert--cold {
+  color: #c7ddff;
+  text-shadow: 0 0 1px rgba(173, 217, 255, 0.5);
+  background: linear-gradient(95deg, rgba(30, 64, 175, 0.5) 0%, rgba(56, 189, 248, 0.35) 50%, rgba(30, 64, 175, 0.48) 100%);
+  border-color: rgba(96, 165, 250, 0.62);
+  box-shadow:
+    0 0 6px rgba(59, 130, 246, 0.3),
+    0 0 12px rgba(56, 189, 248, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gatilho-lateral-alert--warm {
+  color: #d8f7ff;
+  text-shadow: 0 0 1px rgba(168, 240, 255, 0.58);
+  background: linear-gradient(95deg, rgba(3, 105, 161, 0.52) 0%, rgba(14, 165, 233, 0.42) 50%, rgba(8, 145, 178, 0.52) 100%);
+  border-color: rgba(34, 211, 238, 0.64);
+  box-shadow:
+    0 0 7px rgba(34, 211, 238, 0.33),
+    0 0 14px rgba(14, 165, 233, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.gatilho-lateral-alert--hot {
+  color: #d9d6ce;
+  text-shadow: 0 0 1px rgba(225, 223, 216, 0.4);
+  background: linear-gradient(95deg, rgba(22, 163, 74, 0.58) 0%, rgba(74, 222, 128, 0.46) 50%, rgba(22, 163, 74, 0.56) 100%);
+  border-color: rgba(74, 222, 128, 0.7);
+  box-shadow:
+    0 0 8px rgba(74, 222, 128, 0.36),
+    0 0 16px rgba(34, 197, 94, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.gatilho-lateral-alert--ready {
+  color: #d9d6ce;
+  text-shadow: 0 0 1px rgba(225, 223, 216, 0.42);
+  background: linear-gradient(95deg, rgba(21, 128, 61, 0.64) 0%, rgba(74, 222, 128, 0.52) 50%, rgba(21, 128, 61, 0.62) 100%);
+  border-color: rgba(110, 231, 183, 0.78);
+  box-shadow:
+    0 0 10px rgba(74, 222, 128, 0.4),
+    0 0 18px rgba(52, 211, 153, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.gatilho-lateral-alert--buy.gatilho-lateral-alert--ready {
+  box-shadow:
+    0 0 0 1px rgba(96, 165, 250, 0.72),
+    0 0 10px rgba(96, 165, 250, 0.34),
+    0 0 18px rgba(59, 130, 246, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Diferenciação por lado no termômetro de prontidão (não afeta CUIDADO lateral). */
+.gatilho-lateral-alert--sell.gatilho-lateral-alert--cold {
+  color: #d9d6ce;
+  text-shadow: 0 0 1px rgba(225, 223, 216, 0.4);
+  background: linear-gradient(95deg, rgba(131, 24, 67, 0.52) 0%, rgba(190, 24, 93, 0.38) 50%, rgba(127, 29, 29, 0.5) 100%);
+  border-color: rgba(244, 114, 182, 0.6);
+  box-shadow: 0 0 6px rgba(244, 114, 182, 0.28), 0 0 12px rgba(190, 24, 93, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gatilho-lateral-alert--sell.gatilho-lateral-alert--warm {
+  color: #fce7f3;
+  text-shadow: 0 0 1px rgba(251, 207, 232, 0.45);
+  background: linear-gradient(95deg, rgba(131, 24, 67, 0.58) 0%, rgba(190, 24, 93, 0.46) 50%, rgba(157, 23, 77, 0.54) 100%);
+  border-color: rgba(244, 114, 182, 0.68);
+  box-shadow:
+    0 0 7px rgba(219, 39, 119, 0.32),
+    0 0 14px rgba(190, 24, 93, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.gatilho-lateral-alert--sell.gatilho-lateral-alert--hot {
+  color: #fdf2f8;
+  text-shadow: 0 0 1px rgba(251, 207, 232, 0.48);
+  background: linear-gradient(95deg, rgba(190, 18, 60, 0.64) 0%, rgba(225, 29, 72, 0.52) 50%, rgba(131, 24, 67, 0.6) 100%);
+  border-color: rgba(251, 113, 133, 0.76);
+  box-shadow:
+    0 0 8px rgba(225, 29, 72, 0.38),
+    0 0 16px rgba(190, 24, 93, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.gatilho-lateral-alert--sell.gatilho-lateral-alert--ready {
+  color: #fdf2f8;
+  text-shadow: 0 0 1px rgba(254, 242, 242, 0.5);
+  background: linear-gradient(95deg, rgba(159, 18, 57, 0.68) 0%, rgba(225, 29, 72, 0.56) 50%, rgba(131, 24, 67, 0.64) 100%);
+  border-color: rgba(251, 113, 133, 0.82);
+  box-shadow:
+    0 0 0 1px rgba(192, 132, 252, 0.74),
+    0 0 10px rgba(192, 132, 252, 0.34),
+    0 0 18px rgba(168, 85, 247, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+/* Preparo neutro: ouro/amarelo (eixo amarelo Tailwind), sem laranja de venda. */
+.gatilho-lateral-alert--thermo-neutral.gatilho-lateral-alert--cold {
+  color: #fefce8;
+  text-shadow: 0 0 1px rgba(254, 249, 195, 0.55);
+  background: linear-gradient(95deg, rgba(66, 32, 6, 0.62) 0%, rgba(113, 63, 18, 0.48) 50%, rgba(69, 26, 3, 0.58) 100%);
+  border-color: rgba(234, 179, 8, 0.68);
+  box-shadow:
+    0 0 6px rgba(250, 204, 21, 0.28),
+    0 0 12px rgba(234, 179, 8, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.gatilho-lateral-alert--thermo-neutral.gatilho-lateral-alert--warm {
+  color: #fefce8;
+  text-shadow: 0 0 1px rgba(254, 240, 138, 0.58);
+  background: linear-gradient(95deg, rgba(113, 63, 18, 0.6) 0%, rgba(161, 98, 7, 0.5) 50%, rgba(113, 63, 18, 0.58) 100%);
+  border-color: rgba(250, 204, 21, 0.72);
+  box-shadow:
+    0 0 7px rgba(250, 204, 21, 0.34),
+    0 0 14px rgba(234, 179, 8, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.gatilho-lateral-alert--thermo-neutral.gatilho-lateral-alert--hot {
+  color: #fffbeb;
+  text-shadow: 0 0 1px rgba(254, 249, 195, 0.62);
+  background: linear-gradient(95deg, rgba(161, 98, 7, 0.62) 0%, rgba(234, 179, 8, 0.52) 50%, rgba(202, 138, 4, 0.6) 100%);
+  border-color: rgba(253, 224, 71, 0.78);
+  box-shadow:
+    0 0 8px rgba(253, 224, 71, 0.38),
+    0 0 16px rgba(250, 204, 21, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26);
+}
+
+.gatilho-lateral-alert--thermo-neutral.gatilho-lateral-alert--ready {
+  color: #fffbeb;
+  text-shadow: 0 0 1px rgba(255, 251, 235, 0.65);
+  background: linear-gradient(95deg, rgba(202, 138, 4, 0.66) 0%, rgba(253, 224, 71, 0.48) 50%, rgba(234, 179, 8, 0.62) 100%);
+  border-color: rgba(254, 240, 138, 0.85);
+  box-shadow:
+    0 0 10px rgba(253, 224, 71, 0.44),
+    0 0 18px rgba(250, 204, 21, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+@keyframes gatilhoLateralPulse {
+  0%,
+  100% {
+    filter: brightness(0.98) saturate(0.88);
+    background-position: 0% 50%;
+    box-shadow:
+      0 0 4px rgba(250, 204, 21, 0.24),
+      0 0 9px rgba(234, 179, 8, 0.14),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+  50% {
+    filter: brightness(1.08) saturate(0.96);
+    background-position: 100% 50%;
+    box-shadow:
+      0 0 8px rgba(253, 224, 71, 0.32),
+      0 0 14px rgba(250, 204, 21, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  }
+}
+
+@keyframes gatilhoThermoPulse {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1);
+  }
+  50% {
+    filter: brightness(1.06) saturate(1.04);
+  }
+}
+
+/* Com alerta lateral: menos “puxar” os botões para cima e altura mínima dos botões um pouco menor */
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-btns {
+  transform: none;
+  margin-top: 0;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-btn {
+  min-height: 44px;
+  padding: 5px 6px;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-details {
+  padding: 4px 6px;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-detail-row {
+  font-size: 9.5px;
+  line-height: 1.22;
+}
+
+.gatilho-wrap--hold .gatilho-details-wrap {
+  margin-top: 0;
+  margin-bottom: 4px;
+  gap: 6px;
+}
+
+.gatilho-wrap--hold .gatilho-details {
+  padding: 5px 8px;
+  gap: 3px;
+}
+
+.gatilho-wrap--hold .gatilho-detail-row {
+  font-size: 10px;
+  line-height: 1.22;
+}
+
+.gatilho-wrap--hold .gatilho-detail-k {
+  font-size: 8.5px;
+}
+
+.gatilho-wrap--hold .gatilho-detail-v {
+  font-size: 10px;
+}
+
+.gatilho-wrap--hold .gatilho-side-tit {
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.gatilho-wrap--hold .gatilho-btns {
+  gap: 6px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  transform: none;
+}
+
+.gatilho-wrap--hold .gatilho-btn {
+  min-height: 48px;
+  padding: 6px 8px;
+  gap: 2px;
+}
+
+.gatilho-subtitle {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a8b8d8;
+  letter-spacing: 0.02em;
+}
+
+.gatilho-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+  position: static;
+  z-index: 3;
+}
+
+.gatilho-title-row .gatilho-subtitle {
+  margin-bottom: 0;
+}
+
+.gatilho-mem-tri-wrap {
+  position: absolute;
+  left: 60%;
+  top: 104%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  line-height: 1;
+  z-index: 3;
+  min-width: 72px;
+  min-height: 62px;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 66px;
+  font-size: 64px;
+  font-weight: 900;
+  will-change: transform, opacity, filter;
+}
+
+/* Em HOLD (botão compra/venda visível), deixar o triângulo mais limpo para não poluir o card. */
+.gatilho-wrap--hold .gatilho-mem-tri-wrap {
+  left: 56%;
+  top: 88%;
+  min-width: 46px;
+  min-height: 38px;
+}
+
+/* Quando o gatilho está ativo (botão visível), ocultar o triângulo para não poluir. */
+.gatilho-wrap--hold .gatilho-mem-tri-wrap {
+  display: none !important;
+}
+
+.gatilho-mem-tri-row {
+  position: absolute;
+  right: -14px;
+  top: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri-wrap--inline {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  min-width: 46px;
+  min-height: 38px;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri-wrap--inline .gatilho-mem-tri {
+  min-width: 44px;
+  font-size: 42px;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri-wrap--inline {
+  display: inline-flex !important;
+}
+
+.gatilho-wrap--idle .gatilho-mem-tri-row {
+  top: 56px;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri-row {
+  top: 60px;
+}
+
+
+.gatilho-wrap--hold .gatilho-mem-tri {
+  min-width: 40px;
+  font-size: 40px;
+}
+
+.gatilho-mem-tri--mem {
+  animation:
+    gatilhoMemTriBlink calc(0.55s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriPulse calc(2.2s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriFloat calc(2.8s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-mem-tri--prep {
+  animation:
+    gatilhoMemTriPrepFloatPulse calc(4.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Fase 1 (pré-sinal): amarelo neon para ambos os lados (compra/venda). */
+.gatilho-mem-tri--prep.gatilho-mem-tri--buy,
+.gatilho-mem-tri--prep.gatilho-mem-tri--sell {
+  color: #fde047 !important;
+  text-shadow:
+    0 0 12px rgba(250, 204, 21, 0.98),
+    0 0 24px rgba(234, 179, 8, 0.62),
+    0 0 42px rgba(202, 138, 4, 0.44) !important;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri--mem {
+  animation:
+    gatilhoMemTriBlink calc(0.85s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriPulse calc(3s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriFloat calc(3.8s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri--prep {
+  animation:
+    gatilhoMemTriPrepFloatPulse calc(5.4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-mem-tri--buy {
+  color: #5ecfff;
+  text-shadow:
+    0 0 10px rgba(56, 189, 248, 0.95),
+    0 0 20px rgba(0, 191, 255, 0.55),
+    0 0 34px rgba(14, 165, 233, 0.38);
+}
+
+.gatilho-mem-tri--sell {
+  color: #f0abfc;
+  text-shadow:
+    0 0 10px rgba(232, 121, 249, 0.95),
+    0 0 20px rgba(217, 70, 239, 0.58),
+    0 0 34px rgba(192, 38, 211, 0.4);
+}
+
+@keyframes gatilhoMemTriBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.28;
+  }
+}
+
+@keyframes gatilhoMemTriPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.16);
+    filter: brightness(1.16);
+  }
+}
+
+@keyframes gatilhoMemTriPulseSlow {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: scale(0.98);
+    filter: brightness(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.24);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes gatilhoMemTriFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes gatilhoMemTriPrepFloatPulse {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: translateY(0px) scale(0.9) rotate(0deg);
+    filter: brightness(0.92);
+  }
+  20% {
+    opacity: 0.9;
+    transform: translateY(-3px) scale(1.03) rotate(-1.5deg);
+    filter: brightness(1.02);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-7px) scale(1.22) rotate(0deg);
+    filter: brightness(1.2);
+  }
+  65% {
+    opacity: 0.92;
+    transform: translateY(-4px) scale(1.08) rotate(1.5deg);
+    filter: brightness(1.08);
+  }
+  82% {
+    opacity: 0.78;
+    transform: translateY(-1px) scale(0.96) rotate(0deg);
+    filter: brightness(0.98);
+  }
+}
+
+.gatilho-mini {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ui-label-muted);
+}
+
+.gatilho-mini strong {
+  color: #8b9dc3;
+  font-weight: 600;
+}
+
+.gatilho-btns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.gatilho-btns .gatilho-btn {
+  flex: 0 1 auto;
+  min-width: min(200px, 100%);
+  max-width: 280px;
+}
+
+/* Logo SENSE no gatilho em repouso: cor e brilho conforme agressão (COMPRA / VENDA / neutro / OFF). */
+.gatilho-btns--idle-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(var(--gatilho-idle-logo-side) + 8px);
+  padding: 2px 6px 4px;
+  margin-top: 0;
+  transform: none;
+}
+
+.gatilho-idle-logo {
+  --glow: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* Sobe o conjunto (anel + SENSE) para o letreiro não ficar cortado pelo limite do HUD */
+  margin-top: -26px;
+  padding: 0;
+  background: none;
+  animation: senseHudFloat calc(5.2s * var(--sense-anim-factor)) ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Complemento visual «IA» por baixo do letreiro SENSE (atalho SENSE IA). */
+.gatilho-idle-logo__ia {
+  display: block;
+  margin-top: -2px;
+  margin-bottom: 2px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.42em;
+  padding-left: 0.36em;
+  color: #dbe8ff;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 10px rgba(130, 180, 255, 0.38),
+    0 0 18px rgba(90, 120, 220, 0.22);
+  line-height: 1.1;
+  pointer-events: none;
+  user-select: none;
+}
+
+.gatilho-idle-logo__ia-next {
+  display: block;
+  margin-top: -1px;
+  margin-bottom: 1px;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: rgba(175, 195, 230, 0.72);
+  text-transform: lowercase;
+  text-shadow: 0 0 8px rgba(70, 100, 180, 0.2);
+  line-height: 1.05;
+  pointer-events: none;
+  user-select: none;
+}
+
+.gatilho-idle-logo__inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  overflow: visible;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Área da arte: máscara = silhueta do PNG → o brilho só “anda” no S, ondas e SENSE. */
+.gatilho-idle-logo__art {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+  transform-origin: 50% 36%;
+  will-change: transform;
+}
+
+/*
+ * “Pulso” no círculo/ondas em volta do S: pivô acima do centro (PNG quadrada, marca no topo).
+ * O PNG não separa camadas — o texto SENSE move um pouco menos que o anel.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .gatilho-idle-logo:not(.gatilho-idle-logo--off) .gatilho-idle-logo__art {
+    animation: gatilhoSenseRingPulse calc(1.32s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite alternate;
+  }
+
+  .gatilho-idle-logo--neutral:not(.gatilho-idle-logo--off) .gatilho-idle-logo__art {
+    animation-duration: calc(1.75s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+  }
+}
+
+@keyframes gatilhoSenseRingPulse {
+  0% {
+    transform: scale(1) rotate(-0.55deg);
+  }
+
+  100% {
+    transform: scale(1.028) rotate(0.6deg);
+  }
+}
+
+/*
+ * Linhas horizontais animadas (estilo “scan”) — intensidade e velocidade com --glow / --flow-speed.
+ * Mesma máscara da logo; fica entre o PNG e o brilho diagonal.
+ */
+.gatilho-idle-logo__flow-lines {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: var(--sense-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--sense-mask);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: calc(0.08 + var(--glow) * 0.78);
+}
+
+.gatilho-idle-logo--off .gatilho-idle-logo__flow-lines {
+  display: none;
+}
+
+.gatilho-idle-logo__flow-lines::before {
+  content: "";
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  top: -35%;
+  height: 170%;
+  transform-origin: 50% 50%;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 5px,
+    rgba(255, 255, 255, 0.07) 5px,
+    rgba(255, 255, 255, 0.07) 6px
+  );
+  animation: gatilhoFlowLinesScroll calc(var(--flow-speed, 2.85s) * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) linear infinite;
+  filter: blur(0.25px);
+}
+
+.gatilho-idle-logo--buy .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(5px - var(--glow) * 1.5px),
+    rgba(57, 255, 20, calc(0.12 + var(--glow) * 0.42)) calc(5px - var(--glow) * 1.5px),
+    rgba(57, 255, 20, calc(0.12 + var(--glow) * 0.42)) calc(6px - var(--glow) * 1.5px)
+  );
+}
+
+.gatilho-idle-logo--sell .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent calc(5px - var(--glow) * 1.5px),
+    rgba(var(--speed-neg-rgb), calc(0.1 + var(--glow) * 0.4)) calc(5px - var(--glow) * 1.5px),
+    rgba(var(--speed-neg-rgb), calc(0.1 + var(--glow) * 0.4)) calc(6px - var(--glow) * 1.5px)
+  );
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__flow-lines {
+  opacity: calc(0.06 + var(--glow) * 0.45);
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__flow-lines::before {
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 6px,
+    rgba(var(--speed-neut-rgb), 0.14) 6px,
+    rgba(var(--speed-neut-rgb), 0.14) 7px
+  );
+  animation-duration: calc(var(--flow-speed, 2.85s) * 1.15 * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+@keyframes gatilhoFlowLinesScroll {
+  0% {
+    transform: translateY(-14%) translateX(-6%);
+  }
+
+  100% {
+    transform: translateY(14%) translateX(6%);
+  }
+}
+
+.gatilho-idle-logo__shine {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+  mask-image: var(--sense-mask);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--sense-mask);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mix-blend-mode: soft-light;
+  opacity: calc(0.55 + var(--glow) * 0.35);
+}
+
+.gatilho-idle-logo--off .gatilho-idle-logo__shine {
+  display: none;
+}
+
+.gatilho-idle-logo__shine::before {
+  content: "";
+  position: absolute;
+  top: -35%;
+  bottom: -35%;
+  left: -45%;
+  width: 42%;
+  transform: translateX(-120%) skewX(-11deg);
+  background: linear-gradient(
+    102deg,
+    transparent 0%,
+    transparent 36%,
+    rgba(255, 255, 255, 0.14) 48%,
+    rgba(255, 255, 255, 0.32) 50%,
+    rgba(255, 255, 255, 0.14) 52%,
+    transparent 64%,
+    transparent 100%
+  );
+  filter: blur(0.4px);
+  animation: gatilhoLogoShineSweep calc(4.8s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra)) ease-in-out infinite;
+}
+
+.gatilho-idle-logo--buy .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(57, 255, 20, 0.16) 46%,
+    rgba(57, 255, 20, 0.44) 50%,
+    rgba(57, 255, 20, 0.16) 54%,
+    transparent 66%
+  );
+}
+
+.gatilho-idle-logo--sell .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 34%,
+    rgba(var(--speed-neg-rgb), 0.16) 46%,
+    rgba(var(--speed-neg-rgb), 0.4) 50%,
+    rgba(var(--speed-neg-rgb), 0.16) 54%,
+    transparent 66%
+  );
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__shine {
+  opacity: calc(0.28 + var(--glow) * 0.25);
+}
+
+.gatilho-idle-logo--neutral .gatilho-idle-logo__shine::before {
+  background: linear-gradient(
+    102deg,
+    transparent 38%,
+    rgba(var(--speed-neut-rgb), 0.1) 48%,
+    rgba(var(--speed-neut-rgb), 0.22) 50%,
+    rgba(var(--speed-neut-rgb), 0.1) 52%,
+    transparent 62%
+  );
+  animation-duration: calc(5.6s * var(--sense-anim-factor) * var(--sense-glow-sweep-extra));
+}
+
+@keyframes gatilhoLogoShineSweep {
+  0% {
+    transform: translateX(-130%) skewX(-11deg);
+    opacity: 0;
+  }
+
+  6% {
+    opacity: 1;
+  }
+
+  42% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 1;
+  }
+
+  48%,
+  100% {
+    transform: translateX(280%) skewX(-11deg);
+    opacity: 0;
+  }
+}
+
+/*
+ * PNG com fundo preto: lighten faz o preto “sumir” sobre o painel escuro — ficam S, ondas e texto.
+ * (Com transparência real no ficheiro, o efeito é ainda mais limpo.)
+ */
+.gatilho-idle-logo__img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  height: var(--gatilho-idle-logo-side);
+  width: auto;
+  max-width: var(--gatilho-idle-logo-side);
+  aspect-ratio: 1;
+  object-fit: contain;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+  user-select: none;
+  transition:
+    filter 0.5s ease,
+    opacity 0.5s ease,
+    transform 0.5s ease;
+}
+
+/* Repouso: lado base × escala AGR (JS) × folga extra (~12%). */
+.gatilho-wrap--idle .gatilho-idle-logo .gatilho-idle-logo__img {
+  height: calc(var(--gatilho-idle-logo-side) * var(--gatilho-idle-agg-scale, 1.85) / 1.85 * 1.12);
+  max-width: calc(var(--gatilho-idle-logo-side) * var(--gatilho-idle-agg-scale, 1.85) / 1.85 * 1.12);
+}
+
+/* Compra: halos = mesmas tonalidades do speed positivo (--speed-pos-rgb). */
+.gatilho-idle-logo--buy .gatilho-idle-logo__img {
+  opacity: calc(0.52 + var(--glow) * 0.48);
+  filter:
+    grayscale(calc(1 - var(--glow) * 0.92))
+    hue-rotate(calc(var(--glow) * -38deg))
+    saturate(calc(0.3 + var(--glow) * 0.95))
+    brightness(calc(0.86 + var(--glow) * 0.24))
+    contrast(calc(0.98 + var(--glow) * 0.06))
+    drop-shadow(
+      0 0 calc(2px + var(--glow) * 16px) rgba(57, 255, 20, calc(0.2 + var(--glow) * 0.66))
+    )
+    drop-shadow(
+      0 0 calc(8px + var(--glow) * 30px) rgba(57, 255, 20, calc(0.12 + var(--glow) * 0.5))
+    );
+}
+
+/* Venda: halos = mesmas tonalidades do speed negativo (--speed-neg-rgb). */
+.gatilho-idle-logo--sell .gatilho-idle-logo__img {
+  opacity: calc(0.52 + var(--glow) * 0.48);
+  filter:
+    grayscale(calc(1 - var(--glow) * 0.92))
+    hue-rotate(calc(var(--glow) * 8deg))
+    saturate(calc(0.38 + var(--glow) * 0.58))
+    brightness(calc(0.88 + var(--glow) * 0.24))
+    contrast(calc(0.98 + var(--glow) * 0.08))
+    drop-shadow(
+      0 0 calc(2px + var(--glow) * 16px) rgba(var(--speed-neg-rgb), calc(0.18 + var(--glow) * 0.6))
+    )
+    drop-shadow(
+      0 0 calc(8px + var(--glow) * 30px) rgba(var(--speed-neg-rgb), calc(0.1 + var(--glow) * 0.45))
+    );
+}
+
+/* Neutro: mesma família do speed neutro + sombra discreta. */
+.gatilho-idle-logo--neutral .gatilho-idle-logo__img {
+  opacity: calc(0.58 + var(--glow) * 0.22);
+  filter:
+    grayscale(1)
+    saturate(0)
+    brightness(calc(0.86 + var(--glow) * 0.14))
+    contrast(1.05)
+    drop-shadow(0 8px 18px rgba(var(--speed-neut-rgb), 0.22));
+}
+
+/* ZFlow OFF: apagado, só escala de cinzas */
+.gatilho-idle-logo--off .gatilho-idle-logo__img {
+  opacity: 0.4;
+  filter: grayscale(1) brightness(0.72) contrast(0.96);
+}
+
+/* Flutuação partilhada: logo gatilho + medidores % Pico / % Persist */
+@keyframes senseHudFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-idle-logo__flow-lines::before {
+    animation: none;
+  }
+
+  .gatilho-idle-logo__shine::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .gatilho-idle-logo__art {
+    animation: none !important;
+  }
+
+  .gatilho-idle-logo {
+    animation: none;
+  }
+}
+
+.gatilho-details-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 12px;
+}
+
+.gatilho-side-tit {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a8cc;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.gatilho-details-wrap .gatilho-details {
+  margin-top: 0;
+}
+
+.gatilho-details {
+  margin-top: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(15, 22, 38, 0.85);
+  border: 1px solid rgba(47, 66, 100, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.gatilho-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.gatilho-detail-k {
+  color: #8b9dc3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.gatilho-detail-v {
+  color: #e8f0ff;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  word-break: break-all;
+}
+
+.gatilho-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 2px solid;
+  min-height: 88px;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.gatilho-btn__label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.gatilho-btn__sub {
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* COMPRA: sempre azul neon (mais forte quando ligado) */
+.gatilho-btn--buy {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: linear-gradient(160deg, rgba(14, 165, 233, 0.12) 0%, rgba(10, 15, 26, 0.96) 100%);
+  box-shadow:
+    0 0 14px rgba(56, 189, 248, 0.22),
+    0 0 28px rgba(0, 180, 255, 0.1),
+    inset 0 0 16px rgba(56, 189, 248, 0.06);
+  color: #bae6fd;
+}
+
+.gatilho-btn--buy .gatilho-btn__label {
+  color: #5ecfff;
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.65),
+    0 0 16px rgba(0, 191, 255, 0.3);
+}
+
+.gatilho-btn--buy .gatilho-btn__sub {
+  color: #93c5e8;
+}
+
+.gatilho-btn--buy.gatilho-btn--on {
+  border-color: rgba(56, 189, 248, 0.95);
+  background: linear-gradient(160deg, rgba(14, 165, 233, 0.26) 0%, rgba(10, 15, 26, 0.98) 100%);
+  box-shadow:
+    0 0 28px rgba(56, 189, 248, 0.58),
+    0 0 48px rgba(0, 200, 255, 0.28),
+    inset 0 0 24px rgba(56, 189, 248, 0.12);
+  color: #e0f2fe;
+}
+
+.gatilho-btn--buy.gatilho-btn--on .gatilho-btn__label {
+  color: var(--speed-pos);
+  text-shadow:
+    0 0 10px rgba(var(--speed-pos-rgb), 0.95),
+    0 0 22px rgba(var(--speed-pos-rgb), 0.55),
+    0 0 36px rgba(var(--speed-pos-rgb), 0.35);
+}
+
+.gatilho-btn--buy.gatilho-btn--on .gatilho-btn__sub {
+  color: #bae6fd;
+}
+
+/* VENDA: sempre fúcsia neon (mais forte quando ligado) */
+.gatilho-btn--sell {
+  border-color: rgba(232, 121, 249, 0.45);
+  background: linear-gradient(160deg, rgba(217, 70, 239, 0.12) 0%, rgba(10, 15, 26, 0.96) 100%);
+  box-shadow:
+    0 0 14px rgba(232, 121, 249, 0.22),
+    0 0 28px rgba(192, 38, 211, 0.12),
+    inset 0 0 16px rgba(232, 121, 249, 0.06);
+  color: #f5d0fe;
+}
+
+.gatilho-btn--sell .gatilho-btn__label {
+  color: var(--speed-neg);
+  text-shadow:
+    0 0 8px rgba(var(--speed-neg-rgb), 0.65),
+    0 0 16px rgba(217, 70, 239, 0.32);
+}
+
+.gatilho-btn--sell .gatilho-btn__sub {
+  color: #d8b4e6;
+}
+
+.gatilho-btn--sell.gatilho-btn--on {
+  border-color: rgba(232, 121, 249, 0.95);
+  background: linear-gradient(160deg, rgba(217, 70, 239, 0.24) 0%, rgba(10, 15, 26, 0.98) 100%);
+  box-shadow:
+    0 0 28px rgba(232, 121, 249, 0.55),
+    0 0 48px rgba(192, 38, 211, 0.28),
+    inset 0 0 24px rgba(232, 121, 249, 0.12);
+  color: #fae8ff;
+}
+
+.gatilho-btn--sell.gatilho-btn--on .gatilho-btn__label {
+  color: #f0abfc;
+  text-shadow:
+    0 0 10px rgba(232, 121, 249, 0.95),
+    0 0 22px rgba(217, 70, 239, 0.55),
+    0 0 36px rgba(192, 38, 211, 0.35);
+}
+
+.gatilho-btn--sell.gatilho-btn--on .gatilho-btn__sub {
+  color: #f5d0fe;
+}
+
+/* Hold: rótulos COMPRA/VENDA compactos (vence .gatilho-btn--on .gatilho-btn__label). */
+.gatilho-wrap--hold .gatilho-btn.gatilho-btn--on .gatilho-btn__label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.hud-line {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background: #0f1626;
+  border-left: 3px solid #2e4a6e;
+  min-height: 38px;
+}
+
+.hud-cols > .hud-col:nth-child(3) .hud-line:not([class*="maker"]) {
+  gap: 0;
+  padding: 3px 5px;
+  margin-bottom: 2px;
+  min-height: 0;
+}
+
+.hud-line:last-child {
+  margin-bottom: 0;
+}
+
+.hud-line .hud-k {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ui-label-muted);
+}
+
+.hud-cols > .hud-col:nth-child(3) .hud-line:not([class*="maker"]) .hud-k {
+  font-size: 9px;
+}
+
+.hud-line .hud-v {
+  font-size: var(--ui-text-size);
+  color: #e8f0ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.hud-cols > .hud-col:nth-child(3) .hud-line:not([class*="maker"]) .hud-v {
+  font-size: 10px;
+  line-height: 1.22;
+}
+
+/* Makers — neon (COMPRA+ verde / VENDA+ vermelho, como no MT5) */
+.hud-line--maker-buy {
+  border-left-color: #39ff14 !important;
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 20px rgba(57, 255, 20, 0.06),
+    0 0 16px rgba(57, 255, 20, 0.18);
+}
+
+.hud-line--maker-buy .hud-v {
+  color: #b8ffc4 !important;
+  text-shadow:
+    0 0 6px rgba(57, 255, 20, 0.9),
+    0 0 14px rgba(57, 255, 20, 0.45),
+    0 0 24px rgba(57, 255, 20, 0.2);
+}
+
+.hud-line--maker-sell {
+  border-left-color: #ff1744 !important;
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.12) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow:
+    inset 0 0 20px rgba(255, 23, 68, 0.06),
+    0 0 16px rgba(255, 23, 68, 0.2);
+}
+
+.hud-line--maker-sell .hud-v {
+  color: #ffb4c0 !important;
+  text-shadow:
+    0 0 6px rgba(255, 23, 68, 0.85),
+    0 0 14px rgba(255, 23, 68, 0.45),
+    0 0 24px rgba(255, 23, 68, 0.2);
+}
+
+.hud-line--maker-neutro {
+  border-left-color: #94a3b8 !important;
+  box-shadow: 0 0 10px rgba(148, 163, 184, 0.12);
+}
+
+.hud-line--maker-neutro .hud-v {
+  color: #cbd5e1 !important;
+}
+
+.hud-line--maker-off {
+  border-left-color: #475569 !important;
+  opacity: 0.88;
+}
+
+.hud-line--maker-off .hud-v {
+  color: #94a3b8 !important;
+  text-shadow: none;
+}
+
+/* Makers (Mini/Ref): uma linha (rótulo | texto) — tamanho médio, legível */
+.hud-col-makers .hud-line {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 6px 8px;
+  min-height: 0 !important;
+  padding: 4px 6px !important;
+  margin-bottom: 3px !important;
+}
+
+.hud-col-makers .hud-line .hud-k {
+  flex: 0 0 auto;
+  font-size: 10px !important;
+  letter-spacing: 0.055em;
+}
+
+.hud-col-makers .hud-line .hud-v {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+}
+
+.hud-col-makers .hud-line--maker-buy {
+  background: linear-gradient(90deg, rgba(57, 255, 20, 0.1) 0%, rgba(15, 22, 38, 0.96) 68%) !important;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 14px rgba(57, 255, 20, 0.05),
+    0 0 10px rgba(57, 255, 20, 0.14) !important;
+}
+
+.hud-col-makers .hud-line--maker-buy .hud-v {
+  text-shadow:
+    0 0 5px rgba(57, 255, 20, 0.78),
+    0 0 12px rgba(57, 255, 20, 0.32) !important;
+}
+
+.hud-col-makers .hud-line--maker-sell {
+  background: linear-gradient(90deg, rgba(255, 23, 68, 0.1) 0%, rgba(15, 22, 38, 0.96) 68%) !important;
+  border-radius: 6px;
+  box-shadow:
+    inset 0 0 14px rgba(255, 23, 68, 0.05),
+    0 0 10px rgba(255, 23, 68, 0.16) !important;
+}
+
+.hud-col-makers .hud-line--maker-sell .hud-v {
+  text-shadow:
+    0 0 5px rgba(255, 23, 68, 0.72),

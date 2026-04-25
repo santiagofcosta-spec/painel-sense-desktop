@@ -1,0 +1,12 @@
+/**
+ * [placar] — parte 0123 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.meta-foot {
+  font-size: 11px;
+  color: var(--ui-text-muted);
+  margin-top: 4px;
+  flex-shrink: 0;
+}

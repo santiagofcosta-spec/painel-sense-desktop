@@ -1,0 +1,85 @@
+/**
+ * [media] — parte 0128 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: no-preference) {
+  .regime-mercado--one::before {
+    animation: regimeMercadoAccentPulse 3.2s ease-in-out infinite;
+  }
+
+  .regime-mercado__strip .regime-mercado__vies--buy {
+    animation: regimeViesBreathBuy 4.2s ease-in-out infinite;
+  }
+
+  .regime-mercado__strip .regime-mercado__vies--sell {
+    animation: regimeViesBreathSell 4.2s ease-in-out infinite;
+  }
+
+  .regime-mercado__strip .regime-mercado__vies--neutro {
+    animation: regimeViesBreathNeutro 4.8s ease-in-out infinite;
+  }
+}
+
+@keyframes regimeViesBreathBuy {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow:
+      0 0 6px rgba(56, 189, 248, 0.35),
+      0 0 12px rgba(56, 189, 248, 0.12);
+  }
+
+  50% {
+    opacity: 0.9;
+    text-shadow:
+      0 0 12px rgba(56, 189, 248, 0.45),
+      0 0 20px rgba(56, 189, 248, 0.18);
+  }
+}
+
+@keyframes regimeViesBreathSell {
+  0%,
+  100% {
+    opacity: 1;
+    text-shadow:
+      0 0 6px rgba(251, 146, 60, 0.34),
+      0 0 12px rgba(251, 146, 60, 0.12);
+  }
+
+  50% {
+    opacity: 0.9;
+    text-shadow:
+      0 0 12px rgba(251, 146, 60, 0.42),
+      0 0 20px rgba(251, 146, 60, 0.16);
+  }
+}
+
+@keyframes regimeViesBreathNeutro {
+  0%,
+  100% {
+    opacity: 0.95;
+    text-shadow: none;
+  }
+
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(148, 163, 184, 0.25);
+  }
+}
+
+/* Atualização do EA: destaque curto (combinado em JS — .regime-mercado--flash). */
+@keyframes regimeMercadoFlash {
+  0% {
+    box-shadow:
+      0 0 0 1px rgba(125, 211, 252, 0.45),
+      0 0 20px rgba(125, 211, 252, 0.18);
+    filter: brightness(1.12);
+  }
+
+  100% {
+    box-shadow: 0 0 24px rgba(0, 80, 255, 0.06);
+    filter: brightness(1);
+  }
+}

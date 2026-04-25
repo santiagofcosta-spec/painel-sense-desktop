@@ -1,0 +1,327 @@
+/**
+ * [misc] — parte 0127 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.ptax-bussola__vies {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.ptax-bussola__vies--alta {
+  color: #34d399;
+}
+
+.ptax-bussola__vies--baixa {
+  color: #fb923c;
+}
+
+.ptax-bussola__vies--neutra {
+  color: #94a3b8;
+}
+
+.ptax-bussola__forecast {
+  font-size: 12px;
+  color: #cbd5e1;
+  line-height: 1.35;
+}
+
+.ptax-bussola__row {
+  font-size: 10.5px;
+  color: var(--ui-text-muted);
+  line-height: 1.4;
+}
+
+.ptax-bussola__disclaimer {
+  font-size: 9.5px;
+  color: var(--ui-text-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+  opacity: 0.92;
+}
+
+/* Regime (rastreador) — JSON regimeMercado (EA schema ≥7) */
+.regime-mercado {
+  margin-top: 6px;
+  padding: 5px 7px;
+  border-radius: var(--ui-panel-radius);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.65) 0%, rgba(30, 41, 59, 0.45) 100%);
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.regime-mercado__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.regime-mercado__tag {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+  color: #7c8db0;
+  font-weight: 700;
+}
+
+.regime-mercado__vies {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.regime-mercado__vies--buy {
+  color: #38bdf8;
+}
+
+.regime-mercado__vies--sell {
+  color: #fb923c;
+}
+
+.regime-mercado__vies--neutro {
+  color: #94a3b8;
+}
+
+.regime-mercado__conf {
+  margin-left: auto;
+  color: #cbd5e1;
+  font-variant-numeric: tabular-nums;
+}
+
+.regime-mercado__rotulo {
+  margin: 0 0 6px;
+  color: #e2e8f0;
+  font-size: var(--ui-text-size);
+  line-height: 1.4;
+}
+
+.regime-mercado__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  color: #8b9cc0;
+  font-size: 10px;
+}
+
+.regime-mercado--one {
+  margin-top: 4px;
+  padding: 4px 8px 5px 11px;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+/* Barra à esquerda — cor conforme viés (classes em renderer: regime-mercado--vies-*). */
+.regime-mercado--one::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 3px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.88;
+}
+
+.regime-mercado--vies-compra::before {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.95) 0%, rgba(14, 165, 233, 0.45) 100%);
+  box-shadow:
+    0 0 10px rgba(56, 189, 248, 0.35),
+    0 0 18px rgba(56, 189, 248, 0.14);
+}
+
+.regime-mercado--vies-venda::before {
+  background: linear-gradient(180deg, rgba(251, 146, 60, 0.95) 0%, rgba(234, 88, 12, 0.45) 100%);
+  box-shadow:
+    0 0 10px rgba(251, 146, 60, 0.32),
+    0 0 18px rgba(251, 146, 60, 0.12);
+}
+
+.regime-mercado--vies-neutro::before {
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.75) 0%, rgba(71, 85, 105, 0.4) 100%);
+  box-shadow: 0 0 8px rgba(148, 163, 184, 0.2);
+}
+
+/* Brilho que percorre a faixa (HUD “vivo”) — desligado com prefers-reduced-motion. */
+.regime-mercado--one::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(125, 211, 252, 0.1) 50%,
+    transparent 62%,
+    transparent 100%
+  );
+  background-size: 240% 100%;
+  animation: regimeMercadoBorderSweep 5.4s ease-in-out infinite;
+  opacity: 0.55;
+}
+
+.regime-mercado--vies-venda.regime-mercado--one::after {
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(251, 146, 60, 0.09) 50%,
+    transparent 62%,
+    transparent 100%
+  );
+}
+
+.regime-mercado--vies-neutro.regime-mercado--one::after {
+  opacity: 0.35;
+}
+
+.regime-mercado__strip {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 10px;
+  line-height: 1.25;
+  position: relative;
+  z-index: 1;
+}
+
+/* Última linha principal do regime: confiança compra/venda (esq.) + ATR / Δtx (dir.). */
+.regime-mercado__tail {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px 10px;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.regime-mercado__tail-meta {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 8px;
+  justify-self: end;
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: #94a3b8;
+}
+
+.regime-mercado__tail-meta .regime-mercado__meta {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Confiança compra vs venda (fiabilidade para gatilho). */
+.regime-mercado__sideconf {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  min-width: 0;
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: #94a3b8;
+}
+
+.regime-mercado__sideconf .regime-side__sep {
+  opacity: 0.55;
+  user-select: none;
+}
+
+.regime-side {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 6px;
+}
+
+.regime-side__lbl {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 9px;
+}
+
+.regime-side--buy .regime-side__lbl {
+  color: #7dd3fc;
+}
+
+.regime-side--sell .regime-side__lbl {
+  color: #fdba74;
+}
+
+.regime-side__pct {
+  font-variant-numeric: tabular-nums;
+  color: #e2e8f0;
+  font-weight: 800;
+}
+
+.regime-side__fiab {
+  font-weight: 600;
+  font-size: 9px;
+  white-space: normal;
+}
+
+.regime-side__fiab--ok {
+  color: #86efac;
+}
+
+.regime-side__fiab--warn {
+  color: #fcd34d;
+}
+
+.regime-side__fiab--bad {
+  color: #f87171;
+}
+
+.regime-side__fiab--unk {
+  color: #64748b;
+}
+
+.regime-mercado--one .regime-rastreador {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes regimeMercadoBorderSweep {
+  0%,
+  100% {
+    background-position: 8% 50%;
+  }
+
+  50% {
+    background-position: 92% 50%;
+  }
+}
+
+@keyframes regimeMercadoAccentPulse {
+  0%,
+  100% {
+    opacity: 0.82;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 1;
+    filter: brightness(1.12);
+  }
+}

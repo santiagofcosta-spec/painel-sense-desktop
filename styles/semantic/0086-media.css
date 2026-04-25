@@ -1,0 +1,24 @@
+/**
+ * [media] — parte 0086 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+@media (prefers-reduced-motion: reduce) {
+  .gatilho-idle-logo__flow-lines::before {
+    animation: none;
+  }
+
+  .gatilho-idle-logo__shine::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .gatilho-idle-logo__art {
+    animation: none !important;
+  }
+
+  .gatilho-idle-logo {
+    animation: none;
+  }
+}

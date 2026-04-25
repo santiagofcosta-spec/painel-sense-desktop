@@ -1,0 +1,10 @@
+Logos no painel
+---------------
+Copiados da pasta do EA:
+  Santiago EA\Ico\sense ico White.ico  -> assets/sense-ico-white.ico  (padrao no topo)
+  Santiago EA\Ico\Logo-sense-ico.ico   -> assets/logo-sense-ico.ico
+  Santiago EA\Ico\sense ico.ico        -> assets/sense-ico.ico
+
+Opcional SLAVA: coloque nesta pasta:
+  slava-logo.png ou slava-logo.svg
+(se existirem, o painel usa SLAVA antes do icone branco).

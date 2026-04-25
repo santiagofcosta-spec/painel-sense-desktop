@@ -1,0 +1,7 @@
+dist/
+node_modules/
+config.json
+setenv.local.bat
+sense-dash-secret.local.txt
+sense-dash-secret.local
+*.lnk

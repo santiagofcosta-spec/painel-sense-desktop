@@ -1,0 +1,11 @@
+/**
+ * [misc] — parte 0004 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+html::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+  display: none !important;
+}

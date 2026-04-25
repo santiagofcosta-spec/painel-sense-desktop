@@ -1,0 +1,139 @@
+/**
+ * [signal] — parte 0020 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Faixa de sinal (mesma lógica do HUD: hold amarelo/fúcsia · consenso verde/vermelho) */
+.signal-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 10px;
+  border-bottom: 1px solid #1f2a44;
+  font-size: 12px;
+  min-height: 34px;
+  flex-shrink: 0;
+}
+
+/* Trilho + texto a deslizar (mesmo padrão que .hud-sr-detect__track / __moving) */
+.signal-strip--active .signal-strip__track {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.signal-strip--active .signal-strip__moving {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 8px;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.signal-strip--active .signal-strip__src {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.signal-strip--idle {
+  background: #080c14;
+  color: var(--ui-text-muted);
+}
+
+.signal-strip__idle {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
+.signal-strip__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.93;
+}
+
+.signal-strip__dir {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+/* Texto mais longo quando o gatilho abre a janela dos botões (mesmas cores .signal-src-*) */
+.signal-strip--confirmed .signal-strip__dir {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+}
+
+.signal-strip__src {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.signal-strip--active.signal-compra.signal-src-hold {
+  background: linear-gradient(90deg, #2a2408 0%, #0f0d06 100%);
+  border-left: 4px solid #facc15;
+  color: #fef9c3;
+}
+
+.signal-strip--active.signal-compra.signal-src-hold .signal-strip__dir {
+  color: #fde047;
+  text-shadow: 0 0 12px rgba(250, 204, 21, 0.45);
+}
+
+.signal-strip--active.signal-compra.signal-src-consenso {
+  background: linear-gradient(90deg, #0d2418 0%, #0a0f14 100%);
+  border-left: 4px solid #22c55e;
+  color: #d1fae5;
+}
+
+.signal-strip--active.signal-compra.signal-src-consenso .signal-strip__dir {
+  color: #4ade80;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.35);
+}
+
+.signal-strip--active.signal-venda.signal-src-hold {
+  background: linear-gradient(90deg, #2a1028 0%, #120812 100%);
+  border-left: 4px solid #e879f9;
+  color: #fae8ff;
+}
+
+.signal-strip--active.signal-venda.signal-src-hold .signal-strip__dir {
+  color: #f0abfc;
+  text-shadow: 0 0 12px rgba(232, 121, 249, 0.45);
+}
+
+.signal-strip--active.signal-venda.signal-src-consenso {
+  background: linear-gradient(90deg, #2a1010 0%, #140a0a 100%);
+  border-left: 4px solid #ef4444;
+  color: #fee2e2;
+}
+
+.signal-strip--active.signal-venda.signal-src-consenso .signal-strip__dir {
+  color: #f87171;
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.35);
+}
+
+.signal-strip--active.signal-compra.signal-src-unk,
+.signal-strip--active.signal-venda.signal-src-unk {
+  border-left: 4px solid #64748b;
+  background: #0f1624;
+  color: #e2e8f0;
+}
+
+.signal-strip--active.signal-strip--divergent {
+  border-left-color: #facc15 !important;
+  box-shadow: inset 0 0 18px rgba(250, 204, 21, 0.12);
+}
+
+.signal-strip--active.signal-strip--divergent .signal-strip__dir {
+  color: #fde68a !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.32) !important;
+}

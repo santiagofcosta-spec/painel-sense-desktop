@@ -1,0 +1,165 @@
+/**
+ * [hud] — parte 0091 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Linha de consenso no mesmo padrão das demais (uma linha), com truncamento seguro. */
+.hud-col-makers .hud-line--radar-consensus {
+  align-items: center !important;
+  gap: 6px 8px !important;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-k {
+  flex: 0 0 auto !important;
+  margin-bottom: 0;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-v-wrap {
+  flex: 1 1 auto !important;
+  flex-wrap: nowrap !important;
+  justify-content: flex-end !important;
+  min-width: 0;
+  overflow: hidden;
+  text-align: right !important;
+}
+
+.hud-col-makers .hud-line--radar-consensus .hud-v {
+  display: block;
+  flex: 0 1 auto;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3 !important;
+  text-align: right !important;
+}
+
+.hud-consensus-reactive-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.55);
+  background: rgba(14, 116, 144, 0.18);
+  color: #67e8f9;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.hud-line--radar-flip-none {
+  border-left-color: #64748b !important;
+  opacity: 0.92;
+}
+
+.hud-line--radar-flip-none .hud-v {
+  color: #94a3b8 !important;
+  text-shadow: none;
+}
+
+/* Radar — picos (ciano) e persistência (laranja), como labels do MT5 */
+.hud-line--radar-picos {
+  border-left-color: #22d3ee !important;
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.18);
+}
+
+.hud-line--radar-picos .hud-v {
+  color: #a5f3fc !important;
+  text-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
+}
+
+.hud-line--radar-persist {
+  border-left-color: #fb923c !important;
+  background: linear-gradient(90deg, rgba(251, 146, 60, 0.1) 0%, rgba(15, 22, 38, 0.95) 55%) !important;
+  box-shadow: 0 0 14px rgba(251, 146, 60, 0.2);
+}
+
+.hud-line--radar-persist .hud-v {
+  color: #fed7aa !important;
+  text-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+}
+
+/* Saldos: + verde / − vermelho (neon suave) */
+.hud-line--radar-saldo-pos {
+  border-left-color: #4ade80 !important;
+  background: linear-gradient(90deg, rgba(74, 222, 128, 0.1) 0%, rgba(15, 22, 38, 0.95) 60%) !important;
+  box-shadow: 0 0 12px rgba(74, 222, 128, 0.15);
+}
+
+.hud-line--radar-saldo-pos .hud-v {
+  color: #bbf7d0 !important;
+  text-shadow: 0 0 6px rgba(74, 222, 128, 0.35);
+}
+
+.hud-line--radar-saldo-neg {
+  border-left-color: #f472b6 !important;
+  background: linear-gradient(90deg, rgba(244, 114, 182, 0.1) 0%, rgba(15, 22, 38, 0.95) 60%) !important;
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.18);
+}
+
+.hud-line--radar-saldo-neg .hud-v {
+  color: #fbcfe8 !important;
+  text-shadow: 0 0 6px rgba(244, 114, 182, 0.35);
+}
+
+/* Absorção no Radar (abaixo de Últ. virada): só quando ativa — mesma caixa que as outras linhas */
+.hud-line--absorption.hud-line--absorption-compra {
+  border-left-color: #00bfff !important;
+  background: linear-gradient(90deg, rgba(0, 191, 255, 0.12) 0%, #0f1626 88%) !important;
+  box-shadow:
+    inset 0 0 14px rgba(0, 191, 255, 0.05),
+    0 0 12px rgba(0, 191, 255, 0.16);
+}
+
+.hud-line--absorption.hud-line--absorption-compra .hud-v {
+  color: #b8f4ff !important;
+  text-shadow: 0 0 8px rgba(0, 191, 255, 0.35);
+}
+
+.hud-line--absorption.hud-line--absorption-venda {
+  border-left-color: #e879f9 !important;
+  background: linear-gradient(90deg, rgba(232, 121, 249, 0.12) 0%, #0f1626 88%) !important;
+  box-shadow:
+    inset 0 0 14px rgba(232, 121, 249, 0.06),
+    0 0 12px rgba(217, 70, 239, 0.18);
+}
+
+.hud-line--absorption.hud-line--absorption-venda .hud-v {
+  color: #fce7f8 !important;
+  text-shadow: 0 0 8px rgba(232, 121, 249, 0.32);
+}
+
+.hud-line--absorption.hud-line--absorption-neut {
+  border-left-color: #fbbf24 !important;
+  background: linear-gradient(90deg, rgba(251, 191, 36, 0.1) 0%, #0f1626 88%) !important;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.12);
+}
+
+.hud-line--absorption.hud-line--absorption-neut .hud-v {
+  color: #fde68a !important;
+}
+
+/* Absorção: texto longo — alinhar à esquerda e deixar quebrar em várias linhas */
+.hud-line--absorption {
+  min-height: 0 !important;
+}
+
+.hud-line--absorption .hud-v-wrap {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  text-align: left !important;
+  width: 100%;
+}
+
+.hud-line--absorption .hud-v {
+  flex: 1 1 auto !important;
+  overflow: visible !important;
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.38;
+  text-align: left;
+}

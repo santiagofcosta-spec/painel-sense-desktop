@@ -1,0 +1,67 @@
+/**
+ * [hud] — parte 0065 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* SR extremo + absorção no sentido oposto: brilho âmbar lento (sem deslize horizontal — ver renderer JS). */
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance,
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  animation: srAbsorptionNuanceWrap calc(5.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Fundo e borda distintos do modo “só SR máx.” — mistura âmbar para ficar óbvio vs verde/vermelho puro. */
+.hud-sr-detect--sell.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  color: #fde68a;
+  background: linear-gradient(
+    110deg,
+    rgba(69, 26, 26, 0.94) 0%,
+    rgba(120, 53, 15, 0.82) 20%,
+    rgba(185, 28, 28, 0.42) 48%,
+    rgba(146, 64, 14, 0.72) 72%,
+    rgba(49, 21, 21, 0.92) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(251, 191, 36, 0.72);
+  text-shadow:
+    0 0 14px rgba(253, 224, 71, 0.42),
+    0 0 2px rgba(49, 21, 21, 0.95);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(251, 191, 36, 0.42);
+}
+
+.hud-sr-detect--buy.hud-sr-detect--lead-strong.hud-sr-detect--absorption-nuance {
+  color: #ecfccb;
+  background: linear-gradient(
+    110deg,
+    rgba(6, 78, 59, 0.92) 0%,
+    rgba(22, 101, 52, 0.72) 22%,
+    rgba(113, 63, 18, 0.38) 50%,
+    rgba(22, 101, 52, 0.68) 76%,
+    rgba(6, 95, 70, 0.9) 100%
+  );
+  background-size: 380% 100%;
+  border-color: rgba(163, 230, 53, 0.62);
+  text-shadow:
+    0 0 12px rgba(217, 249, 157, 0.45),
+    0 0 2px rgba(6, 78, 59, 0.92);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 0 1px rgba(132, 204, 22, 0.4);
+}
+
+@keyframes srAbsorptionNuanceWrap {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(251, 191, 36, 0.22);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(253, 224, 71, 0.55),
+      0 0 22px rgba(251, 191, 36, 0.28);
+  }
+}

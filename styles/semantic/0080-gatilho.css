@@ -1,0 +1,305 @@
+/**
+ * [gatilho] — parte 0080 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+/* Com alerta lateral: menos “puxar” os botões para cima e altura mínima dos botões um pouco menor */
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-btns {
+  transform: none;
+  margin-top: 0;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-btn {
+  min-height: 44px;
+  padding: 5px 6px;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-details {
+  padding: 4px 6px;
+}
+
+.gatilho-wrap--hold.gatilho-wrap--lateral-warn .gatilho-detail-row {
+  font-size: 9.5px;
+  line-height: 1.22;
+}
+
+.gatilho-wrap--hold .gatilho-details-wrap {
+  margin-top: 0;
+  margin-bottom: 4px;
+  gap: 6px;
+}
+
+.gatilho-wrap--hold .gatilho-details {
+  padding: 5px 8px;
+  gap: 3px;
+}
+
+.gatilho-wrap--hold .gatilho-detail-row {
+  font-size: 10px;
+  line-height: 1.22;
+}
+
+.gatilho-wrap--hold .gatilho-detail-k {
+  font-size: 8.5px;
+}
+
+.gatilho-wrap--hold .gatilho-detail-v {
+  font-size: 10px;
+}
+
+.gatilho-wrap--hold .gatilho-side-tit {
+  font-size: 9px;
+  margin-bottom: 2px;
+}
+
+.gatilho-wrap--hold .gatilho-btns {
+  gap: 6px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+  transform: none;
+}
+
+.gatilho-wrap--hold .gatilho-btn {
+  min-height: 48px;
+  padding: 6px 8px;
+  gap: 2px;
+}
+
+.gatilho-subtitle {
+  margin: 0 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #a8b8d8;
+  letter-spacing: 0.02em;
+}
+
+.gatilho-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  margin-bottom: 4px;
+  position: static;
+  z-index: 3;
+}
+
+.gatilho-title-row .gatilho-subtitle {
+  margin-bottom: 0;
+}
+
+.gatilho-mem-tri-wrap {
+  position: absolute;
+  left: 60%;
+  top: 104%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  line-height: 1;
+  z-index: 3;
+  min-width: 72px;
+  min-height: 62px;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 66px;
+  font-size: 64px;
+  font-weight: 900;
+  will-change: transform, opacity, filter;
+}
+
+/* Em HOLD (botão compra/venda visível), deixar o triângulo mais limpo para não poluir o card. */
+.gatilho-wrap--hold .gatilho-mem-tri-wrap {
+  left: 56%;
+  top: 88%;
+  min-width: 46px;
+  min-height: 38px;
+}
+
+/* Quando o gatilho está ativo (botão visível), ocultar o triângulo para não poluir. */
+.gatilho-wrap--hold .gatilho-mem-tri-wrap {
+  display: none !important;
+}
+
+.gatilho-mem-tri-row {
+  position: absolute;
+  right: -14px;
+  top: 58px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri-wrap--inline {
+  position: static;
+  left: auto;
+  top: auto;
+  transform: none;
+  min-width: 46px;
+  min-height: 38px;
+  pointer-events: none;
+}
+
+.gatilho-mem-tri-wrap--inline .gatilho-mem-tri {
+  min-width: 44px;
+  font-size: 42px;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri-wrap--inline {
+  display: inline-flex !important;
+}
+
+.gatilho-wrap--idle .gatilho-mem-tri-row {
+  top: 56px;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri-row {
+  top: 60px;
+}
+
+
+.gatilho-wrap--hold .gatilho-mem-tri {
+  min-width: 40px;
+  font-size: 40px;
+}
+
+.gatilho-mem-tri--mem {
+  animation:
+    gatilhoMemTriBlink calc(0.55s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriPulse calc(2.2s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriFloat calc(2.8s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-mem-tri--prep {
+  animation:
+    gatilhoMemTriPrepFloatPulse calc(4.2s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+/* Fase 1 (pré-sinal): amarelo neon para ambos os lados (compra/venda). */
+.gatilho-mem-tri--prep.gatilho-mem-tri--buy,
+.gatilho-mem-tri--prep.gatilho-mem-tri--sell {
+  color: #fde047 !important;
+  text-shadow:
+    0 0 12px rgba(250, 204, 21, 0.98),
+    0 0 24px rgba(234, 179, 8, 0.62),
+    0 0 42px rgba(202, 138, 4, 0.44) !important;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri--mem {
+  animation:
+    gatilhoMemTriBlink calc(0.85s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriPulse calc(3s * var(--sense-anim-factor)) ease-in-out infinite,
+    gatilhoMemTriFloat calc(3.8s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-wrap--hold .gatilho-mem-tri--prep {
+  animation:
+    gatilhoMemTriPrepFloatPulse calc(5.4s * var(--sense-anim-factor)) ease-in-out infinite;
+}
+
+.gatilho-mem-tri--buy {
+  color: #5ecfff;
+  text-shadow:
+    0 0 10px rgba(56, 189, 248, 0.95),
+    0 0 20px rgba(0, 191, 255, 0.55),
+    0 0 34px rgba(14, 165, 233, 0.38);
+}
+
+.gatilho-mem-tri--sell {
+  color: #f0abfc;
+  text-shadow:
+    0 0 10px rgba(232, 121, 249, 0.95),
+    0 0 20px rgba(217, 70, 239, 0.58),
+    0 0 34px rgba(192, 38, 211, 0.4);
+}
+
+@keyframes gatilhoMemTriBlink {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0.28;
+  }
+}
+
+@keyframes gatilhoMemTriPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.16);
+    filter: brightness(1.16);
+  }
+}
+
+@keyframes gatilhoMemTriPulseSlow {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: scale(0.98);
+    filter: brightness(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.24);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes gatilhoMemTriFloat {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-4px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-3px) rotate(2deg);
+  }
+}
+
+@keyframes gatilhoMemTriPrepFloatPulse {
+  0%,
+  100% {
+    opacity: 0.68;
+    transform: translateY(0px) scale(0.9) rotate(0deg);
+    filter: brightness(0.92);
+  }
+  20% {
+    opacity: 0.9;
+    transform: translateY(-3px) scale(1.03) rotate(-1.5deg);
+    filter: brightness(1.02);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-7px) scale(1.22) rotate(0deg);
+    filter: brightness(1.2);
+  }
+  65% {
+    opacity: 0.92;
+    transform: translateY(-4px) scale(1.08) rotate(1.5deg);
+    filter: brightness(1.08);
+  }
+  82% {
+    opacity: 0.78;
+    transform: translateY(-1px) scale(0.96) rotate(0deg);
+    filter: brightness(0.98);
+  }
+}

@@ -1,0 +1,91 @@
+/**
+ * [hud] — parte 0108 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.radar-delta-gauge__svg {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 58px;
+  display: block;
+  overflow: visible;
+}
+
+.radar-delta-gauge__track {
+  stroke: rgba(148, 163, 184, 0.28);
+  stroke-width: 3.5;
+}
+
+.radar-delta-gauge__fill {
+  stroke: currentColor;
+  stroke-width: 5;
+  transition:
+    stroke-dasharray 0.45s cubic-bezier(0.33, 1, 0.68, 1),
+    stroke 0.25s ease;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+.radar-delta-gauge__needle {
+  stroke: currentColor;
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.radar-delta-gauge__pivot {
+  fill: #e2e8f0;
+  stroke: #334155;
+  stroke-width: 0.6;
+}
+
+.radar-delta-gauge__num {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  line-height: 1.15;
+  color: #e2e8f0;
+  text-shadow: 0 0 8px rgba(148, 163, 184, 0.35);
+  pointer-events: none;
+  max-width: 100%;
+  white-space: nowrap;
+}
+
+.radar-delta-gauge--pos {
+  color: var(--speed-pos);
+}
+
+.radar-delta-gauge--pos .radar-delta-gauge__num {
+  color: var(--speed-pos-soft);
+  text-shadow: 0 0 8px rgba(var(--speed-pos-rgb), 0.4);
+}
+
+.radar-delta-gauge--neg {
+  color: var(--speed-neg);
+}
+
+.radar-delta-gauge--neg .radar-delta-gauge__num {
+  color: var(--speed-neg-soft);
+  text-shadow: 0 0 8px rgba(var(--speed-neg-rgb), 0.38);
+}
+
+.radar-delta-gauge--neut {
+  color: var(--speed-neut);
+}
+
+.radar-delta-gauge--neut .radar-delta-gauge__num {
+  color: var(--speed-neut-num);
+  text-shadow: none;
+}
+
+.radar-delta-gauge--empty {
+  color: #64748b;
+}
+
+.radar-delta-gauge--empty .radar-delta-gauge__num {
+  color: #94a3b8;
+}

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Painel SENSE</title>
+    <link rel="stylesheet" href="styles.css?v=20260424cssfix2" />
+  </head>
+  <body>
+    <main class="layout">
+      <header class="topbar">
+        <div class="brand" aria-hidden="false">
+          <picture>
+            <img
+              class="brand-logo"
+              src="assets/sense-logo-idle.png"
+              width="200"
+              height="48"
+              alt="SENSE"
+              onerror="this.onerror=null;this.src='assets/sense-ico-white.ico';"
+            />
+          </picture>
+        </div>
+        <span class="hint">Atualiza a cada 0,5 s · JSON do EA</span>
+        <button type="button" id="pickJsonBtn" class="btn-pick-json">
+          Escolher dashboard.json…
+        </button>
+        <div class="topbar__tail">
+          <span id="pathLabel" class="path"></span>
+        </div>
+      </header>
+
+      <div
+        id="dataBanner"
+        class="data-banner"
+        role="alert"
+        aria-live="assertive"
+        hidden
+      ></div>
+
+      <div id="signalBanner" class="signal-strip signal-strip--idle" role="status" aria-live="polite"></div>
+
+      <section class="grid">
+        <div class="panel panel-tl">
+          <h2 class="panel-title">Fluxo por ativo</h2>
+          <div id="flowBox" class="flow"></div>
+        </div>
+
+        <div class="panel panel-tr">
+          <h2 class="panel-title">Alvos / níveis</h2>
+          <div id="levelsBox" class="levels"></div>
+        </div>
+
+        <div class="panel panel-hud">
+          <h2 class="panel-title">Agressão · Radar · Makers</h2>
+          <div id="hudBox" class="hud-block"></div>
+        </div>
+
+        <div class="panel panel-bl">
+          <h2 class="panel-title">Δ agressor · pressão rápida · pressão forte</h2>
+          <div id="deltaBox" class="delta-panel"></div>
+        </div>
+
+        <div class="panel panel-br">
+          <h2 class="panel-title">Placar</h2>
+          <div id="summaryBox" class="summary"></div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="statusLine" class="status"></span>
+      </footer>
+
+      <section id="senseIaDialog" class="sense-ia-dialog" hidden>
+        <div class="sense-ia-dialog__panel">
+          <header class="sense-ia-dialog__head">
+            <h3 class="sense-ia-dialog__title">SENSE IA</h3>
+            <button type="button" id="senseIaDialogClose" class="sense-ia-dialog__close" aria-label="Fechar">
+              ×
+            </button>
+          </header>
+          <p id="senseIaMeta" class="sense-ia-dialog__meta"></p>
+          <div id="senseIaBody" class="sense-ia-dialog__body"></div>
+          <footer class="sense-ia-dialog__foot">
+            Análise descritiva dos sinais do painel — não é recomendação financeira.
+            Configure em
+            <kbd class="sense-ia-dialog__kbd">config.json</kbd>
+            →
+            <span class="sense-ia-dialog__kbd">senseIa</span>:
+            <strong>OpenAI</strong>
+            — <span class="sense-ia-dialog__kbd">openaiApiKey</span>
+            (ou <span class="sense-ia-dialog__kbd">OPENAI_API_KEY</span> no sistema);
+            <strong>Ollama</strong>
+            — <span class="sense-ia-dialog__kbd">provider</span>: &quot;ollama&quot; e modelo em
+            <span class="sense-ia-dialog__kbd">model</span>.
+            Leitura automática: <span class="sense-ia-dialog__kbd">autoEveryMinutes</span> em
+            <span class="sense-ia-dialog__kbd">senseIa</span> (ex. 30; 0=desligar).
+            Opcional Genspark:
+            <a
+              class="sense-ia-dialog__link"
+              href="https://www.genspark.ai/pt"
+              target="_blank"
+              rel="noopener noreferrer"
+              >genspark.ai</a
+            >.
+          </footer>
+        </div>
+      </section>
+    </main>
+    <script>
+      (function () {
+        function showErr(msg) {
+          var b = document.getElementById("dataBanner");
+          if (b) {
+            b.hidden = false;
+            b.className = "data-banner data-banner--show";
+            b.textContent = msg;
+          }
+        }
+        window.addEventListener("error", function (e) {
+          showErr("Erro JS: " + (e.message || (e.error && e.error.message) || "desconhecido"));
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+          var r = e.reason;
+          showErr("Promise: " + (r && r.message ? r.message : String(r)));
+        });
+      })();
+    </script>
+    <script src="dashboard-guard.js?v=20260416j"></script>
+    <script src="renderer-utils.js?v=20260424modular"></script>
+    <script src="renderer-dom-shell.js?v=20260424dom"></script>
+    <script src="renderer-state.js?v=20260424modular"></script>
+    <script src="renderer-contracts.js?v=20260425phase23"></script>
+    <script src="renderer-sr-motion.js?v=20260424modular"></script>
+    <script src="renderer-sense-ia.js?v=20260424senseiamod"></script>
+    <script src="renderer-flow-levels.js?v=20260424flow"></script>
+    <script src="renderer-aggression-format.js?v=20260424aggfmt"></script>
+    <script src="renderer-regime-context.js?v=20260424regimeui"></script>
+    <script src="renderer-regime-ui.js?v=20260424regimeui"></script>
+    <script src="renderer-dashboard-paths.js?v=20260424flow"></script>
+    <script src="renderer-gatilho-memory.js?v=20260424phase21"></script>
+    <script src="renderer-gatilho.js?v=20260424flow"></script>
+    <script src="renderer-delta.js?v=20260424placar"></script>
+    <script src="renderer-placar-meta.js?v=20260424debounce"></script>
+    <script src="renderer-panel-debounce.js?v=20260424debounce"></script>
+    <script src="renderer-hud-metrics.js?v=20260424phase22"></script>
+    <script src="renderer-hud.js?v=20260424debounce"></script>
+    <script src="renderer-consensus-signal.js?v=20260424consensus"></script>
+    <script src="renderer-render-view-panels.js?v=20260424split"></script>
+    <script src="renderer-render-view.js?v=20260424split"></script>
+    <script src="renderer.js?v=20260424split"></script>
+    <script src="renderer-bootstrap.js?v=20260424boot"></script>
+  </body>
+</html>

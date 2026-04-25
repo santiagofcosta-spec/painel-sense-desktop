@@ -1,0 +1,193 @@
+/**
+ * [gatilho] — parte 0087 (ordem global preservada).
+ * Gerado: scripts/split-css-semantic.js
+ */
+
+
+.gatilho-details-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 12px;
+}
+
+.gatilho-side-tit {
+  font-size: 11px;
+  font-weight: 700;
+  color: #94a8cc;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+}
+
+.gatilho-details-wrap .gatilho-details {
+  margin-top: 0;
+}
+
+.gatilho-details {
+  margin-top: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(15, 22, 38, 0.85);
+  border: 1px solid rgba(47, 66, 100, 0.55);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.gatilho-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.gatilho-detail-k {
+  color: #8b9dc3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.gatilho-detail-v {
+  color: #e8f0ff;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  word-break: break-all;
+}
+
+.gatilho-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 10px;
+  border-radius: 12px;
+  border: 2px solid;
+  min-height: 88px;
+  transition:
+    box-shadow 0.25s ease,
+    border-color 0.25s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.gatilho-btn__label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+.gatilho-btn__sub {
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+  font-weight: 500;
+}
+
+/* COMPRA: sempre azul neon (mais forte quando ligado) */
+.gatilho-btn--buy {
+  border-color: rgba(56, 189, 248, 0.45);
+  background: linear-gradient(160deg, rgba(14, 165, 233, 0.12) 0%, rgba(10, 15, 26, 0.96) 100%);
+  box-shadow:
+    0 0 14px rgba(56, 189, 248, 0.22),
+    0 0 28px rgba(0, 180, 255, 0.1),
+    inset 0 0 16px rgba(56, 189, 248, 0.06);
+  color: #bae6fd;
+}
+
+.gatilho-btn--buy .gatilho-btn__label {
+  color: #5ecfff;
+  text-shadow:
+    0 0 8px rgba(56, 189, 248, 0.65),
+    0 0 16px rgba(0, 191, 255, 0.3);
+}
+
+.gatilho-btn--buy .gatilho-btn__sub {
+  color: #93c5e8;
+}
+
+.gatilho-btn--buy.gatilho-btn--on {
+  border-color: rgba(56, 189, 248, 0.95);
+  background: linear-gradient(160deg, rgba(14, 165, 233, 0.26) 0%, rgba(10, 15, 26, 0.98) 100%);
+  box-shadow:
+    0 0 28px rgba(56, 189, 248, 0.58),
+    0 0 48px rgba(0, 200, 255, 0.28),
+    inset 0 0 24px rgba(56, 189, 248, 0.12);
+  color: #e0f2fe;
+}
+
+.gatilho-btn--buy.gatilho-btn--on .gatilho-btn__label {
+  color: var(--speed-pos);
+  text-shadow:
+    0 0 10px rgba(var(--speed-pos-rgb), 0.95),
+    0 0 22px rgba(var(--speed-pos-rgb), 0.55),
+    0 0 36px rgba(var(--speed-pos-rgb), 0.35);
+}
+
+.gatilho-btn--buy.gatilho-btn--on .gatilho-btn__sub {
+  color: #bae6fd;
+}
+
+/* VENDA: sempre fúcsia neon (mais forte quando ligado) */
+.gatilho-btn--sell {
+  border-color: rgba(232, 121, 249, 0.45);
+  background: linear-gradient(160deg, rgba(217, 70, 239, 0.12) 0%, rgba(10, 15, 26, 0.96) 100%);
+  box-shadow:
+    0 0 14px rgba(232, 121, 249, 0.22),
+    0 0 28px rgba(192, 38, 211, 0.12),
+    inset 0 0 16px rgba(232, 121, 249, 0.06);
+  color: #f5d0fe;
+}
+
+.gatilho-btn--sell .gatilho-btn__label {
+  color: var(--speed-neg);
+  text-shadow:
+    0 0 8px rgba(var(--speed-neg-rgb), 0.65),
+    0 0 16px rgba(217, 70, 239, 0.32);
+}
+
+.gatilho-btn--sell .gatilho-btn__sub {
+  color: #d8b4e6;
+}
+
+.gatilho-btn--sell.gatilho-btn--on {
+  border-color: rgba(232, 121, 249, 0.95);
+  background: linear-gradient(160deg, rgba(217, 70, 239, 0.24) 0%, rgba(10, 15, 26, 0.98) 100%);
+  box-shadow:
+    0 0 28px rgba(232, 121, 249, 0.55),
+    0 0 48px rgba(192, 38, 211, 0.28),
+    inset 0 0 24px rgba(232, 121, 249, 0.12);
+  color: #fae8ff;
+}
+
+.gatilho-btn--sell.gatilho-btn--on .gatilho-btn__label {
+  color: #f0abfc;
+  text-shadow:
+    0 0 10px rgba(232, 121, 249, 0.95),
+    0 0 22px rgba(217, 70, 239, 0.55),
+    0 0 36px rgba(192, 38, 211, 0.35);
+}
+
+.gatilho-btn--sell.gatilho-btn--on .gatilho-btn__sub {
+  color: #f5d0fe;
+}
+
+/* Hold: rótulos COMPRA/VENDA compactos (vence .gatilho-btn--on .gatilho-btn__label). */
+.gatilho-wrap--hold .gatilho-btn.gatilho-btn--on .gatilho-btn__label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
