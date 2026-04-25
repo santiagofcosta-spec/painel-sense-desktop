@@ -39,7 +39,14 @@ module.exports = function createValidateRouter(ctx) {
     try {
       license = await get(
         db,
-        `SELECT id, licenseKey, customerName, status, plan, expiresAt, maxMachines
+        `SELECT
+           id,
+           licenseKey AS "licenseKey",
+           customerName AS "customerName",
+           status,
+           plan,
+           expiresAt AS "expiresAt",
+           maxMachines AS "maxMachines"
          FROM licenses WHERE licenseKey = $1`,
         [String(licenseKey).trim()]
       );
@@ -68,7 +75,11 @@ module.exports = function createValidateRouter(ctx) {
 
       const bindings = await all(
         db,
-        `SELECT id, mt5Account, machineHash FROM license_bindings WHERE licenseId = $1`,
+        `SELECT
+           id,
+           mt5Account AS "mt5Account",
+           machineHash AS "machineHash"
+         FROM license_bindings WHERE licenseId = $1`,
         [license.id]
       );
       const exact = bindings.find((b) => b.mt5Account === String(mt5Account) && b.machineHash === String(machineHash));
