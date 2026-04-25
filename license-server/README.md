@@ -8,6 +8,11 @@
 - `ADMIN_TOKEN` (obrigatoria)
 - `ONLINE_VALID_MS` (default 15 min)
 - `GRACE_MS` (default 24h)
+- `PGSSL_MODE` (default `insecure`)  
+  - `disable`: sem TLS (recomendado em rede interna Easypanel app->db)
+  - `insecure`: TLS sem validar CA (compatibilidade)
+  - `strict`: TLS com validacao de certificado
+- `PGSSL_CA` (obrigatoria apenas se `PGSSL_MODE=strict`, conteudo PEM da CA)
 
 ## Execucao
 
@@ -26,6 +31,7 @@ npm start
    - `LICENSE_HMAC_SECRET`
    - `ADMIN_TOKEN`
    - `PORT=8787`
+   - `PGSSL_MODE=disable` (para Postgres interno do Easypanel)
 4. Expor via dominio/subdominio com HTTPS.
 
 ## Endpoints
