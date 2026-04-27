@@ -190,7 +190,35 @@ const senseIaDialog = document.getElementById("senseIaDialog");
 const senseIaBody = document.getElementById("senseIaBody");
 const senseIaMeta = document.getElementById("senseIaMeta");
 const senseIaDialogClose = document.getElementById("senseIaDialogClose");
+const senseIaProviderHelp = document.getElementById("senseIaProviderHelp");
 const hudBoxEl = document.getElementById("hudBox");
+
+function renderSenseIaProviderHelp(sch) {
+  if (!senseIaProviderHelp) return;
+  const p = String((sch && sch.provider) || "").toLowerCase();
+  const model = String((sch && sch.model) || "").trim();
+  const host = String((sch && sch.ollamaHost) || "http://127.0.0.1:11434").trim();
+
+  if (p === "ollama") {
+    senseIaProviderHelp.innerHTML =
+      `Análise descritiva dos sinais do painel — não é recomendação financeira. ` +
+      `Modo atual: <strong>Ollama</strong> (${escapeHtml(model || "llama3.2")}) em ` +
+      `<span class="sense-ia-dialog__kbd">${escapeHtml(host)}</span>.`;
+    return;
+  }
+  if (p === "genspark") {
+    senseIaProviderHelp.innerHTML =
+      `Análise descritiva dos sinais do painel — não é recomendação financeira. ` +
+      `Modo atual: <strong>Genspark</strong>. Define <span class="sense-ia-dialog__kbd">gskApiKey</span> em ` +
+      `<kbd class="sense-ia-dialog__kbd">config.json</kbd> → <span class="sense-ia-dialog__kbd">senseIa</span>.`;
+    return;
+  }
+  senseIaProviderHelp.innerHTML =
+    `Análise descritiva dos sinais do painel — não é recomendação financeira. ` +
+    `Modo atual: <strong>OpenAI</strong>. Define <span class="sense-ia-dialog__kbd">openaiApiKey</span> em ` +
+    `<kbd class="sense-ia-dialog__kbd">config.json</kbd> → <span class="sense-ia-dialog__kbd">senseIa</span> ` +
+    `ou <span class="sense-ia-dialog__kbd">OPENAI_API_KEY</span> no sistema.`;
+}
 
 function normalizeTextFold(v) {
   return String(v || "")
@@ -200,12 +228,48 @@ function normalizeTextFold(v) {
 }
 
 function parseSenseIaBiasLabel(answer) {
-  const firstLine = String(answer || "").split(/\r?\n/, 1)[0] || "";
-  const folded = normalizeTextFold(firstLine);
-  if (!folded.includes("vies")) return "Lateral";
-  if (folded.includes("alta")) return "Alta";
-  if (folded.includes("baixa")) return "Baixa";
+  const raw = String(answer || "");
+  const lines = raw
+    .split(/\r?\n/)
+    .map((l) => String(l || "").trim())
+    .filter(Boolean);
+
+  // Regra principal: usar a primeira linha "Viés: ...", quando existir.
+  const first = lines.length > 0 ? lines[0] : "";
+  const firstFold = normalizeTextFold(first);
+  if (firstFold.startsWith("vies")) {
+    if (/vies\s*:\s*baixa\b/.test(firstFold)) return "Baixa";
+    if (/vies\s*:\s*alta\b/.test(firstFold)) return "Alta";
+    if (/vies\s*:\s*lateral\b/.test(firstFold)) return "Lateral";
+  }
+
+  // Fallback: procurar linhas que declarem explicitamente o viés.
+  for (const ln of lines) {
+    const f = normalizeTextFold(ln);
+    if (!f.startsWith("vies")) continue;
+    if (/baixa\b/.test(f)) return "Baixa";
+    if (/alta\b/.test(f)) return "Alta";
+    if (/lateral\b/.test(f)) return "Lateral";
+  }
+
+  // Último fallback: heurística no texto completo — avalia Alta antes para não conflatar "alta mas risco de baixa" como Baixa.
+  const foldedAll = normalizeTextFold(raw);
+  if (/(tend|bias).*\balta\b|comprad/.test(foldedAll)) return "Alta";
+  if (/(tend|bias).*\bbaixa\b|vended/.test(foldedAll)) return "Baixa";
   return "Lateral";
+}
+
+function senseIaBiasToTriggerSide(answer) {
+  const bias = parseSenseIaBiasLabel(answer);
+  if (bias === "Alta") return { side: "buy", label: "COMPRA" };
+  if (bias === "Baixa") return { side: "sell", label: "VENDA" };
+  return { side: "", label: "" };
+}
+
+function applySenseIaHybridTriggerFromResult(r) {
+  /* Modo auditoria: a leitura automática continua no diálogo, mas a opinião intraday
+     sobre COMPRA/VENDA vem do estado atual do painel + gatilho EA (renderer-gatilho.js). */
+  void r;
 }
 
 function senseIaBiasToneClass(label) {
@@ -220,8 +284,36 @@ function senseIaBiasTrackClass(label) {
   return "sense-ia-card__confidence-track--lateral";
 }
 
+function senseIaBiasCardClass(label) {
+  if (label === "Alta") return "sense-ia-card--alta";
+  if (label === "Baixa") return "sense-ia-card--baixa";
+  return "sense-ia-card--lateral";
+}
+
+function applySenseIaDialogBiasTheme(label) {
+  if (!senseIaDialog) return;
+  senseIaDialog.classList.remove("sense-ia-dialog--bias-alta", "sense-ia-dialog--bias-baixa", "sense-ia-dialog--bias-lateral");
+  if (label === "Alta") senseIaDialog.classList.add("sense-ia-dialog--bias-alta");
+  else if (label === "Baixa") senseIaDialog.classList.add("sense-ia-dialog--bias-baixa");
+  else senseIaDialog.classList.add("sense-ia-dialog--bias-lateral");
+}
+
 function parseSenseIaConfidence(answer) {
-  const m = String(answer || "").match(/(\d{1,3})\s*%/);
+  const raw = String(answer || "");
+  // Prioridade: linha estruturada "Confiança: XX%"
+  const lines = raw.split(/\r?\n/);
+  for (const ln of lines) {
+    const f = normalizeTextFold(ln);
+    if (f.startsWith("confianca")) {
+      const m = ln.match(/(\d{1,3})\s*%/);
+      if (m) {
+        const pct = Number(m[1]);
+        if (Number.isFinite(pct)) return Math.max(0, Math.min(100, Math.round(pct)));
+      }
+    }
+  }
+  // Fallback: primeiro % no texto inteiro
+  const m = raw.match(/(\d{1,3})\s*%/);
   if (!m) return null;
   const pct = Number(m[1]);
   if (!Number.isFinite(pct)) return null;
@@ -233,7 +325,10 @@ function splitSenseIaContent(answer) {
     .split(/\r?\n/)
     .map((l) => l.trim())
     .filter(Boolean);
-  const content = lines.filter((l, i) => !(i === 0 && normalizeTextFold(l).startsWith("vies:")));
+  const content = lines.filter((l) => {
+    const f = normalizeTextFold(l);
+    return !f.startsWith("vies:") && !f.startsWith("confianca:");
+  });
   const bullets = [];
   const paragraphs = [];
   for (const line of content) {
@@ -274,7 +369,7 @@ function formatSenseIaRichHtml(answer) {
   const keyItems = (cls.key.length ? cls.key : bullets).slice(0, 4);
   const riskItems = cls.risks.slice(0, 3);
   const invalidItems = cls.invalid.slice(0, 3);
-  const summary = paragraphs.slice(0, 2).join(" ").trim();
+  const summary = paragraphs.slice(0, 2).join(" ").trim() || bullets.slice(0, 2).join(". ").trim();
 
   const listHtml = (arr) =>
     arr.length
@@ -282,7 +377,7 @@ function formatSenseIaRichHtml(answer) {
       : `<div class="sense-ia-dialog__none">—</div>`;
 
   return `
-    <article class="sense-ia-card">
+    <article class="sense-ia-card ${senseIaBiasCardClass(bias)}">
       <div class="sense-ia-card__confidence ${senseIaBiasTrackClass(bias)}" role="img" aria-label="Confiança ${conf === null ? "indisponível" : `${conf}%`}">
         <div class="sense-ia-card__confidence-fill" style="width:${conf === null ? 0 : conf}%;"></div>
       </div>
@@ -383,6 +478,7 @@ if (
 
   function closeSenseIaDialog() {
     if (!senseIaDialog) return;
+    senseIaDialog.classList.remove("sense-ia-dialog--bias-alta", "sense-ia-dialog--bias-baixa", "sense-ia-dialog--bias-lateral");
     senseIaDialog.setAttribute("hidden", "");
   }
 
@@ -393,6 +489,7 @@ if (
     senseIaDialog.classList.add("sense-ia-dialog--floating");
     openSenseIaDialog();
     if (r && r.ok) {
+      applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
       senseIaBody.classList.add("sense-ia-dialog__body--rich");
       senseIaBody.innerHTML = formatSenseIaRichHtml(r.answer || "—");
       if (senseIaMeta) {
@@ -400,6 +497,7 @@ if (
         senseIaMeta.textContent = bits.join(" · ");
       }
     } else {
+      applySenseIaDialogBiasTheme("Lateral");
       senseIaBody.classList.remove("sense-ia-dialog__body--rich");
       senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
       if (senseIaMeta) senseIaMeta.textContent = "";
@@ -429,6 +527,7 @@ if (
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const r = await window.senseAPI.senseIaAsk();
       if (r && r.ok && senseIaBody) {
+        applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
         senseIaBody.classList.add("sense-ia-dialog__body--rich");
         senseIaBody.innerHTML = formatSenseIaRichHtml(r.answer || "—");
         if (senseIaMeta) {
@@ -436,11 +535,13 @@ if (
           senseIaMeta.textContent = bits.join(" · ");
         }
       } else if (senseIaBody) {
+        applySenseIaDialogBiasTheme("Lateral");
         senseIaBody.classList.remove("sense-ia-dialog__body--rich");
         senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
         if (senseIaMeta) senseIaMeta.textContent = "";
       }
     } catch (e) {
+      applySenseIaDialogBiasTheme("Lateral");
       if (senseIaBody) {
         senseIaBody.classList.remove("sense-ia-dialog__body--rich");
         const msg = e && e.message ? e.message : String(e);
@@ -458,6 +559,7 @@ if (
     senseIaApiLock = true;
     try {
       const r = await window.senseAPI.senseIaAsk();
+      applySenseIaHybridTriggerFromResult(r);
       showSenseIaFloatingResult(r);
     } catch (e) {
       showSenseIaFloatingResult({ ok: false, error: e && e.message ? e.message : String(e) });
@@ -472,9 +574,35 @@ if (
   if (hudBoxEl) {
     hudBoxEl.addEventListener(
       "pointerdown",
-      (e) => {
+      async (e) => {
         if (e.pointerType === "mouse" && e.button !== 0) return;
         const t = e.target;
+        const toggleBtn = t && t.closest && t.closest("[data-sense-ia-hybrid-toggle='1']");
+        if (toggleBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const nextEnabled = !(__SRS.senseIaHybridEnabled === true);
+          if (window.senseAPI && typeof window.senseAPI.setSenseIaHybridEnabled === "function") {
+            try {
+              const r = await window.senseAPI.setSenseIaHybridEnabled(nextEnabled);
+              if (r && r.ok) {
+                __SRS.senseIaHybridEnabled = r.iaHybridEnabled === true;
+                __SRS.senseIaHybridButtonOnly = !(r.iaHybridButtonOnly === false);
+                if (!__SRS.senseIaHybridEnabled) {
+                  __SRS.senseIaHybridLastSide = "";
+                  __SRS.senseIaHybridPrevOpinionSide = "";
+                  __SRS.senseIaHybridLastLabel = "";
+                  __SRS.senseIaHybridLastTriggerAtMs = 0;
+                  __SRS.senseIaHybridPulseUntilMs = 0;
+                }
+              }
+            } catch (_) {}
+          } else {
+            __SRS.senseIaHybridEnabled = nextEnabled;
+          }
+          tick();
+          return;
+        }
         const hit =
           (t && t.closest && t.closest("[data-sense-ia-trigger='1']")) ||
           (t && t.closest && t.closest(".gatilho-idle-logo--sense-ia")) ||
@@ -507,14 +635,30 @@ if (
     window.senseAPI
       .getSenseIaSchedule()
       .then(function (sch) {
+        renderSenseIaProviderHelp(sch);
+        __SRS.senseIaHybridEnabled = !!(sch && sch.iaHybridEnabled === true);
+        __SRS.senseIaHybridButtonOnly = !(sch && sch.iaHybridButtonOnly === false);
+        if (!__SRS.senseIaHybridEnabled) {
+          __SRS.senseIaHybridLastSide = "";
+          __SRS.senseIaHybridPrevOpinionSide = "";
+          __SRS.senseIaHybridLastLabel = "";
+          __SRS.senseIaHybridLastTriggerAtMs = 0;
+          __SRS.senseIaHybridPulseUntilMs = 0;
+        }
         const min = sch && Number(sch.autoEveryMinutes);
         if (!Number.isFinite(min) || min <= 0) return;
         const ms = min * 60 * 1000;
         __SRS.senseIaAutoEveryMs = ms;
         __SRS.senseIaNextAutoAtMs = Date.now() + 3000;
+        if (__SRS.senseIaAutoIntervalId) {
+          clearInterval(__SRS.senseIaAutoIntervalId);
+          __SRS.senseIaAutoIntervalId = null;
+        }
         setTimeout(runSenseIaAutoTick, 3000);
-        setInterval(runSenseIaAutoTick, ms);
+        __SRS.senseIaAutoIntervalId = setInterval(runSenseIaAutoTick, ms);
       })
-      .catch(function () {});
+      .catch(function () {
+        renderSenseIaProviderHelp(null);
+      });
   }
 }

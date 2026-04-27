@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Painel SENSE</title>
     <link rel="stylesheet" href="styles.css?v=20260424cssfix2" />
+    <link rel="stylesheet" href="styles/semantic/0132-flow-advanced.css?v=20260427flowadv" />
   </head>
   <body>
     <main class="layout">
@@ -35,14 +36,13 @@
         class="data-banner"
         role="alert"
         aria-live="assertive"
-        hidden
       ></div>
 
       <div id="signalBanner" class="signal-strip signal-strip--idle" role="status" aria-live="polite"></div>
 
       <section class="grid">
         <div class="panel panel-tl">
-          <h2 class="panel-title">Fluxo por ativo</h2>
+          <h2 class="panel-title">Fluxo por ativo/Fluxo Avançado</h2>
           <div id="flowBox" class="flow"></div>
         </div>
 
@@ -82,20 +82,13 @@
           <p id="senseIaMeta" class="sense-ia-dialog__meta"></p>
           <div id="senseIaBody" class="sense-ia-dialog__body"></div>
           <footer class="sense-ia-dialog__foot">
-            Análise descritiva dos sinais do painel — não é recomendação financeira.
-            Configure em
-            <kbd class="sense-ia-dialog__kbd">config.json</kbd>
-            →
-            <span class="sense-ia-dialog__kbd">senseIa</span>:
-            <strong>OpenAI</strong>
-            — <span class="sense-ia-dialog__kbd">openaiApiKey</span>
-            (ou <span class="sense-ia-dialog__kbd">OPENAI_API_KEY</span> no sistema);
-            <strong>Ollama</strong>
-            — <span class="sense-ia-dialog__kbd">provider</span>: &quot;ollama&quot; e modelo em
-            <span class="sense-ia-dialog__kbd">model</span>.
+            <span id="senseIaProviderHelp">
+              Análise descritiva dos sinais do painel — não é recomendação financeira. Configure em
+              <kbd class="sense-ia-dialog__kbd">config.json</kbd> →
+              <span class="sense-ia-dialog__kbd">senseIa</span>.
+            </span>
             Leitura automática: <span class="sense-ia-dialog__kbd">autoEveryMinutes</span> em
-            <span class="sense-ia-dialog__kbd">senseIa</span> (ex. 30; 0=desligar).
-            Opcional Genspark:
+            <span class="sense-ia-dialog__kbd">senseIa</span> (ex. 30; 0=desligar). Opcional Genspark:
             <a
               class="sense-ia-dialog__link"
               href="https://www.genspark.ai/pt"
@@ -145,6 +138,7 @@
     <script src="renderer-panel-debounce.js?v=20260424debounce"></script>
     <script src="renderer-hud-metrics.js?v=20260424phase22"></script>
     <script src="renderer-hud.js?v=20260424debounce"></script>
+    <script src="renderer-flow-advanced.js?v=20260427flowadv"></script>
     <script src="renderer-consensus-signal.js?v=20260424consensus"></script>
     <script src="renderer-render-view-panels.js?v=20260424split"></script>
     <script src="renderer-render-view.js?v=20260424split"></script>

@@ -12,6 +12,10 @@ contextBridge.exposeInMainWorld("senseAPI", {
   senseIaAsk: () => ipcRenderer.invoke("sense-ia-ask"),
   /** Leitura automática: minutos entre disparos (0 = off). */
   getSenseIaSchedule: () => ipcRenderer.invoke("get-sense-ia-schedule"),
+  /** Liga/desliga modo híbrido da IA no config.json. */
+  setSenseIaHybridEnabled: (enabled) => ipcRenderer.invoke("set-sense-ia-hybrid-enabled", !!enabled),
+  /** Guarda relatório de calibragem localmente no notebook. */
+  saveIaCalibrationReport: (payload) => ipcRenderer.invoke("save-ia-calibration-report", payload || {}),
   getLicenseStatus: () => ipcRenderer.invoke("get-license-status"),
   /** Chamado quando o ficheiro dashboard.json muda no disco (ex.: MT5 gravou). */
   onDashboardFileChanged: (cb) => {

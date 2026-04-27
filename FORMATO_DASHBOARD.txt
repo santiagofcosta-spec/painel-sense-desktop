@@ -229,3 +229,36 @@ GUARD NO MQL5 (um só gráfico grava — include pronto)
   Outros gráficos: export=false OU Number_Magic diferente de Magic_Exporta_Painel.
 
 ================================================================================
+================================================================================
+SCHEMA v9 — flowAdvanced (Fase 1: Z normalizado + TapeSpeed + SpreadZ)
+-----------------------------------------------------------------------
+  Campo raiz "flowAdvanced" (objeto, opcional):
+    schemaFlowAdv  — integer (1 = Fase 1, 2 = Fase 2)
+    zMiniNorm      — número, Z normalizado intraday do mini (-∞ a +∞, tipicamente -3 a +3)
+    zRefNorm       — número, Z normalizado intraday do cheio
+    tapeSpeedZ     — número, Z-score da velocidade do tape (ticks/s)
+    tapeTicksPerSec— número, ticks por segundo atual
+    spreadZ        — número, Z-score do spread vs. média intraday
+    spreadLiquidityAlert — boolean, true quando spreadZ > 2.0
+
+SCHEMA v10 — flowAdvanced ampliado (Fase 2: Footprint + Absorção Real)
+------------------------------------------------------------------------
+  flowAdvanced.schemaFlowAdv = 2 quando Fase 2 ativa. Adiciona:
+    footprint (objeto):
+      buyVol, sellVol — volume de agressão comprador/vendedor na vela M1 anterior
+      delta           — buyVol - sellVol
+      deltaNorm       — delta normalizado [-1, +1]
+      exaustionBuy    — boolean: vela de alta com delta negativo
+      exaustionSell   — boolean: vela de baixa com delta positivo
+    absorptionReal (objeto):
+      buy, sell  — boolean (absorção compradora ou vendedora detectada)
+      deltaAbs   — |deltaNorm| no momento da detecção
+      priceMove  — deslocamento de preço em pontos reais na janela
+    ofiNocional (objeto):
+      wBid, wAsk — profundidade ponderada por nocional (DOL 5× WDO)
+      ema        — OFI EMA atual
+      pctBid     — % do livro ponderado no lado comprador
+      fatorRef   — peso aplicado ao símbolo de referência (1.0 ou 5.0)
+  regimeMercado.basisDirecional — string "compra"|"venda"|"neutro"
+    (quando codigo == "curva_tensa": indica qual lado o basis favorece por convergência)
+================================================================================

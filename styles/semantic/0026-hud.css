@@ -5,10 +5,11 @@
 
 
 .panel-hud .hud-block {
-  flex: 0 1 auto;
-  min-height: min-content;
+  flex: 1 1 auto;
+  min-height: 0;
   padding-top: 0;
-  padding-bottom: 12px;
+  padding-bottom: 8px;
+  overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }

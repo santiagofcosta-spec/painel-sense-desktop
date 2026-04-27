@@ -233,9 +233,9 @@ function parseAbsorptionProxy(absorption, d) {
 
 /**
  * Métricas do proxy mini vs cheio: barras |z| nas linhas do símbolo; chip entre cheio e % TEND.
- * @returns {null | { mPct: number, rPct: number, chipText: string, chipTone: string, align: string, title: string }}
+ * @returns {null | { mPct: number, rPct: number, chipText: string, chipTone: string, chipLevel: number, align: string, title: string }}
  */
-function flowMiniRefMetrics(flow) {
+function flowMiniRefMetrics(flow, flowAdv) {
   if (!flow || typeof flow !== "object") return null;
   const zM = Number(flow.zMini);
   const zR = Number(flow.zRef);
@@ -245,25 +245,42 @@ function flowMiniRefMetrics(flow) {
   const rAbs = Number.isFinite(zR) ? Math.min(Math.abs(zR), cap) : 0;
   const mPct = cap > 0 ? (mAbs / cap) * 100 : 0;
   const rPct = cap > 0 ? (rAbs / cap) * 100 : 0;
-  const signM = !Number.isFinite(zM) ? 0 : zM > 0 ? 1 : zM < 0 ? -1 : 0;
-  const signR = !Number.isFinite(zR) ? 0 : zR > 0 ? 1 : zR < 0 ? -1 : 0;
+  const signFrom = (v, deadzone = 0.02) => {
+    if (!Number.isFinite(v)) return 0;
+    if (v > deadzone) return 1;
+    if (v < -deadzone) return -1;
+    return 0;
+  };
+  const signM = signFrom(zM, 0.02);
+  const signR = signFrom(zR, 0.02);
+  const zMN = Number(flowAdv && flowAdv.zMiniNorm);
+  const zRN = Number(flowAdv && flowAdv.zRefNorm);
+  const signMN = signFrom(zMN, 0.10);
+  const signRN = signFrom(zRN, 0.10);
+  const signs = [signM, signR, signMN, signRN].filter((s) => s !== 0);
+  const pos = signs.filter((s) => s > 0).length;
+  const neg = signs.filter((s) => s < 0).length;
+  const used = signs.length;
   let align = "neut";
   let chipText = "Neutro";
   let chipTone = "neut";
-  if (signM !== 0 && signR !== 0) {
-    if (signM === signR) {
+  let chipLevel = 0;
+  if (used >= 2) {
+    if (pos === used || neg === used) {
       align = "aligned";
-      chipText = "Alinhados";
-      chipTone = signM > 0 ? "buy" : "sell";
+      chipText = `Alinhados (${used}/4)`;
+      chipTone = pos > 0 ? "buy" : "sell";
+      chipLevel = used >= 4 ? 3 : used >= 3 ? 2 : 1;
     } else {
       align = "divergent";
-      chipText = "Divergentes";
+      chipText = `Divergentes (${pos}x${neg})`;
       chipTone = "div";
+      chipLevel = Math.min(3, Math.max(1, Math.min(pos, neg)));
     }
   }
   const title =
-    "Intensidade de fluxo no mini e na referência (escala 0–3). «Alinhados» = mesmo sentido; não distingue institucional vs retalho.";
-  return { mPct, rPct, chipText, chipTone, align, title };
+    "Leitura conjunta de 4 fluxos: WDO, DOL, WDO avançado e DOL avançado. «Alinhados» = mesmo sentido predominante.";
+  return { mPct, rPct, chipText, chipTone, chipLevel, align, title };
 }
 
 /** Estimativa LEVE/PESADO a partir do texto da linha AGRESSÃO quando não há JSON numérico. */
@@ -423,8 +440,11 @@ function absorptionLinesFromDash(d) {
 
 function hudAbsorptionRowHtml(d) {
   const lines = absorptionLinesFromDash(d);
-  if (lines.length === 0) return "";
-  return lines
+  const real = absorptionRealLineFromDash(d);
+  // Quando há Absorção Real, ela é a fonte oficial para evitar conflito com a heurística legada.
+  if (real) return real;
+  if (lines.length === 0 && !real) return "";
+  const baseHtml = lines
     .map((absorption, idx) => {
   let toneCls = "hud-line--absorption-neut";
   if (absorption.includes("Compradores absorvendo")) toneCls = "hud-line--absorption-compra";
@@ -447,6 +467,21 @@ function hudAbsorptionRowHtml(d) {
   </div>`;
     })
     .join("");
+  return baseHtml + (real || "");
+}
+
+function absorptionRealLineFromDash(d) {
+  const fa = d && d.flowAdvanced && typeof d.flowAdvanced === "object" ? d.flowAdvanced : null;
+  const ar = fa && fa.absorptionReal && typeof fa.absorptionReal === "object" ? fa.absorptionReal : null;
+  if (!ar || (!ar.buy && !ar.sell)) return "";
+  const deltaAbs = Number.isFinite(Number(ar.deltaAbs)) ? Number(ar.deltaAbs).toFixed(2) : "—";
+  const priceMove = Number.isFinite(Number(ar.priceMove)) ? `${Number(ar.priceMove).toFixed(1)} pts` : "—";
+  const sideTxt = ar.buy ? "COMPRAS ABSORVEM VENDAS" : "VENDAS ABSORVEM COMPRAS";
+  const toneCls = ar.buy ? "hud-line--absorption-compra" : "hud-line--absorption-venda";
+  return `<div class="hud-line hud-line--absorption ${toneCls}" title="Absorção Real do fluxo avançado">
+    <span class="hud-k">Absorção Real</span>
+    <span class="hud-v-wrap"><span class="hud-v">${escapeHtml(sideTxt)} · Δ ${escapeHtml(deltaAbs)} · mov. preço ${escapeHtml(priceMove)}</span></span>
+  </div>`;
 }
 
 
@@ -478,14 +513,14 @@ function renderHudBlock(d, schemaVersion, consensus) {
   const aggrRowTone = hudAggrRowToneClass(agg);
   const aggrDay = aggressionDayAccumMeta(agg, d.zMediaAcumBias);
   const absorptionLines = absorptionLinesFromDash(d);
-  const absorptionFocus = absorptionLines.length > 0;
-  const absorptionFocusHtml = absorptionFocus
+  const hasAbsorption = absorptionLines.length > 0 || !!absorptionRealLineFromDash(d);
+  const absorptionFocusHtml = hasAbsorption
     ? `<div class="hud-absorption-focus" role="group" aria-label="Absorção em destaque">
         <h3 class="hud-col-title hud-col-title--radar-follows-makers">Absorção (foco)</h3>
         <div class="hud-absorption-focus__body">${hudAbsorptionRowHtml(d)}</div>
       </div>`
     : "";
-  const radarHtml = absorptionFocus
+  const radarHtml = hasAbsorption
     ? absorptionFocusHtml
     : `<h3 class="hud-col-title hud-col-title--radar-follows-makers">Radar</h3>
         ${(() => {
@@ -553,9 +588,9 @@ function renderHudBlock(d, schemaVersion, consensus) {
       <div class="hud-col hud-col-instruments">
         <div class="hud-instruments-stack">
           ${renderMakersPreparoRow(go, v, agg, d)}
-          <div class="hud-makers-delta">${hudRadarDeltaPctGaugesRow(rad, go)}</div>
+          <div class="hud-makers-delta">${hudRadarDeltaPctGaugesRow(rad, go, d)}</div>
         </div>
-        <div class="hud-absorption-radar-slot">${absorptionFocus ? "" : hudAbsorptionRowHtml(d)}</div>
+        <div class="hud-absorption-radar-slot"></div>
       </div>
       <div class="hud-col hud-col-makers">
         <h3 class="hud-col-title">Makers</h3>

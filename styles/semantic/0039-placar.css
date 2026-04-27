@@ -7,9 +7,9 @@
 .summary {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  font-size: 13px;
-  line-height: 1.45;
+  gap: 4px;
+  font-size: 10px;
+  line-height: 1.18;
   color: #c8d6ee;
 }
 

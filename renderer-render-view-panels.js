@@ -43,6 +43,18 @@
 
 function paintDashboardFlowAndRegime(flowBox, d) {
   const flow = d.flow && typeof d.flow === "object" ? d.flow : null;
+  const flowAdv = d.flowAdvanced && typeof d.flowAdvanced === "object" ? d.flowAdvanced : null;
+  const flowAdvRow = (label, value, suffix = "") => {
+    if (value == null || !Number.isFinite(Number(value))) {
+      return `<div class="flow-row flow-row--thin flow-row--adv flow-row--placeholder"><span class="lbl">${escapeHtml(
+        label
+      )}</span><strong>—</strong></div>`;
+    }
+    const n = Number(value);
+    const txt = `${n > 0 ? "+" : ""}${n.toFixed(2)}${suffix}`;
+    const rowCls = `${flowRowClassFromSignedMetric(n)} flow-row--thin flow-row--adv`;
+    return `<div class="${escapeHtml(rowCls)}"><span class="lbl">${escapeHtml(label)}</span><strong>${escapeHtml(txt)}</strong></div>`;
+  };
   if (flow) {
     const mini = flow.miniSymbol || flow.mini_symbol || "—";
     const ref = flow.refSymbol || flow.ref_symbol || mini;
@@ -58,7 +70,7 @@ function paintDashboardFlowAndRegime(flowBox, d) {
     const rowTrend = escapeHtml(
       flowRowClassFromTrendBias(trendDir, ntslZ, lateralPct, trendWeakPct, trendStrongPct)
     );
-    const fr = flowMiniRefMetrics(flow);
+    const fr = flowMiniRefMetrics(flow, flowAdv);
     const zlineCls = fr !== null ? " flow-row--zline" : "";
     const zMiniSignCls =
       Number(flow.zMini) > 0.02
@@ -88,7 +100,7 @@ function paintDashboardFlowAndRegime(flowBox, d) {
       fr !== null
         ? `<div class="flow-row flow-row--proxy-chip flow-mini-ref-proxy--${fr.align}" title="${escapeHtml(
             fr.title
-          )}"><span class="flow-mini-ref-chip flow-mini-ref-chip--${fr.chipTone}">${escapeHtml(fr.chipText)}</span></div>`
+          )}"><span class="flow-mini-ref-chip flow-mini-ref-chip--${fr.chipTone} flow-mini-ref-chip--lvl-${fr.chipLevel}">${escapeHtml(fr.chipText)}</span></div>`
         : "";
     const miniCells =
       fr !== null
@@ -102,16 +114,49 @@ function paintDashboardFlowAndRegime(flowBox, d) {
             fmtNum(flow.zRef)
           )}</strong>`
         : `<span class="lbl">${escapeHtml(ref)}</span><strong>${escapeHtml(fmtNum(flow.zRef))}</strong>`;
+    const zMiniNormRow = flowAdvRow(`${mini} AVANÇADO`, flowAdv && flowAdv.zMiniNorm);
+    const zRefNormRow = flowAdvRow(`${ref} AVANÇADO`, flowAdv && flowAdv.zRefNorm);
+    const tapeSpeedRow = flowAdvRow("Tape Vel (Z)", flowAdv && flowAdv.tapeSpeedZ);
+    const spreadZ = flowAdv && Number.isFinite(Number(flowAdv.spreadZ)) ? Number(flowAdv.spreadZ) : null;
+    const spreadSuffix = spreadZ != null && flowAdv && flowAdv.spreadLiquidityAlert ? "  LIQ.REDUZ." : "";
+    const spreadZRow = flowAdvRow("Spread Z", spreadZ, spreadSuffix);
+    const fp = flowAdv && flowAdv.footprint && typeof flowAdv.footprint === "object" ? flowAdv.footprint : null;
+    const fpBuy = fp && Number.isFinite(Number(fp.buyVol)) ? Number(fp.buyVol) : 0;
+    const fpSell = fp && Number.isFinite(Number(fp.sellVol)) ? Number(fp.sellVol) : 0;
+    const fpTot = fpBuy + fpSell;
+    const fpBuyPct = fpTot > 0 ? Math.round((100 * fpBuy) / fpTot) : null;
+    const fpSellPct = fpTot > 0 ? Math.round((100 * fpSell) / fpTot) : null;
+    const fpDeltaNorm = fp && Number.isFinite(Number(fp.deltaNorm)) ? Number(fp.deltaNorm) : null;
+    const fpExhaustText = fp && (fp.exaustionBuy || fp.exaustionSell) ? `⚡ EXAUSTÃO ${fp.exaustionBuy ? "COMPRA" : "VENDA"}` : "";
+    const fpAlertCls = fpExhaustText ? " flow-row--footprint-alert" : "";
+    const fpDeltaTxt =
+      fpDeltaNorm != null ? (fpDeltaNorm > 0 ? "+" : "") + fpDeltaNorm.toFixed(2) : "";
+    const footprintCvRow =
+      fp && fpBuyPct != null && fpSellPct != null
+        ? `<div class="flow-row delta-row flow-row--thin flow-row--adv flow-row--footprint${fpAlertCls}">
+            <span class="lbl">Footprint C/V</span>
+            <strong><span class="flow-adv-fp-buy">${escapeHtml(String(fpBuyPct))}%</span><span class="flow-adv-fp-sep"> | </span><span class="flow-adv-fp-sell">${escapeHtml(String(fpSellPct))}%</span>${
+              fpDeltaNorm != null ? ` · <span class="flow-adv-fp-delta">Δ${escapeHtml(fpDeltaTxt)}</span>` : ""
+            }${
+              fpExhaustText ? ` · <span class="flow-adv-exhaust">${escapeHtml(fpExhaustText)}</span>` : ""
+            }</strong>
+          </div>`
+        : `<div class="flow-row flow-row--thin flow-row--adv flow-row--placeholder flow-row--footprint"><span class="lbl">Footprint C/V</span><strong>—</strong></div>`;
     setElementHtmlIfChanged(
       flowBox,
       `
       <div class="${rowMini}${zlineCls}">${miniCells}</div>
+      ${zMiniNormRow}
       ${chipBetween}
       <div class="${rowRef}${zlineCls}">${refCells}</div>
-      <div class="${rowNtsl}" title="Soma X%+Y%: amplitude do dia vs abertura (NTSL). No MT5 aparece como VIÉS no HUD.">
+      ${zRefNormRow}
+      ${tapeSpeedRow}
+      ${spreadZRow}
+      ${footprintCvRow}
+      <div class="${rowNtsl} flow-row--thin" title="Soma X%+Y%: amplitude do dia vs abertura (NTSL). No MT5 aparece como VIÉS no HUD.">
         <span class="lbl">% da TEND.</span><strong>${escapeHtml(ntslStr)}</strong>
       </div>
-      <div class="${rowTrend}" title="Viés de tendência mapeado de −1 (baixa) a +1 (alta).">
+      <div class="${rowTrend} flow-row--thin" title="Viés de tendência mapeado de −1 (baixa) a +1 (alta).">
         <span class="lbl">Viés/ TEND.</span>${trendBiasLabelHtml(
           trendDir,
           ntslZ,
@@ -142,7 +187,10 @@ function paintDashboardFlowAndRegime(flowBox, d) {
 
 function paintDashboardHud(hudBox, d, v, consensus) {
   if (hudBox) {
-    setElementHtmlIfChanged(hudBox, renderHudBlock(d, v, consensus));
+    let _hudHtml = renderHudBlock(d, v, consensus);
+    if (d && d.flowAdvanced && d.flowAdvanced.footprint && typeof renderFootprintBlock === "function")
+      _hudHtml += renderFootprintBlock(d);
+    setElementHtmlIfChanged(hudBox, _hudHtml);
     syncSenseIaHudOverlayLayers();
   }
 }

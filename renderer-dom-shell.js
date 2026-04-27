@@ -12,19 +12,28 @@
 /**
  * @param {boolean} show
  * @param {unknown} [err]
+ * @param {"error"|"soft"} [tone]
  */
-function setDataBanner(show, err) {
+function setDataBanner(show, err, tone) {
   const el = document.getElementById("dataBanner");
   if (!el) return;
+  // Banner em overlay: não ocupa linha da grelha nem desloca o layout.
+  el.hidden = false;
   if (show) {
-    el.hidden = false;
-    el.className = "data-banner data-banner--show";
+    const soft = String(tone || "").toLowerCase() === "soft";
+    el.className = soft ? "data-banner data-banner--show data-banner--soft" : "data-banner data-banner--show";
     const msg = err && String(err).trim() ? String(err).trim() : "Sem dados do JSON.";
-    el.textContent =
-      msg +
+    const msgUp = msg.toUpperCase();
+    const isPathIssue =
+      msgUp.includes("ARQUIVO NÃO ENCONTRADO") ||
+      msgUp.includes("SEM DADOS DO JSON") ||
+      msgUp.includes("CRIE O JSON") ||
+      msgUp.includes("AJUSTE CONFIG.JSON") ||
+      msgUp.includes("CAMINHO");
+    const pathHint =
       " — Use «Escolher dashboard.json…» e aponte para MQL5\\Files\\dashboard.json (no MT5: Ficheiro → Abrir pasta de dados).";
+    el.textContent = isPathIssue ? msg + pathHint : msg;
   } else {
-    el.hidden = true;
     el.className = "data-banner";
     el.textContent = "";
   }

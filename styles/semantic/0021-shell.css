@@ -11,15 +11,15 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows:
-    minmax(100px, auto)
-    minmax(255px, 1.58fr)
-    minmax(200px, 1.12fr);
+    minmax(96px, auto)
+    minmax(300px, 1.95fr)
+    minmax(150px, 0.84fr);
   gap: var(--grid-gap);
   padding: 5px 6px;
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   scrollbar-gutter: unset;
   /* Barra oculta (incl. Electron/Win — scroll com roda / touch) */
   scrollbar-width: none !important;
@@ -49,7 +49,8 @@
   min-height: 0;
   overflow-x: hidden;
   /* Conteúdo visível; scroll global no body se a janela for baixa */
-  overflow-y: visible;
+  overflow-y: hidden;
+  contain: layout paint;
 }
 
 .panel-tl {
@@ -60,5 +61,5 @@
   min-height: 0;
   align-self: stretch;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: auto;
 }
