@@ -1364,6 +1364,9 @@ function renderGatilhoFABadges(dashboardData) {
   if (diag.ptaxWindow) {
     html += `<span class="gatilho-fa-badge gatilho-fa-badge--ptax" title="Janela PTAX ativa — TapeBlast suspenso">🕐 PTAX</span>`;
   }
+  if (diag.crossConflict) {
+    html += `<span class="gatilho-fa-badge gatilho-fa-badge--conflict" title="Z-norm mini e ref divergentes — boost de consenso cancelado">⚡ CONFLITO Z</span>`;
+  }
   return html ? `<span class="gatilho-fa-badges" aria-label="Alertas fluxo avançado">${html}</span>` : "";
 }
 

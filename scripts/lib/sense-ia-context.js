@@ -275,9 +275,12 @@ function compactDashboardForAI(data) {
         fpExaustBuy: !!diagRaw.fpExaustBuy,
         fpExaustSell: !!diagRaw.fpExaustSell,
         ptaxWindow: !!diagRaw.ptaxWindow,
+        crossConflict: !!diagRaw.crossConflict,
         tapeSpeedZ: Number.isFinite(Number(diagRaw.tapeSpeedZ)) ? Number(diagRaw.tapeSpeedZ) : null,
         spreadZ: Number.isFinite(Number(diagRaw.spreadZ)) ? Number(diagRaw.spreadZ) : null,
         fpDeltaNormVela: Number.isFinite(fpDn) ? fpDn : null,
+        consensoSegEfetivoBuy:  Number.isFinite(Number(diagRaw.consensoSegEfetivoBuy))  ? Number(diagRaw.consensoSegEfetivoBuy)  : null,
+        consensoSegEfetiveSell: Number.isFinite(Number(diagRaw.consensoSegEfetiveSell)) ? Number(diagRaw.consensoSegEfetiveSell) : null,
         reasonsBuy,
         reasonsSell,
       };
