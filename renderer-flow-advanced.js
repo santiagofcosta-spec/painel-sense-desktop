@@ -81,6 +81,40 @@ function renderFlowAdvancedBlock(d) {
   return html;
 }
 
+// ── Bloco OFI Nocional (Fase 3) ───────────────────────────────────────────
+
+function renderOfiNocionalBlock(d) {
+  const fa  = d && d.flowAdvanced;
+  const ofi = fa && fa.ofiNocional;
+  if (!ofi || typeof ofi !== "object") return "";
+
+  const pctBid  = Number.isFinite(Number(ofi.pctBid)) ? Number(ofi.pctBid) : null;
+  const ema     = Number.isFinite(Number(ofi.ema))    ? Number(ofi.ema)    : null;
+  const fator   = Number.isFinite(Number(ofi.fatorRef)) ? Number(ofi.fatorRef) : null;
+
+  const bidCls  = pctBid == null ? "flow-adv--neutro"
+                : pctBid > 55   ? "flow-adv--buy-mid"
+                : pctBid < 45   ? "flow-adv--sell-mid"
+                : "flow-adv--neutro";
+  const emaCls  = ema == null ? "flow-adv--neutro"
+                : ema > 0.05  ? "flow-adv--buy-weak"
+                : ema < -0.05 ? "flow-adv--sell-weak"
+                : "flow-adv--neutro";
+
+  const pctTxt  = pctBid != null ? pctBid.toFixed(1) + "% bid" : "—";
+  const emaTxt  = ema    != null ? (ema >= 0 ? "+" : "") + ema.toFixed(3) : "—";
+  const fatorTxt = fator != null ? `peso ${fator.toFixed(1)}×` : "";
+
+  let html = '<div class="flow-adv-block">';
+  html += `<div class="flow-adv-title">OFI NOCIONAL${fatorTxt ? ` <span class="flow-adv-sub">${escapeHtml(fatorTxt)}</span>` : ""}</div>`;
+  html += `<div class="flow-adv-row ${escapeHtml(bidCls)}">`;
+  html += `<span class="flow-adv-k">LIVRO POND.</span><span class="flow-adv-v">${escapeHtml(pctTxt)}</span></div>`;
+  html += `<div class="flow-adv-row ${escapeHtml(emaCls)}">`;
+  html += `<span class="flow-adv-k">OFI EMA</span><span class="flow-adv-v">${escapeHtml(emaTxt)}</span></div>`;
+  html += "</div>";
+  return html;
+}
+
 // ── Bloco Footprint M1 (Fase 2) ───────────────────────────────────────────
 
 function renderFootprintBlock(d) {

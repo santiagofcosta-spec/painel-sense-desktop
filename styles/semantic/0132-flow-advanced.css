@@ -120,3 +120,10 @@
   color: #fff;
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.45);
 }
+
+.flow-adv-sub {
+  font-size: 0.65rem;
+  opacity: 0.65;
+  margin-left: 4px;
+  font-weight: 400;
+}

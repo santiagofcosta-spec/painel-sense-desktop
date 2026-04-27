@@ -128,7 +128,9 @@ function paintDashboardFlowAndRegime(flowBox, d) {
     const fpSellPct = fpTot > 0 ? Math.round((100 * fpSell) / fpTot) : null;
     const fpDeltaNorm = fp && Number.isFinite(Number(fp.deltaNorm)) ? Number(fp.deltaNorm) : null;
     const fpExhaustText = fp && (fp.exaustionBuy || fp.exaustionSell) ? `⚡ EXAUSTÃO ${fp.exaustionBuy ? "COMPRA" : "VENDA"}` : "";
-    const fpAlertCls = fpExhaustText ? " flow-row--footprint-alert" : "";
+    const fpAlertCls = fpExhaustText
+      ? ` flow-row--footprint-alert ${fp && fp.exaustionBuy ? "flow-row--footprint-alert-buy" : "flow-row--footprint-alert-sell"}`
+      : "";
     const fpDeltaTxt =
       fpDeltaNorm != null ? (fpDeltaNorm > 0 ? "+" : "") + fpDeltaNorm.toFixed(2) : "";
     const footprintCvRow =
@@ -190,6 +192,8 @@ function paintDashboardHud(hudBox, d, v, consensus) {
     let _hudHtml = renderHudBlock(d, v, consensus);
     if (d && d.flowAdvanced && d.flowAdvanced.footprint && typeof renderFootprintBlock === "function")
       _hudHtml += renderFootprintBlock(d);
+    if (d && d.flowAdvanced && d.flowAdvanced.ofiNocional && typeof renderOfiNocionalBlock === "function")
+      _hudHtml += renderOfiNocionalBlock(d);
     setElementHtmlIfChanged(hudBox, _hudHtml);
     syncSenseIaHudOverlayLayers();
   }
@@ -305,6 +309,8 @@ function paintDashboardLevelsPanel(levelsBox, d, v, S, levelsHoldMsDefault) {
   };
   const srPlacarHtml = renderSrDetectDiscreet(d);
   const srLevelsBlock = srPlacarHtml ? `<div class="levels-sr-wrap">${srPlacarHtml}</div>` : "";
+  const levelsPtaxHtml = renderPtaxBussolaPlacarStrip(d);
+  const levelsPtaxBlock = levelsPtaxHtml ? `<div class="levels-ptax-slot">${levelsPtaxHtml}</div>` : "";
   setElementHtmlIfChanged(
     levelsBox,
     heldLevels.length
@@ -317,8 +323,8 @@ function paintDashboardLevelsPanel(levelsBox, d, v, S, levelsHoldMsDefault) {
                 : `<span class="level-row__tail">${meter}<strong>${escapeHtml(String(row.value ?? ""))}</strong></span>`;
             return `<div class="${levelRowClass(row.label)}${levelIntensityClass(row.label, row.intensity)}"><span class="level-row__label">${escapeHtml(row.label)}</span>${tail}</div>`;
           })
-          .join("")}${srLevelsBlock}`
-      : `<p class="hint-inline">Sem níveis.</p>${srLevelsBlock}`
+          .join("")}${srLevelsBlock}${levelsPtaxBlock}`
+      : `<p class="hint-inline">Sem níveis.</p>${srLevelsBlock}${levelsPtaxBlock}`
   );
 }
 
@@ -387,7 +393,6 @@ function paintDashboardSummaryPanel(summaryBox, d) {
 
   const meta = d.meta && typeof d.meta === "object" ? d.meta : {};
   const metaTime = meta.time || "";
-  const placarPtaxHtml = renderPtaxBussolaPlacarStrip(d);
 
   setElementHtmlIfChanged(
     summaryBox,
@@ -402,7 +407,6 @@ function paintDashboardSummaryPanel(summaryBox, d) {
     <div class="bar-wrap bar-wrap--compact"><div id="strengthBar" class="bar ${
       tiedScore ? "bar-tie" : b > s ? "bar-buy" : "bar-sell"
     }" style="width:${strength}%"></div></div>
-    ${placarPtaxHtml ? `<div class="placar-ptax-slot">${placarPtaxHtml}</div>` : ""}
     <div class="meta-foot meta-foot--compact">${escapeHtml(metaTime || "")} · ${escapeHtml(meta.symbol || "")}</div>
     `
   );
