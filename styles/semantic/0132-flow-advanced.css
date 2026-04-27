@@ -76,3 +76,41 @@
 /* Basis direcional no bloco de regime */
 .regime-basis--buy  { color: #00cfff; font-size: 10px; font-weight: 700; }
 .regime-basis--sell { color: #cc44ff; font-size: 10px; font-weight: 700; }
+
+/* Gatilho — badges Fluxo Avançado (MVP), export `gatilhoOperacional.diag` */
+.gatilho-title-row .gatilho-fa-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.gatilho-fa-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.gatilho-fa-badge--spread {
+  background: rgba(234, 179, 8, 0.95);
+  color: #0f172a;
+  box-shadow: 0 0 8px rgba(234, 179, 8, 0.45);
+}
+
+.gatilho-fa-badge--fp {
+  background: rgba(56, 189, 248, 0.9);
+  color: #0f172a;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.gatilho-fa-badge--ptax {
+  background: rgba(168, 85, 247, 0.9);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(168, 85, 247, 0.45);
+}

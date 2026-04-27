@@ -1346,6 +1346,27 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
   </span>`;
 }
 
+/** Badges Fluxo Avançado (MVP) — só quando o EA exporta `gatilhoOperacional.diag` com `faAtivo`. */
+function renderGatilhoFABadges(dashboardData) {
+  const go = dashboardData && dashboardData.gatilhoOperacional;
+  const diag = go && go.diag && typeof go.diag === "object" ? go.diag : null;
+  if (!diag || !diag.faAtivo) return "";
+  let html = "";
+  if (diag.spreadAlert) {
+    html += `<span class="gatilho-fa-badge gatilho-fa-badge--spread" title="Alerta SpreadZ (stress de liquidez)">⚠ SPREAD</span>`;
+  }
+  if (diag.fpExaustBuy) {
+    html += `<span class="gatilho-fa-badge gatilho-fa-badge--fp" title="Exaustão compra (footprint)">⚡ FP COMPRA</span>`;
+  }
+  if (diag.fpExaustSell) {
+    html += `<span class="gatilho-fa-badge gatilho-fa-badge--fp" title="Exaustão venda (footprint)">⚡ FP VENDA</span>`;
+  }
+  if (diag.ptaxWindow) {
+    html += `<span class="gatilho-fa-badge gatilho-fa-badge--ptax" title="Janela PTAX ativa — TapeBlast suspenso">🕐 PTAX</span>`;
+  }
+  return html ? `<span class="gatilho-fa-badges" aria-label="Alertas fluxo avançado">${html}</span>` : "";
+}
+
 function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardData) {
   const prep = gatilhoBuildPrepState(go, schemaVersion, dashboardData);
   if (!prep) return "";
@@ -1364,7 +1385,8 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
     const rs = Number(readinessSell) || 0;
     if (rb > 0 || rs > 0) checklistFocusSide = rb >= rs ? "buy" : "sell";
   }
-  const titleRow = `<div class="gatilho-title-row"><h4 class="gatilho-subtitle">Gatilho operacional</h4></div>`;
+  const faBadges = renderGatilhoFABadges(dashboardData);
+  const titleRow = `<div class="gatilho-title-row"><h4 class="gatilho-subtitle">Gatilho operacional</h4>${faBadges}</div>`;
   const iaHybridEnabled = window.SenseRendererState && window.SenseRendererState.senseIaHybridEnabled === true;
   const iaButtonOnly = window.SenseRendererState && window.SenseRendererState.senseIaHybridButtonOnly === true;
   const prevOpinionSide =

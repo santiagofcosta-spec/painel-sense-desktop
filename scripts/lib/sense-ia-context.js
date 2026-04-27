@@ -256,6 +256,32 @@ function compactDashboardForAI(data) {
       "consensoSegRestantesCompra",
       "consensoSegRestantesVenda",
     ]);
+    const diagRaw = go.diag && typeof go.diag === "object" ? go.diag : null;
+    if (diagRaw) {
+      const reasonsBuy = Array.isArray(diagRaw.reasonsBuy)
+        ? diagRaw.reasonsBuy
+        : Array.isArray(diagRaw.reasons)
+          ? diagRaw.reasons
+          : [];
+      const reasonsSell = Array.isArray(diagRaw.reasonsSell)
+        ? diagRaw.reasonsSell
+        : Array.isArray(diagRaw.reasons)
+          ? diagRaw.reasons
+          : [];
+      const fpDn = Number(diagRaw.fpDeltaNormVela);
+      out.gatilho.diag = {
+        faAtivo: !!diagRaw.faAtivo,
+        spreadAlert: !!diagRaw.spreadAlert,
+        fpExaustBuy: !!diagRaw.fpExaustBuy,
+        fpExaustSell: !!diagRaw.fpExaustSell,
+        ptaxWindow: !!diagRaw.ptaxWindow,
+        tapeSpeedZ: Number.isFinite(Number(diagRaw.tapeSpeedZ)) ? Number(diagRaw.tapeSpeedZ) : null,
+        spreadZ: Number.isFinite(Number(diagRaw.spreadZ)) ? Number(diagRaw.spreadZ) : null,
+        fpDeltaNormVela: Number.isFinite(fpDn) ? fpDn : null,
+        reasonsBuy,
+        reasonsSell,
+      };
+    }
   }
 
   if (Array.isArray(data.levels) && data.levels.length) {
