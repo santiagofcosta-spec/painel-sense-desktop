@@ -1,0 +1,78 @@
+/* 0132-flow-advanced.css — Blocos de fluxo avançado */
+
+.flow-adv-block {
+  margin-top: 6px;
+  padding: 5px 8px;
+  border-left: 2px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+  border-radius: 3px;
+}
+
+.flow-adv-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.30);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.flow-adv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.flow-adv-k { color: rgba(255,255,255,0.42); flex-shrink: 0; margin-right: 6px; font-size: 10px; }
+.flow-adv-v { font-weight: 600; color: rgba(255,255,255,0.70); }
+
+/* Z normalizado */
+.flow-adv--neutro    .flow-adv-v { color: rgba(255,255,255,0.50); }
+.flow-adv--buy-weak  .flow-adv-v { color: #66ffaa; }
+.flow-adv--buy-mid   .flow-adv-v { color: #00ff88; }
+.flow-adv--buy-hot   .flow-adv-v { color: #00ffcc; text-shadow: 0 0 6px rgba(0,255,204,0.50); }
+.flow-adv--sell-weak .flow-adv-v { color: #ff9988; }
+.flow-adv--sell-mid  .flow-adv-v { color: #ff5533; }
+.flow-adv--sell-hot  .flow-adv-v { color: #ff2200; text-shadow: 0 0 6px rgba(255,34,0,0.50); }
+
+/* TapeSpeed */
+.flow-adv-tape--idle  .flow-adv-v { color: rgba(255,255,255,0.38); }
+.flow-adv-tape--warm  .flow-adv-v { color: #ffcc44; }
+.flow-adv-tape--hot   .flow-adv-v { color: #ffaa00; text-shadow: 0 0 5px rgba(255,170,0,0.55); }
+.flow-adv-tape--blast .flow-adv-v {
+  color: #00ff88;
+  font-weight: 800;
+  text-shadow: 0 0 8px rgba(0,255,136,0.70);
+}
+
+/* SpreadZ */
+.flow-adv-spread--ok    .flow-adv-v { color: rgba(255,255,255,0.50); }
+.flow-adv-spread--alert { border-left-color: #ffb300; background: rgba(255,179,0,0.06); }
+.flow-adv-spread--alert .flow-adv-v { color: #ffb300; }
+
+/* Footprint */
+.flow-adv-fp-buy   { color: #00cfff; font-weight: 700; }
+.flow-adv-fp-sell  { color: #ff4444; font-weight: 700; }
+.flow-adv-fp-sep   { color: rgba(255,255,255,0.28); }
+.flow-adv-fp-delta { color: rgba(255,255,255,0.48); font-size: 10px; margin-left: 4px; }
+.flow-adv-exhaust  { color: #ff4444; font-weight: 700; font-size: 10px; letter-spacing: 0.04em; }
+.flow-adv-note {
+  margin-top: 2px;
+  font-size: 9px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+/* Absorção Real */
+.flow-adv-absorb--buy  { border-left-color: #00cfff; background: rgba(0,207,255,0.07); }
+.flow-adv-absorb--sell { border-left-color: #cc44ff; background: rgba(204,68,255,0.07); }
+.flow-adv-absorb--buy  .flow-adv-title { color: rgba(0,207,255,0.65); }
+.flow-adv-absorb--sell .flow-adv-title { color: rgba(204,68,255,0.65); }
+.flow-adv-absorb--buy  .flow-adv-v { color: #00cfff; }
+.flow-adv-absorb--sell .flow-adv-v { color: #cc44ff; }
+
+/* Basis direcional no bloco de regime */
+.regime-basis--buy  { color: #00cfff; font-size: 10px; font-weight: 700; }
+.regime-basis--sell { color: #cc44ff; font-size: 10px; font-weight: 700; }

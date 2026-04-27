@@ -302,6 +302,16 @@ function renderRegimeMercadoHtml(rm) {
   const sp = rm.spreadTaxaMiniRef;
   const hasSp = sp != null && Number.isFinite(Number(sp));
   const spStr = hasSp ? fmtNum(Number(sp), 5) : "";
+  const basisDir = String(rm.basisDirecional ?? "neutro").toLowerCase();
+  let basisHtml = "";
+  if (basisDir === "compra" || basisDir === "venda") {
+    const basisCls = basisDir === "compra" ? "regime-basis--buy" : "regime-basis--sell";
+    const basisTxt =
+      basisDir === "compra"
+        ? "BASIS FAVORECE COMPRA (convergência)"
+        : "BASIS FAVORECE VENDA (convergência)";
+    basisHtml = `<span class="${basisCls}">${escapeHtml(basisTxt)}</span>`;
+  }
   const trHtml = rm.rastreador && typeof rm.rastreador === "object" ? renderRegimeRastreadorHtml(rm.rastreador) : "";
   const warnShort = div
     ? '<span class="regime-mercado__warn" title="Divergência Mini e Cheio; confira o chip entre as linhas dos dois símbolos.">Divergência Mini e Cheio</span>'
@@ -326,6 +336,7 @@ function renderRegimeMercadoHtml(rm) {
       <div class="regime-mercado__tail-meta" title="Rácio de ATR no M1 e diferença de ritmo entre referência e mini (taxas).">
         <span class="regime-mercado__meta">ATR ${escapeHtml(atrStr)}</span>
         ${hasSp ? `<span class="regime-mercado__meta" title="Diferença de taxas: referência menos mini.">Δ taxa ${escapeHtml(spStr)}</span>` : ""}
+        ${basisHtml}
       </div>
     </div>
     ${trHtml}

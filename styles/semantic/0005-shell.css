@@ -23,6 +23,7 @@ body {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  position: relative;
   overflow-x: hidden;
   overflow: hidden;
 }
@@ -39,19 +40,40 @@ body {
 }
 
 .data-banner {
-  display: none;
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 43px;
+  z-index: 16;
+  pointer-events: none;
   margin: 0;
   padding: 10px 12px;
   font-size: 12px;
-  flex-shrink: 0;
   line-height: 1.45;
+  box-sizing: border-box;
+  min-height: 34px;
+  max-height: 34px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   color: #fecaca;
   background: linear-gradient(90deg, #3f1d1d 0%, #2a1212 100%);
   border-bottom: 1px solid #7f1d1d;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 120ms ease;
 }
 
 .data-banner.data-banner--show {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+.data-banner.data-banner--soft {
+  color: #dbeafe;
+  background: linear-gradient(90deg, #172554 0%, #1e3a8a 100%);
+  border-bottom: 1px solid #1d4ed8;
 }
 
 .brand {

@@ -695,6 +695,46 @@
 .flow .flow-row--zline > strong {
   flex-shrink: 0;
   margin-left: auto;
+  width: 78px;
+  min-width: 78px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Footprint tem conteúdo longo (C/V + delta + exaustão): não fixar largura. */
+.flow .flow-row.flow-row--footprint > strong {
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 74%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Destaque visual só quando EXAUSTÃO estiver ativa na linha Footprint. */
+.flow .flow-row.flow-row--footprint.flow-row--footprint-alert {
+  animation: flowFootprintAlertPulse 1.1s ease-in-out infinite;
+}
+
+.flow .flow-row.flow-row--footprint.flow-row--footprint-alert .flow-adv-exhaust {
+  text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+}
+
+@keyframes flowFootprintAlertPulse {
+  0% {
+    background-color: rgba(255, 68, 68, 0.06);
+    border-left-color: rgba(255, 68, 68, 0.38);
+  }
+  50% {
+    background-color: rgba(255, 68, 68, 0.16);
+    border-left-color: rgba(255, 68, 68, 0.72);
+  }
+  100% {
+    background-color: rgba(255, 68, 68, 0.06);
+    border-left-color: rgba(255, 68, 68, 0.38);
+  }
 }
 
 .flow-ztrack {
@@ -788,6 +828,22 @@
   background: rgba(51, 65, 85, 0.65);
   color: rgba(226, 232, 240, 0.92);
   border-color: rgba(100, 116, 139, 0.45);
+}
+
+/* Intensidade do alinhamento/divergência (1=fraco, 2=médio, 3=forte) */
+.flow-mini-ref-chip--lvl-1 {
+  opacity: 0.82;
+  transform: scale(0.98);
+}
+.flow-mini-ref-chip--lvl-2 {
+  opacity: 0.92;
+  transform: scale(1);
+}
+.flow-mini-ref-chip--lvl-3 {
+  opacity: 1;
+  transform: scale(1.03);
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.28);
 }
 
 /* Delta — proxy tape / tamanho */

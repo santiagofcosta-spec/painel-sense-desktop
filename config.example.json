@@ -10,7 +10,11 @@
     "openAiBase": "",
     "gskApiKey": "",
     "gensparkBase": "",
-    "autoEveryMinutes": 30
+    "autoEveryMinutes": 30,
+    "hybrid": {
+      "enabled": false,
+      "buttonOnly": true
+    }
   },
   "license": {
     "enabled": false,

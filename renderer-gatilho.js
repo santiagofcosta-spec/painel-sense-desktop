@@ -340,6 +340,16 @@ function renderGatilhoIdleLogo(aggText) {
   const nextHtml = nextLabel
     ? `<span class="gatilho-idle-logo__ia-next" aria-hidden="true">${escapeHtml(nextLabel)}</span>`
     : "";
+  const hybridEnabled = window.SenseRendererState && window.SenseRendererState.senseIaHybridEnabled === true;
+  const hybridButtonOnly = window.SenseRendererState && window.SenseRendererState.senseIaHybridButtonOnly === true;
+  const hybridPulse =
+    hybridEnabled &&
+    !hybridButtonOnly &&
+    Number(window.SenseRendererState.senseIaHybridPulseUntilMs) > 0 &&
+    Date.now() < Number(window.SenseRendererState.senseIaHybridPulseUntilMs);
+  const hybridBadge = hybridEnabled
+    ? `<span class="gatilho-idle-logo__ia-hybrid${hybridPulse ? " gatilho-idle-logo__ia-hybrid--pulse" : ""}" aria-hidden="true">IA GATILHO ON</span>`
+    : "";
   return `<div class="gatilho-idle-logo gatilho-idle-logo--${mode}${maxCls} gatilho-idle-logo--sense-ia" style="--glow:${g};--gatilho-idle-agg-scale:${logoScale.toFixed(2)}" title="SENSE — leitura de agressao · Clique: SENSE IA (sentimento do painel)">
     <div class="gatilho-idle-logo__inner">
       <div class="gatilho-idle-logo__art" style="--sense-mask:${maskUrl};--flow-speed:${flowSec}s">
@@ -349,8 +359,20 @@ function renderGatilhoIdleLogo(aggText) {
       </div>
     </div>
     <span class="gatilho-idle-logo__ia" aria-hidden="true">IA</span>
+    ${hybridBadge}
     ${nextHtml}
   </div>`;
+}
+
+function renderSenseIaHybridToggleButton() {
+  const hybridEnabled = window.SenseRendererState && window.SenseRendererState.senseIaHybridEnabled === true;
+  return `<button
+      type="button"
+      class="gatilho-hybrid-toggle${hybridEnabled ? " gatilho-hybrid-toggle--on" : ""}"
+      data-sense-ia-hybrid-toggle="1"
+      aria-label="Alternar IA híbrida"
+      title="IA híbrida: ${hybridEnabled ? "ON" : "OFF"}"
+    >IA ${hybridEnabled ? "ON" : "OFF"}</button>`;
 }
 /** Texto curto para a faixa (BUY/SELL + motivo legível); detalhe no `title`. */
 function abbreviateGatilhoBlockReason(reason) {
@@ -971,10 +993,39 @@ function gatilhoBuildPrepState(go, schemaVersion, dashboardData) {
   };
 }
 
+function renderMakersHoldOverlay(go, showBuy, showSell) {
+  if (!showBuy && !showSell) return "";
+  const buyF = pickGatilhoTradeFields(go, "buy");
+  const sellF = pickGatilhoTradeFields(go, "sell");
+  const fmt = (x) => (x && String(x).trim() ? escapeHtml(x) : "—");
+  const rows = (f) => `
+      <div class="gatilho-detail-row"><span class="gatilho-detail-k">Preço</span><span class="gatilho-detail-v">${fmt(f.entry)}</span></div>
+      <div class="gatilho-detail-row"><span class="gatilho-detail-k">SL</span><span class="gatilho-detail-v">${fmt(f.sl)}</span></div>
+      <div class="gatilho-detail-row"><span class="gatilho-detail-k">TP</span><span class="gatilho-detail-v">${fmt(f.tp)}</span></div>`;
+  const buyBtn = showBuy
+    ? `<div class="gatilho-btn gatilho-btn--buy gatilho-btn--on"><span class="gatilho-btn__label">COMPRA</span></div>`
+    : "";
+  const sellBtn = showSell
+    ? `<div class="gatilho-btn gatilho-btn--sell gatilho-btn--on"><span class="gatilho-btn__label">VENDA</span></div>`
+    : "";
+  const showBoth = showBuy && showSell;
+  const detailsBuy = showBuy
+    ? `<div class="gatilho-details${showBoth ? " gatilho-details--stacked" : ""}">${showBoth ? '<div class="gatilho-side-tit">Compra</div>' : ""}${rows(buyF)}</div>`
+    : "";
+  const detailsSell = showSell
+    ? `<div class="gatilho-details${showBoth ? " gatilho-details--stacked" : ""}">${showBoth ? '<div class="gatilho-side-tit">Venda</div>' : ""}${rows(sellF)}</div>`
+    : "";
+  return `<div class="hud-makers-preparo__hold-op" aria-label="Gatilho operacional ativo">
+    <div class="gatilho-btns">${buyBtn}${sellBtn}</div>
+    <div class="gatilho-details-wrap">${detailsBuy}${detailsSell}</div>
+  </div>`;
+}
+
 /** Termómetro + logo SENSE na coluna Makers (no sítio da antiga bússola PTAX). */
 function renderMakersPreparoRow(go, schemaVersion, aggressionText, dashboardData) {
   const prep = gatilhoBuildPrepState(go, schemaVersion, dashboardData);
   const agg = typeof aggressionText === "string" ? aggressionText : "";
+  const topRightToggle = `<div class="hud-makers-preparo__top-right-toggle">${renderSenseIaHybridToggleButton()}</div>`;
   /* Sem schema v6 / gatilhoOperacional o termómetro não existe — a logo SENSE IA continua obrigatória (atalho). */
   if (!prep) {
     const logoHtmlOnly = `<div class="hud-makers-preparo__logo hud-makers-preparo__logo--dual" data-sense-ia-trigger="1" title="SENSE IA — clique para consultar">
@@ -982,6 +1033,7 @@ function renderMakersPreparoRow(go, schemaVersion, aggressionText, dashboardData
         <div class="hud-makers-preparo__dual-layer hud-makers-preparo__dual-layer--text" aria-hidden="true"></div>
       </div>`;
     return `<div class="hud-makers-preparo hud-makers-preparo--no-prep" role="group" aria-label="Marca SENSE e SENSE IA">
+      ${topRightToggle}
       ${logoHtmlOnly}
     </div>`;
   }
@@ -990,13 +1042,16 @@ function renderMakersPreparoRow(go, schemaVersion, aggressionText, dashboardData
   const thermoHtml = idle ? thermoMeterIdle : thermoMeterHold;
   /* Duas camadas: logo + texto IA (texto preenchido em syncSenseIaHudOverlayLayers após o tick). */
   // Logo central SENSE: visível em repouso e com gatilho ativo (antes sumia no HOLD).
+  const holdOverlayHtml = renderMakersHoldOverlay(go, showBuy, showSell);
   const logoHtml = `<div class="hud-makers-preparo__logo hud-makers-preparo__logo--dual${
     idle ? "" : " hud-makers-preparo__logo--with-hold"
   }" data-sense-ia-trigger="1" title="SENSE IA — clique para consultar">
         <div class="hud-makers-preparo__dual-layer hud-makers-preparo__dual-layer--logo">${renderGatilhoIdleLogo(agg)}</div>
+        <div class="hud-makers-preparo__dual-layer hud-makers-preparo__dual-layer--hold">${holdOverlayHtml}</div>
         <div class="hud-makers-preparo__dual-layer hud-makers-preparo__dual-layer--text" aria-hidden="true"></div>
       </div>`;
   return `<div class="hud-makers-preparo${idle ? "" : " hud-makers-preparo--hold"}" role="group" aria-label="Preparo do gatilho e marca SENSE">
+    ${topRightToggle}
     <div class="hud-makers-preparo__thermo">${thermoHtml}</div>
     ${logoHtml}
   </div>`;
@@ -1015,6 +1070,213 @@ function contextoSideHintFromDash(dashboardData) {
     if (td < -0.02) return "sell";
   }
   return "";
+}
+
+function iaAuditOpinion(go, dashboardData, aggressionText, prep, prevSideRaw) {
+  const trend = trendBiasLabelFromDashboard(dashboardData) || "";
+  const contexto = contextoSideHintFromDash(dashboardData);
+  const aggText = stripAccentsForDisplay(String(aggressionText || "")).toUpperCase();
+  const eaBuyReady = gatilhoReadyBool(go && go.buyReady);
+  const eaSellReady = gatilhoReadyBool(go && go.sellReady);
+  const regimeBuyOk = regimeSideConfiavelFromDash("buy", dashboardData);
+  const regimeSellOk = regimeSideConfiavelFromDash("sell", dashboardData);
+  const rb = Number(prep && prep.readinessBuy);
+  const rs = Number(prep && prep.readinessSell);
+  let buy = 0;
+  let sell = 0;
+  const reasons = [];
+
+  if (trend === "TEND. DE ALTA FORTE") {
+    buy += 0.32;
+    reasons.push("tendencia forte de alta");
+  } else if (trend === "TEND. DE ALTA") {
+    buy += 0.22;
+    reasons.push("tendencia de alta");
+  } else if (trend === "TEND. DE BAIXA FORTE") {
+    sell += 0.32;
+    reasons.push("tendencia forte de baixa");
+  } else if (trend === "TEND. DE BAIXA") {
+    sell += 0.22;
+    reasons.push("tendencia de baixa");
+  }
+
+  const trendBuy = trend === "TEND. DE ALTA FORTE" || trend === "TEND. DE ALTA";
+  const trendSell = trend === "TEND. DE BAIXA FORTE" || trend === "TEND. DE BAIXA";
+  if (contexto === "buy") {
+    const w = trendBuy ? 0.08 : 0.2;
+    buy += w;
+    reasons.push(trendBuy ? "contexto confirma compra" : "contexto favorece compra");
+  } else if (contexto === "sell") {
+    const w = trendSell ? 0.08 : 0.2;
+    sell += w;
+    reasons.push(trendSell ? "contexto confirma venda" : "contexto favorece venda");
+  }
+
+  if (aggText.includes("COMPRA")) {
+    buy += aggText.includes("MUITO FORTE") ? 0.26 : aggText.includes("FORTE") ? 0.2 : 0.12;
+    reasons.push("agressao compradora");
+  }
+  if (aggText.includes("VENDA")) {
+    sell += aggText.includes("MUITO FORTE") ? 0.26 : aggText.includes("FORTE") ? 0.2 : 0.12;
+    reasons.push("agressao vendedora");
+  }
+
+  if (regimeBuyOk) buy += 0.12;
+  if (regimeSellOk) sell += 0.12;
+  if (eaBuyReady) buy += 0.14;
+  if (eaSellReady) sell += 0.14;
+  if (Number.isFinite(rb) && rb > 0) buy += Math.min(0.2, rb * 0.2);
+  if (Number.isFinite(rs) && rs > 0) sell += Math.min(0.2, rs * 0.2);
+
+  const diff = buy - sell;
+  const prevSide = String(prevSideRaw || "").toLowerCase();
+  const ENTRY = 0.28;
+  const EXIT = 0.23;
+  let side = "";
+  if (prevSide === "buy") {
+    if (diff <= -ENTRY) side = "sell";
+    else if (diff >= EXIT) side = "buy";
+    else side = "";
+  } else if (prevSide === "sell") {
+    if (diff >= ENTRY) side = "buy";
+    else if (diff <= -EXIT) side = "sell";
+    else side = "";
+  } else {
+    if (diff >= ENTRY) side = "buy";
+    else if (diff <= -ENTRY) side = "sell";
+  }
+  const confidence = Math.max(0, Math.min(100, Math.round(Math.max(buy, sell) * 100)));
+  return {
+    side,
+    confidence,
+    reason: reasons.slice(0, 3).join(" + ") || "sem predominio claro",
+    buyScore: buy,
+    sellScore: sell,
+  };
+}
+
+function maybePersistIaCalibrationReport(audit, eaSide, iaSide, concord) {
+  if (!window.SenseRendererState || !window.senseAPI || typeof window.senseAPI.saveIaCalibrationReport !== "function") return;
+  const S = window.SenseRendererState;
+  if (!S.iaAuditStats || typeof S.iaAuditStats !== "object") return;
+  const st = S.iaAuditStats;
+  const hints = S.iaAuditInputHints && typeof S.iaAuditInputHints === "object" ? S.iaAuditInputHints : {};
+  S.iaAuditInputHints = hints;
+  const bump = (key, item) => {
+    const prev = hints[key] && typeof hints[key] === "object" ? hints[key] : {};
+    const evidenceCount = (Number(prev.evidenceCount) || 0) + 1;
+    hints[key] = {
+      key,
+      inputName: item.inputName,
+      currentValue: item.currentValue,
+      suggestedValue: item.suggestedValue,
+      direction: item.direction,
+      motivoIntraday: item.motivoIntraday,
+      impactoEsperado: item.impactoEsperado,
+      evidenceCount,
+      score: evidenceCount * (Number(item.weight) || 1),
+    };
+  };
+  st.total = (Number(st.total) || 0) + 1;
+  const c = String(concord || "").toUpperCase();
+  if (c.includes("CONCORDA")) st.agree = (Number(st.agree) || 0) + 1;
+  if (c.includes("DIVERGE")) st.diverge = (Number(st.diverge) || 0) + 1;
+  if (String(iaSide || "") === "" && String(eaSide || "") !== "") st.neutralVsEa = (Number(st.neutralVsEa) || 0) + 1;
+  if (String(iaSide || "") === "buy" && String(eaSide || "") !== "buy") st.divergeBuy = (Number(st.divergeBuy) || 0) + 1;
+  if (String(iaSide || "") === "sell" && String(eaSide || "") !== "sell") st.divergeSell = (Number(st.divergeSell) || 0) + 1;
+  st.lastReason = String((audit && audit.reason) || st.lastReason || "n/d");
+  const ia = String(iaSide || "");
+  const ea = String(eaSide || "");
+  const disagree = String(concord || "").toUpperCase().includes("DIVERGE");
+  if (disagree) {
+    bump("consenso-global", {
+      inputName: "consenso global (todos os critérios do placar)",
+      currentValue: "0.65",
+      suggestedValue: "0.60",
+      direction: "afrouxar leve",
+      motivoIntraday: "excesso de bloqueio em tendência limpa",
+      impactoEsperado: "+entradas válidas sem abrir muito ruído",
+      weight: 2.2,
+    });
+    bump("entry-z-min", {
+      inputName: "Gatilho_Painel_Entry_Z_Min",
+      currentValue: "0.55",
+      suggestedValue: "0.50",
+      direction: "afrouxar leve",
+      motivoIntraday: "gatilho atrasa em aceleração curta de fluxo",
+      impactoEsperado: "entrada mais responsiva mantendo filtro",
+      weight: 1.9,
+    });
+    bump("tri-limiar", {
+      inputName: "limiar do triângulo de pré-sinal no painel (0..1). Ex.: 0.30",
+      currentValue: "0.30",
+      suggestedValue: "0.32",
+      direction: "endurecer leve",
+      motivoIntraday: "pré-sinal acionando cedo em ruído lateral",
+      impactoEsperado: "menos falso preparo no painel",
+      weight: 1.6,
+    });
+    if (ia === "buy" && ea !== "buy") {
+      bump("trend-fraca", {
+        inputName: "% mínima tendência fraca (NTSL, 0.18)",
+        currentValue: "0.18",
+        suggestedValue: "0.20",
+        direction: "endurecer leve",
+        motivoIntraday: "compra em tendência ainda fraca",
+        impactoEsperado: "menos compra prematura",
+        weight: 1.7,
+      });
+    }
+    if (ia === "sell" && ea !== "sell") {
+      bump("vies-lateral", {
+        inputName: "[VIES T2%] limite -> ATIVO LATERAL / bloqueia entrada",
+        currentValue: "0.10",
+        suggestedValue: "0.12",
+        direction: "endurecer leve",
+        motivoIntraday: "venda em zona de lateralidade curta",
+        impactoEsperado: "menos operação no miolo lateral",
+        weight: 1.7,
+      });
+    }
+    if (!ia && ea) {
+      bump("confianca-lado", {
+        inputName: "limiar de confiança por lado (0..1), Ex.: 0.4 = 40%",
+        currentValue: "0.30",
+        suggestedValue: "0.35",
+        direction: "endurecer leve",
+        motivoIntraday: "EA ativo com leitura IA sem convicção",
+        impactoEsperado: "menos sinal fraco em hold ativo",
+        weight: 1.8,
+      });
+    }
+  }
+  bump("spread-max", {
+    inputName: "spread máximo em pontos (0 = não filtra)",
+    currentValue: "0",
+    suggestedValue: "2 (WDO) / 3 (DOL)",
+    direction: "endurecer risco",
+    motivoIntraday: "proteger entrada em piora de execução",
+    impactoEsperado: "reduz slippage em cenário de stress",
+    weight: 1.2,
+  });
+  const now = Date.now();
+  const lastSaved = Number(S.iaAuditReportLastSavedAtMs) || 0;
+  if (now - lastSaved < 120000) return;
+  S.iaAuditReportLastSavedAtMs = now;
+  void window.senseAPI.saveIaCalibrationReport({
+    stats: {
+      total: Number(st.total) || 0,
+      agree: Number(st.agree) || 0,
+      diverge: Number(st.diverge) || 0,
+      neutralVsEa: Number(st.neutralVsEa) || 0,
+      divergeBuy: Number(st.divergeBuy) || 0,
+      divergeSell: Number(st.divergeSell) || 0,
+      lastReason: st.lastReason || "n/d",
+    },
+    topInputs: Object.values(hints)
+      .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
+      .slice(0, 10),
+  });
 }
 
 function pickContextSide(buyScore, sellScore, dashboardData) {
@@ -1084,7 +1346,7 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
   </span>`;
 }
 
-function renderGatilhoOperacional(go, schemaVersion, _aggressionText, dashboardData) {
+function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardData) {
   const prep = gatilhoBuildPrepState(go, schemaVersion, dashboardData);
   if (!prep) return "";
   const { showBuy, showSell, readinessBuy, readinessSell } = prep;
@@ -1102,22 +1364,36 @@ function renderGatilhoOperacional(go, schemaVersion, _aggressionText, dashboardD
     const rs = Number(readinessSell) || 0;
     if (rb > 0 || rs > 0) checklistFocusSide = rb >= rs ? "buy" : "sell";
   }
-  const memoriaTriangulo = renderGatilhoMemoriaTrianguloHtml(dashboardData);
-  const memoriaTrianguloInline = memoriaTriangulo
-    ? memoriaTriangulo.replace("gatilho-mem-tri-wrap", "gatilho-mem-tri-wrap gatilho-mem-tri-wrap--inline")
-    : "";
-  const memoriaTrianguloRow = memoriaTrianguloInline
-    ? `<div class="gatilho-mem-tri-row">${memoriaTrianguloInline}</div>`
-    : "";
   const titleRow = `<div class="gatilho-title-row"><h4 class="gatilho-subtitle">Gatilho operacional</h4></div>`;
+  const iaHybridEnabled = window.SenseRendererState && window.SenseRendererState.senseIaHybridEnabled === true;
+  const iaButtonOnly = window.SenseRendererState && window.SenseRendererState.senseIaHybridButtonOnly === true;
+  const prevOpinionSide =
+    iaHybridEnabled && window.SenseRendererState ? String(window.SenseRendererState.senseIaHybridPrevOpinionSide || "").toLowerCase() : "";
+  const audit = iaHybridEnabled ? iaAuditOpinion(go, dashboardData, aggressionText, prep, prevOpinionSide) : null;
+  const iaSide = String((audit && audit.side) || "").toLowerCase();
+  const reasonFold = stripAccentsForDisplay(String((audit && audit.reason) || "")).toLowerCase();
+  const iaToneClass =
+    iaSide === "buy" || reasonFold.includes("compra")
+      ? "gatilho-ia-status--buy"
+      : iaSide === "sell" || reasonFold.includes("venda")
+        ? "gatilho-ia-status--sell"
+        : "gatilho-ia-status--neutral";
+  const trendNow = trendBiasLabelFromDashboard(dashboardData) || "—";
+  const contextoNow = contextoSideHintFromDash(dashboardData);
+  const contextoTxt = contextoNow === "buy" ? "COMPRA" : contextoNow === "sell" ? "VENDA" : "NEUTRO";
+  const iaMonitorLine = iaHybridEnabled
+    ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${iaToneClass}"><span class="gatilho-ia-audit-tag">IA AUDITORA (REGRAS)</span> MONITORANDO · Viés ${escapeHtml(
+        trendNow
+      )} · Contexto ${contextoTxt} · Leitura ${escapeHtml((audit && audit.reason) || "sem predominio claro")}</div></div>`
+    : "";
   if (!showBuy && !showSell) {
     const idleMotiveLine = renderGatilhoChecklistPill(go, dashboardData, checklistFocusSide);
     const breakevenBlockIdle = renderGatilhoBreakevenBlock(go, { allowSynthetic: true });
     return `
     <div class="gatilho-wrap gatilho-wrap--idle${breakevenBlockIdle ? " gatilho-wrap--breakeven" : ""}">
       ${titleRow}
+      ${iaMonitorLine}
       ${idleMotiveLine}
-      ${memoriaTrianguloRow}
       ${breakevenBlockIdle}
     </div>`;
   }
@@ -1137,33 +1413,62 @@ function renderGatilhoOperacional(go, schemaVersion, _aggressionText, dashboardD
   ]
     .filter(Boolean)
     .join(" ");
-  const buyF = pickGatilhoTradeFields(go, "buy");
-  const sellF = pickGatilhoTradeFields(go, "sell");
-  const fmt = (x) => (x && String(x).trim() ? escapeHtml(x) : "—");
-  const rows = (f) => `
-      <div class="gatilho-detail-row"><span class="gatilho-detail-k">Preco</span><span class="gatilho-detail-v">${fmt(f.entry)}</span></div>
-      <div class="gatilho-detail-row"><span class="gatilho-detail-k">Stop loss</span><span class="gatilho-detail-v">${fmt(f.sl)}</span></div>
-      <div class="gatilho-detail-row"><span class="gatilho-detail-k">Stop gain</span><span class="gatilho-detail-v">${fmt(f.tp)}</span></div>`;
   const showBoth = showBuy && showSell;
+  const eaSide = showBuy && !showSell ? "buy" : showSell && !showBuy ? "sell" : "";
+  const nowMs = Date.now();
+  if (iaHybridEnabled && window.SenseRendererState) {
+    const prevSide = String(window.SenseRendererState.senseIaHybridPrevOpinionSide || "").toLowerCase();
+    window.SenseRendererState.senseIaHybridLastSide = iaSide;
+    window.SenseRendererState.senseIaHybridLastLabel = iaSide === "buy" ? "COMPRA" : iaSide === "sell" ? "VENDA" : "NEUTRO";
+    if (iaSide !== prevSide) {
+      window.SenseRendererState.senseIaHybridLastTriggerAtMs = nowMs;
+      if (!iaButtonOnly && (iaSide === "buy" || iaSide === "sell")) {
+        window.SenseRendererState.senseIaHybridPulseUntilMs = nowMs + 20_000;
+      } else {
+        window.SenseRendererState.senseIaHybridPulseUntilMs = 0;
+      }
+      if (audit) {
+        const c = !eaSide
+          ? "EA: sem lado unico ativo agora"
+          : !iaSide
+            ? "IA NEUTRO · DIVERGE DO EA"
+            : iaSide === eaSide
+              ? "CONCORDA COM EA"
+              : "DIVERGE DO EA";
+        maybePersistIaCalibrationReport(audit, eaSide, iaSide, c);
+      }
+    }
+    window.SenseRendererState.senseIaHybridPrevOpinionSide = iaSide;
+  }
+  const iaVerdict = !audit
+    ? ""
+    : iaSide === "buy"
+      ? "IA OPINA: COMPRA"
+      : iaSide === "sell"
+        ? "IA OPINA: VENDA"
+        : "IA OPINA: NEUTRO";
+  const concord = !audit
+    ? ""
+    : !eaSide
+      ? "EA: sem lado unico ativo agora"
+      : !iaSide
+        ? "IA NEUTRO · DIVERGE DO EA"
+        : iaSide === eaSide
+          ? "CONCORDA COM EA"
+          : "DIVERGE DO EA";
+  const divergenceReason =
+    audit && iaSide && iaSide !== eaSide
+      ? `Motivo IA: ${audit.reason} · conf ${audit.confidence}%`
+      : audit
+        ? `Leitura IA: ${audit.reason} · conf ${audit.confidence}%`
+        : "";
+  const iaHybridLine = iaHybridEnabled
+    ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${iaToneClass}"><span class="gatilho-ia-audit-tag">IA AUDITORA (REGRAS)</span> ${iaVerdict} · ${concord}${
+        divergenceReason ? ` · ${divergenceReason}` : ""
+      }${iaButtonOnly ? " · MODO SOMENTE OPINIAO" : ""
+      }</div></div>`
+    : "";
 
-  const buyBtn = showBuy
-    ? `<div class="gatilho-btn gatilho-btn--buy gatilho-btn--on">
-         <span class="gatilho-btn__label">COMPRA</span>
-       </div>`
-    : "";
-  const sellBtn = showSell
-    ? `<div class="gatilho-btn gatilho-btn--sell gatilho-btn--on">
-         <span class="gatilho-btn__label">VENDA</span>
-       </div>`
-    : "";
-
-  const detailsBuy = showBuy
-    ? `<div class="gatilho-details${showBoth ? " gatilho-details--stacked" : ""}">${showBoth ? '<div class="gatilho-side-tit">Compra</div>' : ""}${rows(buyF)}</div>`
-    : "";
-  const detailsSell = showSell
-    ? `<div class="gatilho-details${showBoth ? " gatilho-details--stacked" : ""}">${showBoth ? '<div class="gatilho-side-tit">Venda</div>' : ""}${rows(sellF)}</div>`
-    : "";
-  const details = `<div class="gatilho-details-wrap">${detailsBuy}${detailsSell}</div>`;
   const lateralAlert = showCuidadoLine
     ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--cuidado" title="${escapeHtml(
         cuidadoTitle
@@ -1185,19 +1490,10 @@ function renderGatilhoOperacional(go, schemaVersion, _aggressionText, dashboardD
       breakevenBlockHold ? " gatilho-wrap--breakeven" : ""
     }">
       ${titleRow}
+      ${iaHybridLine}
       ${lateralAlert}
       ${direcaoOkAlert}
       ${compactReasonHold}
-      ${memoriaTrianguloRow}
-      <div class="gatilho-body gatilho-body--hold-only-main">
-        <div class="gatilho-body__main">
-      <div class="gatilho-btns">
-        ${buyBtn}
-        ${sellBtn}
-      </div>
-      ${details}
-        </div>
-      </div>
       ${breakevenBlockHold}
     </div>
   `;

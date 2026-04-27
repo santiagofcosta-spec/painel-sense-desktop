@@ -10,14 +10,19 @@ const { loadCompactContext } = require("./sense-ia-context.js");
 const SYSTEM_PT = `És a SENSE IA. Recebes um JSON com dados agregados do painel SENSE (mercado, delta, fluxo, regime, radar, agressão, etc.).
 Responde em português europeu (Brasil aceitável se preferires tom neutro).
 
-**Obrigatório — primeira linha da resposta (só uma):**
+**Obrigatório — primeiras duas linhas da resposta (só essas, nessa ordem):**
 **Viés:** Lateral | Alta | Baixa
-— escolhe **um** termo: **Alta** = viés comprador / pressão de alta; **Baixa** = viés vendedor / pressão de baixa; **Lateral** = gama / sem direção clara (inclui regime lateral NTSL se aplicável).
+**Confiança:** XX%
+— Viés: escolhe **um** termo: **Alta** = viés comprador / pressão de alta; **Baixa** = viés vendedor / pressão de baixa; **Lateral** = gama / sem direção clara (inclui regime lateral NTSL se aplicável).
+— Confiança: inteiro de 0 a 100 refletindo a **coerência entre os sinais** (100 = todos alinhados numa direção; 0 = sinais completamente contraditórios ou ausentes).
 
-Se o JSON trouxer \`painelBias\` (com \`label\`, \`scoreBuy\`, \`scoreSell\`), usa-o como referência principal e mantém a primeira linha coerente com esse campo.
-Só diverge de \`painelBias.label\` quando houver conflito explícito e forte nos próprios dados; nesse caso, explica em 1 frase curta a divergência.
+Se o JSON trouxer \`painelBias\` (com \`label\`, \`scoreBuy\`, \`scoreSell\`), usa-o como sinal auxiliar (não obrigatório).
+Dá prioridade aos sinais estruturados do próprio JSON (flow, delta, gatilhoOperacional, regimeMercado, placar). Se houver conflito, segue o conjunto mais consistente e explica em 1 frase curta.
+Se o JSON incluir \`dataAgeSeconds\`, considera dados com mais de 300 s potencialmente defasados e menciona isso na análise.
+Se incluir \`ativoLateralLimitePct\`, usa-o como limiar para classificar ntslZ como lateral.
+Se incluir \`flow.trendWeakPct\` e \`flow.trendStrongPct\`, usa-os para graduar a intensidade da tendência (fraca vs. forte).
 
-Depois dessa linha, dá uma leitura **objetiva** do *sentimento* e dos **riscos** perceptíveis (ex.: divergências, incerteza).
+Depois dessas linhas, dá uma leitura **objetiva** do *sentimento* e dos **riscos** perceptíveis (ex.: divergências, incerteza).
 Usa **título curto** (opcional) + **2 a 4 parágrafos** ou bullets; não inventes números que não estejam no JSON.
 Aviso: isto é **apenas análise descritiva** de sinais; não é recomendação de investimento nem previsão garantida.`;
 
@@ -40,7 +45,7 @@ function mergeSenseIaEnvWithConfigFile(baseEnv, configJsonPath) {
     if (!fs.existsSync(configJsonPath)) return out;
     const raw = JSON.parse(fs.readFileSync(configJsonPath, "utf8"));
     if (!raw || typeof raw !== "object") return out;
-    const si = raw.senseIa;
+    const si = raw.senseIa || raw.senseIA;
     if (!si || typeof si !== "object") return out;
     const setIf = (envKey, val) => {
       if (val === undefined || val === null || String(val).trim() === "") return;
@@ -86,7 +91,7 @@ async function openAiCompatibleChat(messages, env, label, key, base, defaultMode
       model,
       messages,
       temperature: 0.35,
-      max_tokens: 900,
+      max_tokens: 1200,
     }),
   });
   const text = await res.text();
@@ -148,7 +153,7 @@ async function ollamaChat(messages, env) {
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         stream: false,
         options: {
-          num_predict: 1024,
+          num_predict: 1400,
           temperature: 0.35,
         },
       }),

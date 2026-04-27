@@ -94,13 +94,35 @@ function computePainelBiasSummary(data) {
     reasons.push("regime vendedor");
   }
 
-  const trendSide = normalizeSideFromText(data && data.flow && data.flow.trendDir);
-  if (trendSide === "buy") {
-    buy += 1;
-    reasons.push("flow trend compra");
-  } else if (trendSide === "sell") {
-    sell += 1;
-    reasons.push("flow trend venda");
+  const trendDir = Number(data && data.flow && data.flow.trendDir);
+  if (Number.isFinite(trendDir)) {
+    if (trendDir > 0.08) {
+      buy += 2;
+      reasons.push("flow trend compra");
+    } else if (trendDir < -0.08) {
+      sell += 2;
+      reasons.push("flow trend venda");
+    }
+  }
+
+  const zMini = Number(data && data.flow && data.flow.zMini);
+  const zRef = Number(data && data.flow && data.flow.zRef);
+  let zBuy = 0;
+  let zSell = 0;
+  if (Number.isFinite(zMini)) {
+    if (zMini > 0.08) zBuy++;
+    else if (zMini < -0.08) zSell++;
+  }
+  if (Number.isFinite(zRef)) {
+    if (zRef > 0.08) zBuy++;
+    else if (zRef < -0.08) zSell++;
+  }
+  if (zBuy > zSell) {
+    buy += 2;
+    reasons.push("fluxo mini/ref compra");
+  } else if (zSell > zBuy) {
+    sell += 2;
+    reasons.push("fluxo mini/ref venda");
   }
 
   const aggrSide = normalizeSideFromText(data && data.aggression);
@@ -116,18 +138,42 @@ function computePainelBiasSummary(data) {
   const sellN = Number(data && data.sell);
   if (Number.isFinite(buyN) && Number.isFinite(sellN) && buyN !== sellN) {
     if (buyN > sellN) {
-      buy += 1;
+      buy += 2;
       reasons.push("placar compra");
     } else {
-      sell += 1;
+      sell += 2;
       reasons.push("placar venda");
+    }
+  }
+
+  const dBuyPct = Number(data && data.delta && data.delta.buyPct);
+  const dSellPct = Number(data && data.delta && data.delta.sellPct);
+  if (Number.isFinite(dBuyPct) && Number.isFinite(dSellPct)) {
+    if (dBuyPct - dSellPct >= 4) {
+      buy += 1;
+      reasons.push("delta compra");
+    } else if (dSellPct - dBuyPct >= 4) {
+      sell += 1;
+      reasons.push("delta venda");
+    }
+  }
+
+  const go = data && data.gatilhoOperacional && typeof data.gatilhoOperacional === "object" ? data.gatilhoOperacional : null;
+  if (go) {
+    if (go.buyReady === true || go.buyHighConf === true) {
+      buy += 2;
+      reasons.push("gatilho compra");
+    }
+    if (go.sellReady === true || go.sellHighConf === true) {
+      sell += 2;
+      reasons.push("gatilho venda");
     }
   }
 
   const side = buy > sell ? "buy" : sell > buy ? "sell" : "neutral";
   const label = side === "buy" ? "Alta" : side === "sell" ? "Baixa" : "Lateral";
   const delta = Math.abs(buy - sell);
-  const confidence01 = Math.max(0, Math.min(1, delta / 4));
+  const confidence01 = Math.max(0, Math.min(1, delta / 6));
   return {
     side,
     label,
@@ -149,6 +195,16 @@ function compactDashboardForAI(data) {
     alert: typeof data.alert === "string" ? data.alert : undefined,
   };
 
+  // Limiar lateral NTSL — permite à IA usar o mesmo threshold que o painel
+  const latPct = Number(data.ativoLateralLimitePct);
+  if (Number.isFinite(latPct)) out.ativoLateralLimitePct = latPct;
+
+  // Idade dos dados em segundos — a IA deve mencionar se > 300 s
+  const metaTime = data.meta && data.meta.time ? Date.parse(data.meta.time) : NaN;
+  if (Number.isFinite(metaTime)) {
+    out.dataAgeSeconds = Math.round((Date.now() - metaTime) / 1000);
+  }
+
   const rm = data.regimeMercado;
   if (rm && typeof rm === "object") {
     out.regimeMercado = pick(rm, ["ativo", "rotulo", "codigo", "vies", "confianca", "notas"]);
@@ -156,7 +212,7 @@ function compactDashboardForAI(data) {
 
   const fl = data.flow;
   if (fl && typeof fl === "object") {
-    out.flow = pick(fl, ["zMini", "zRef", "ntslZ", "trendDir"]);
+    out.flow = pick(fl, ["zMini", "zRef", "ntslZ", "trendDir", "trendWeakPct", "trendStrongPct"]);
   }
 
   const d = data.delta;
@@ -187,11 +243,13 @@ function compactDashboardForAI(data) {
     out.aggressionProxy = pick(ap, ["finePct", "heavyPct", "heavySide"]);
   }
 
-  const go = data.gatilho;
+  const go = data.gatilhoOperacional;
   if (go && typeof go === "object") {
     out.gatilho = pick(go, [
       "buyReady",
       "sellReady",
+      "buyHighConf",
+      "sellHighConf",
       "buyBlockReason",
       "sellBlockReason",
       "consensoSegundos",

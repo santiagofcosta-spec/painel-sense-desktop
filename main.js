@@ -61,13 +61,16 @@ function readConfigJson() {
 function readLicenseConfig() {
   const cfg = readConfigJson();
   const lic = cfg && cfg.license && typeof cfg.license === "object" ? cfg.license : {};
+  const hmacSecretEnv = String(process.env.SENSE_LICENSE_HMAC_SECRET || "").trim();
+  const hmacSecretConfig = String(lic.hmacSecret || "").trim();
   return {
     enabled: lic.enabled === true,
     serverUrl: String(lic.serverUrl || "").trim(),
     licenseKey: String(lic.licenseKey || "").trim(),
     mt5Account: String(lic.mt5Account || "").trim(),
     appId: String(lic.appId || "painel").trim() || "painel",
-    hmacSecret: String(process.env.SENSE_LICENSE_HMAC_SECRET || lic.hmacSecret || "").trim(),
+    hmacSecret: hmacSecretEnv,
+    hasConfigHmacSecret: hmacSecretConfig.length > 0,
   };
 }
 
@@ -309,8 +312,18 @@ async function enforceOnlineLicenseOrThrow() {
     };
     return;
   }
-  if (!licCfg.serverUrl || !licCfg.licenseKey || !licCfg.mt5Account || !licCfg.hmacSecret) {
-    throw new Error("Licenciamento ativo, mas faltam campos: serverUrl/licenseKey/mt5Account/hmacSecret.");
+  if (!licCfg.hmacSecret) {
+    throw new Error(
+      "Licenciamento ativo, mas falta SENSE_LICENSE_HMAC_SECRET no ambiente (setenv.local.bat)."
+    );
+  }
+  if (licCfg.hasConfigHmacSecret) {
+    console.warn(
+      "[Painel SENSE] config.license.hmacSecret está preenchido, mas foi ignorado. Use apenas SENSE_LICENSE_HMAC_SECRET."
+    );
+  }
+  if (!licCfg.serverUrl || !licCfg.licenseKey || !licCfg.mt5Account) {
+    throw new Error("Licenciamento ativo, mas faltam campos: serverUrl/licenseKey/mt5Account.");
   }
 
   const online = await validateLicenseOnline(licCfg);
@@ -840,16 +853,122 @@ ipcMain.handle("sense-ia-ask", async () => {
 ipcMain.handle("get-sense-ia-schedule", async () => {
   try {
     const cfg = configPath();
-    if (!fs.existsSync(cfg)) return { autoEveryMinutes: 15 };
+    if (!fs.existsSync(cfg)) return { autoEveryMinutes: 15, provider: "openai", model: "gpt-4o-mini", ollamaHost: "" };
     const j = JSON.parse(stripJsonBom(fs.readFileSync(cfg, "utf8")));
-    const si = j && j.senseIa;
-    if (!si || typeof si !== "object") return { autoEveryMinutes: 15 };
+    const si = j && (j.senseIa || j.senseIA);
+    if (!si || typeof si !== "object") {
+      return {
+        autoEveryMinutes: 15,
+        provider: "openai",
+        model: "gpt-4o-mini",
+        ollamaHost: "",
+        iaHybridEnabled: false,
+        iaHybridButtonOnly: true,
+      };
+    }
     const n = Number(si.autoEveryMinutes);
-    if (!Number.isFinite(n)) return { autoEveryMinutes: 15 };
-    if (n <= 0) return { autoEveryMinutes: 0 };
-    return { autoEveryMinutes: Math.min(1440, Math.floor(n)) };
+    const autoEveryMinutes = !Number.isFinite(n) ? 15 : n <= 0 ? 0 : Math.min(1440, Math.floor(n));
+    const providerRaw = String(si.provider || process.env.SENSE_IA_PROVIDER || "").trim().toLowerCase();
+    const provider = providerRaw || "openai";
+    const model = String(si.model || process.env.SENSE_IA_MODEL || (provider === "ollama" ? "llama3.2" : "gpt-4o-mini")).trim();
+    const ollamaHost = String(si.ollamaHost || process.env.OLLAMA_HOST || "http://127.0.0.1:11434").trim();
+    const hybrid = si.hybrid && typeof si.hybrid === "object" ? si.hybrid : {};
+    const iaHybridEnabled = hybrid.enabled === true;
+    const iaHybridButtonOnly = hybrid.buttonOnly !== false;
+    return { autoEveryMinutes, provider, model, ollamaHost, iaHybridEnabled, iaHybridButtonOnly };
   } catch (e) {
-    return { autoEveryMinutes: 15 };
+    return {
+      autoEveryMinutes: 15,
+      provider: "openai",
+      model: "gpt-4o-mini",
+      ollamaHost: "",
+      iaHybridEnabled: false,
+      iaHybridButtonOnly: true,
+    };
+  }
+});
+
+ipcMain.handle("set-sense-ia-hybrid-enabled", async (_evt, enabled) => {
+  try {
+    const cfg = configPath();
+    const current = readConfigJson();
+    const next = current && typeof current === "object" ? { ...current } : {};
+    const senseKey = next.senseIa && typeof next.senseIa === "object" ? "senseIa" : "senseIA";
+    const prevSense = next[senseKey] && typeof next[senseKey] === "object" ? { ...next[senseKey] } : {};
+    const prevHybrid = prevSense.hybrid && typeof prevSense.hybrid === "object" ? { ...prevSense.hybrid } : {};
+    prevHybrid.enabled = enabled === true;
+    if (typeof prevHybrid.buttonOnly !== "boolean") prevHybrid.buttonOnly = true;
+    prevSense.hybrid = prevHybrid;
+    next[senseKey] = prevSense;
+    fs.writeFileSync(cfg, JSON.stringify(next, null, 2) + "\n", "utf8");
+    return { ok: true, iaHybridEnabled: prevHybrid.enabled, iaHybridButtonOnly: prevHybrid.buttonOnly };
+  } catch (e) {
+    return { ok: false, error: e && e.message ? e.message : String(e) };
+  }
+});
+
+ipcMain.handle("save-ia-calibration-report", async (_evt, payload) => {
+  try {
+    const desktopDir = app.getPath("desktop");
+    const dir = path.join(desktopDir, "Calibragem Inputs");
+    fs.mkdirSync(dir, { recursive: true });
+    const d = new Date();
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const ts = d.toISOString();
+    const p = payload && typeof payload === "object" ? payload : {};
+    const s = p.stats && typeof p.stats === "object" ? p.stats : {};
+    const top = Array.isArray(p.topInputs) ? p.topInputs : [];
+    const dirBadge = (d) => {
+      const x = String(d || "").toLowerCase();
+      if (x.includes("afroux")) return "🟨 afrouxar";
+      if (x.includes("endure")) return "🟥 endurecer";
+      return "🟦 ajustar";
+    };
+    const lines = [
+      "# Relatorio IA Auditora - Calibragem Inputs",
+      "",
+      `Atualizado em: ${ts}`,
+      "",
+      "## Evidencia Intraday (IA x EA)",
+      `- Total de mudancas avaliadas: ${Number(s.total) || 0}`,
+      `- Concordancias IA x EA: ${Number(s.agree) || 0}`,
+      `- Divergencias IA x EA: ${Number(s.diverge) || 0}`,
+      `- IA neutro vs EA ativo: ${Number(s.neutralVsEa) || 0}`,
+      `- Divergencias lado COMPRA: ${Number(s.divergeBuy) || 0}`,
+      `- Divergencias lado VENDA: ${Number(s.divergeSell) || 0}`,
+      `- Motivo mais recente: ${String(s.lastReason || "n/d")}`,
+      "",
+      "## Top 10 Inputs Sugeridos (prioridade IA)",
+    ];
+    if (top.length > 0) {
+      lines.push("| # | Nome do input | Valor atual | Valor sugerido | Direção | Motivo intraday | Evidência | Impacto esperado |");
+      lines.push("|---|---|---|---|---|---|---:|---|");
+      top.forEach((it, idx) => {
+        lines.push(
+          `| ${idx + 1} | ${String(it.inputName || "n/d")} | ${String(it.currentValue || "n/d")} | ${String(it.suggestedValue || "n/d")} | ${dirBadge(it.direction)} | ${String(it.motivoIntraday || "n/d")} | ${Number(it.evidenceCount) || 0} | ${String(it.impactoEsperado || "n/d")} |`,
+        );
+      });
+    } else {
+      lines.push("- Ainda sem evidência suficiente para priorizar top 10 inputs.");
+    }
+    lines.push(
+      "",
+      "",
+      "## Formato de decisao",
+      "- Nome do input",
+      "- Valor atual",
+      "- Valor sugerido",
+      "- Direcao (afrouxar / endurecer)",
+      "- Motivo intraday",
+      "- Evidencia (X divergencias IA x EA)",
+      "- Impacto esperado",
+      "",
+    );
+    const out = path.join(dir, `calibragem-inputs-${day}.md`);
+    fs.writeFileSync(out, lines.join("\n"), "utf8");
+    return { ok: true, path: out };
+  } catch (e) {
+    return { ok: false, error: e && e.message ? e.message : String(e) };
   }
 });
 

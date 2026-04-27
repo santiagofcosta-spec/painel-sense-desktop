@@ -224,6 +224,15 @@ function getDashboardRenderBoxes() {
   };
 }
 
+function marketLikelyClosedNow() {
+  const n = new Date();
+  const day = n.getDay(); // 0 dom, 6 sab
+  if (day === 0 || day === 6) return true;
+  const hhmm = n.getHours() * 100 + n.getMinutes();
+  // Janela simples para B3 índice/dólar intraday.
+  return hhmm < 900 || hhmm > 1850;
+}
+
 function runDashboardPanelsAndPersist(args) {
   const { boxes, dIn, v, now, stale, result, metaLagSec, guardIsComplete, S, LEVELS_HOLD_MS_DEFAULT } = args;
   const d = applyPanelNeutralDebounce(dIn);
@@ -236,5 +245,24 @@ function runDashboardPanelsAndPersist(args) {
   paintDashboardDeltaPanel(boxes.deltaBox, d, v, S);
   paintDashboardSummaryPanel(boxes.summaryBox, d);
   persistDashboardRenderGuards(d, result, { guardIsComplete, S });
-  setDataBanner(false);
+  const staleReads = Number(S && S.staleConsecutiveReads);
+  if (Number.isFinite(staleReads) && staleReads >= 3) {
+    if (marketLikelyClosedNow()) {
+      setDataBanner(
+        true,
+        `Mercado possivelmente fechado (${staleReads} leituras sem atualização). Aguardando novos ticks.`,
+        "soft",
+      );
+    } else {
+      // Durante pregão: alerta forte no início, depois suaviza para reduzir ruído visual contínuo.
+      const staleTone = staleReads >= 8 ? "soft" : undefined;
+      setDataBanner(
+        true,
+        `DADOS STALE (${staleReads} leituras seguidas). Verifique assinatura/segredo do dashboard e fonte de dados.`,
+        staleTone,
+      );
+    }
+  } else {
+    setDataBanner(false);
+  }
 }

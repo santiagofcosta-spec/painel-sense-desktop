@@ -51,7 +51,7 @@
   margin-top: -26px;
   padding: 0;
   background: none;
-  animation: senseHudFloat calc(5.2s * var(--sense-anim-factor)) ease-in-out infinite;
+  animation: none;
   will-change: transform;
 }
 

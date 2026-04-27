@@ -153,6 +153,16 @@ function render(result) {
   metaLagSec = adv.metaLagSec;
   stale = adv.stale;
   result = adv.result;
+  if (stale) {
+    S.staleConsecutiveReads = (Number(S.staleConsecutiveReads) || 0) + 1;
+    const nowWarn = Date.now();
+    if (S.staleConsecutiveReads >= 3 && nowWarn - (Number(S.staleWarnedAtMs) || 0) > 15000) {
+      console.warn("[Painel SENSE] dados stale em sequencia:", S.staleConsecutiveReads);
+      S.staleWarnedAtMs = nowWarn;
+    }
+  } else {
+    S.staleConsecutiveReads = 0;
+  }
 
   runDashboardPanelsAndPersist({
     boxes,

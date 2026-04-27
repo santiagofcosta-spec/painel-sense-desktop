@@ -196,7 +196,17 @@ function renderPicoPersistCountdownClock(go) {
   `;
 }
 
-function hudRadarDeltaPctGaugesRow(rad, go) {
+function renderSpeedMiddleIndicator(go, dashboardData) {
+  const clock = renderPicoPersistCountdownClock(go);
+  if (clock) return `<div class="radar-mid-indicator radar-mid-indicator--clock">${clock}</div>`;
+  if (typeof renderGatilhoMemoriaTrianguloHtml !== "function") return "";
+  const triRaw = renderGatilhoMemoriaTrianguloHtml(dashboardData);
+  if (!triRaw) return "";
+  const tri = triRaw.replace("gatilho-mem-tri-wrap", "gatilho-mem-tri-wrap gatilho-mem-tri-wrap--speed-center");
+  return `<div class="radar-mid-indicator radar-mid-indicator--tri">${tri}</div>`;
+}
+
+function hudRadarDeltaPctGaugesRow(rad, go, dashboardData) {
   const dp = rad && rad.deltaPctPicos;
   const ds = rad && rad.deltaPctPersist;
   return `
@@ -205,7 +215,7 @@ function hudRadarDeltaPctGaugesRow(rad, go) {
       ${hudRadarDeltaPctGauge("% Pico", dp, "pico")}
       ${hudRadarDeltaPctGauge("% Persist", ds, "persist")}
       </div>
-      ${renderPicoPersistCountdownClock(go)}
+      ${renderSpeedMiddleIndicator(go, dashboardData)}
     </div>
   `;
 }

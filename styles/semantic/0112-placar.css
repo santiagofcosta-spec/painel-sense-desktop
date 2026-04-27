@@ -5,33 +5,33 @@
 
 
 .scoreboard--compact {
-  gap: 5px;
-  margin-bottom: 4px;
+  gap: 3px;
+  margin-bottom: 1px;
 }
 
 .scoreboard--compact .score {
-  padding: 4px 5px;
-  border-radius: 6px;
+  padding: 2px 3px;
+  border-radius: 4px;
 }
 
 .scoreboard--compact .score .label {
-  font-size: 9px;
+  font-size: 8px;
   letter-spacing: 0.12em;
 }
 
 .scoreboard--compact .score .num {
-  font-size: 15px;
-  margin-top: 1px;
+  font-size: 11px;
+  margin-top: 0;
 }
 
 .bar-wrap--compact {
-  height: 13px;
-  border-radius: 7px;
-  margin-top: 1px;
+  height: 8px;
+  border-radius: 5px;
+  margin-top: 0;
 }
 
 .meta-foot--compact {
-  font-size: 10px;
-  padding-top: 2px;
+  font-size: 8px;
+  padding-top: 0;
   opacity: 0.92;
 }
