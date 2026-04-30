@@ -20,6 +20,8 @@ const {
   runSenseIaAsk,
   mergeSenseIaEnvWithConfigFile,
 } = require(path.join(__dirname, "scripts", "lib", "sense-ia-ask-core.js"));
+const { loadCompactContext } = require(path.join(__dirname, "scripts", "lib", "sense-ia-context.js"));
+const { SenseIaAutoCycle } = require(path.join(__dirname, "scripts", "lib", "sense-ia-auto-cycle.js"));
 
 let mainWindow = null;
 let licenseRuntimeStatus = {
@@ -32,6 +34,7 @@ let licenseRuntimeStatus = {
 /** fs.watch da pasta do dashboard — leitura imediata quando o MT5 grava (além do intervalo). */
 let dashboardWatchHandle = null;
 let dashboardWatchDebounce = null;
+let autoCycleInstance = null;
 /**
  * Quando true, não reutilizamos `dashboardCacheByPath` como “fonte” antes de reler o disco
  * (evita mostrar dados de um path antigo após mudar `dataFile`).
@@ -778,6 +781,11 @@ function createWindow() {
 
   mainWindow.loadFile(path.join(__dirname, "index.html"), { query: demoPulsoSpeedQueryFromEnvOrConfig() });
   startDashboardWatch();
+  autoCycleInstance = new SenseIaAutoCycle({
+    getWindow: () => mainWindow,
+    configPath: configPath(),
+  });
+  autoCycleInstance.start();
   /* Abre DevTools automaticamente se definires SENSE_DEVTOOLS=1 antes de npm start (PowerShell: $env:SENSE_DEVTOOLS="1"; npm start) */
   if (process.env.SENSE_DEVTOOLS === "1") {
     mainWindow.webContents.openDevTools({ mode: "detach" });
@@ -816,6 +824,10 @@ app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
 
+app.on("before-quit", () => {
+  if (autoCycleInstance) autoCycleInstance.stop();
+});
+
 ipcMain.handle("read-dashboard", async () => {
   const r = await readDashboardJson();
   if (!r.ok) {
@@ -847,6 +859,49 @@ ipcMain.handle("sense-ia-ask", async () => {
     configPath(),
   );
   return await runSenseIaAsk(env);
+});
+
+/** SENSE IA — mesmo contexto JSON, com prompt longo A)–F) para diagnóstico Gatilho FA (B+C). */
+ipcMain.handle("sense-ia-ask-gatilho-diagnostic", async () => {
+  const env = mergeSenseIaEnvWithConfigFile(
+    {
+      ...process.env,
+      SENSE_DASHBOARD_DATA_FILE: getDataFilePath(),
+      SENSE_IA_PROMPT_PROFILE: "gatilho_fa_diagnostic",
+    },
+    configPath(),
+  );
+  return await runSenseIaAsk(env);
+});
+
+/** Devolve o JSON compacto (o mesmo núcleo que a SENSE IA envia ao modelo) para colar noutro sítio (ex.: Cursor). */
+ipcMain.handle("sense-ia-get-compact-context", async () => {
+  const env = mergeSenseIaEnvWithConfigFile(
+    {
+      ...process.env,
+      SENSE_DASHBOARD_DATA_FILE: getDataFilePath(),
+    },
+    configPath(),
+  );
+  const loaded = loadCompactContext(env);
+  if (loaded.error) {
+    return {
+      ok: false,
+      senseIa: true,
+      error: loaded.error,
+      dataPath: loaded.dataPath,
+      hint: loaded.hint,
+    };
+  }
+  const { compact, dataPath } = loaded;
+  return {
+    ok: true,
+    senseIa: true,
+    dataPath,
+    readAt: compact._readAt,
+    sourcePath: compact._sourcePath,
+    json: JSON.stringify(compact, null, 2),
+  };
 });
 
 /** Intervalo da leitura automática (minutos). 0 = desligado. Omisso = 30. */
@@ -965,6 +1020,44 @@ ipcMain.handle("save-ia-calibration-report", async (_evt, payload) => {
       "",
     );
     const out = path.join(dir, `calibragem-inputs-${day}.md`);
+    fs.writeFileSync(out, lines.join("\n"), "utf8");
+    return { ok: true, path: out };
+  } catch (e) {
+    return { ok: false, error: e && e.message ? e.message : String(e) };
+  }
+});
+
+/** Relatório A–F da SENSE IA (Gatilho FA) — Markdown no Ambiente de Trabalho. */
+ipcMain.handle("save-ia-gatilho-fa-report", async (_evt, payload) => {
+  try {
+    const desktopDir = app.getPath("desktop");
+    const dir = path.join(desktopDir, "Relatórios Gatilho FA");
+    fs.mkdirSync(dir, { recursive: true });
+    const p = payload && typeof payload === "object" ? payload : {};
+    const answer = String(p.answer || "").trim();
+    if (!answer) {
+      return { ok: false, error: "Gera o relatório Gatilho FA antes de guardar (resposta vazia)." };
+    }
+    const d = new Date();
+    const slug = d.toISOString().replace(/[:.]/g, "-");
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    const model = String(p.model || "n/d");
+    const provider = String(p.provider || "n/d");
+    const readAt = String(p.readAt || "n/d");
+    const lines = [
+      "# Relatório SENSE IA — Gatilho operacional (A–G)",
+      "",
+      `Guardado em: ${d.toISOString()}`,
+      `Modelo: ${model}`,
+      `Fornecedor: ${provider}`,
+      `Leitura JSON (painel): ${readAt}`,
+      "",
+      "---",
+      "",
+      answer,
+      "",
+    ];
+    const out = path.join(dir, `gatilho-fa-ia-${day}-${slug}.md`);
     fs.writeFileSync(out, lines.join("\n"), "utf8");
     return { ok: true, path: out };
   } catch (e) {

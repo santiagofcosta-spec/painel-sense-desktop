@@ -6,6 +6,11 @@
 
 const fs = require("fs");
 const { loadCompactContext } = require("./sense-ia-context.js");
+const {
+  GATILHO_FA_DIAGNOSTIC_USER_PREFIX,
+  SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC,
+  SYSTEM_GATILHO_FA_DIAGNOSTIC_ADDON,
+} = require("./sense-ia-gatilho-diagnostic-prompt.js");
 
 const SYSTEM_PT = `És a SENSE IA. Recebes um JSON com dados agregados do painel SENSE (mercado, delta, fluxo, regime, radar, agressão, etc.).
 Responde em português europeu (Brasil aceitável se preferires tom neutro).
@@ -21,15 +26,42 @@ Dá prioridade aos sinais estruturados do próprio JSON (flow, delta, gatilhoOpe
 Se o JSON incluir \`dataAgeSeconds\`, considera dados com mais de 300 s potencialmente defasados e menciona isso na análise.
 Se incluir \`ativoLateralLimitePct\`, usa-o como limiar para classificar ntslZ como lateral.
 Se incluir \`flow.trendWeakPct\` e \`flow.trendStrongPct\`, usa-os para graduar a intensidade da tendência (fraca vs. forte).
+Se existir \`eaInputsSnapshot\`, são os **inputs reais** da EA no MT5 nesse momento (objeto completo exportado pelo EA); **não** assumas defaults do código — usa estes valores para flags/limiares (ex.: \`FA_Ativo\`, \`Use_ZFlow\`) e **não** os confundas com \`gatilho.diag.faAtivo\` (estado interno do \`diag\`, só se existir).
 
 Depois dessas linhas, dá uma leitura **objetiva** do *sentimento* e dos **riscos** perceptíveis (ex.: divergências, incerteza).
 Usa **título curto** (opcional) + **2 a 4 parágrafos** ou bullets; não inventes números que não estejam no JSON.
 Aviso: isto é **apenas análise descritiva** de sinais; não é recomendação de investimento nem previsão garantida.`;
 
+const SENSE_IA_PROFILE_AUTO_CYCLE = "auto_cycle";
+
+const SYSTEM_AUTO_CYCLE_PT = `Você é um analista de fluxo de ordens intraday.
+Responda EXATAMENTE neste formato, sem nenhum texto adicional:
+Viés: Alta|Baixa|Lateral
+Confiança: XX%
+Razão: [máximo 12 palavras]`;
+
 function envGet(env, key, def) {
   const v = env && env[key];
   if (v === undefined || v === null || String(v).trim() === "") return def;
   return String(v).trim();
+}
+
+function isGatilhoFaDiagnosticProfile(env) {
+  return envGet(env, "SENSE_IA_PROMPT_PROFILE", "").toLowerCase() === SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC;
+}
+
+/** max_tokens OpenAI-compat: env SENSE_IA_MAX_TOKENS ou limite por defeito. */
+function resolveMaxTokens(env, fallback) {
+  const n = Number(envGet(env, "SENSE_IA_MAX_TOKENS", ""));
+  if (Number.isFinite(n) && n >= 256 && n <= 16384) return Math.floor(n);
+  return fallback;
+}
+
+/** num_predict Ollama: env SENSE_IA_OLLAMA_NUM_PREDICT ou limite por defeito. */
+function resolveOllamaNumPredict(env, fallback) {
+  const n = Number(envGet(env, "SENSE_IA_OLLAMA_NUM_PREDICT", ""));
+  if (Number.isFinite(n) && n >= 200 && n <= 8192) return Math.floor(n);
+  return fallback;
 }
 
 /**
@@ -91,7 +123,7 @@ async function openAiCompatibleChat(messages, env, label, key, base, defaultMode
       model,
       messages,
       temperature: 0.35,
-      max_tokens: 1200,
+      max_tokens: resolveMaxTokens(env, 1200),
     }),
   });
   const text = await res.text();
@@ -136,10 +168,8 @@ async function gensparkChat(messages, env) {
   return openAiCompatibleChat(messages, env, "Genspark", key, gensparkBaseUrl(env), "claude-sonnet-4-6");
 }
 
-/** Timeout da chamada HTTP ao Ollama (ms) — primeira carga do modelo + JSON grande pode ir além de 1–2 min. */
-const OLLAMA_FETCH_TIMEOUT_MS = Number(process.env.SENSE_IA_OLLAMA_TIMEOUT_MS || "") || 300000;
-
 async function ollamaChat(messages, env) {
+  const timeoutMs = Number(envGet(env, "SENSE_IA_OLLAMA_TIMEOUT_MS", "")) || 300000;
   const host = envGet(env, "OLLAMA_HOST", "http://127.0.0.1:11434");
   const model = envGet(env, "SENSE_IA_MODEL", "llama3.2");
   const url = `${host.replace(/\/$/, "")}/api/chat`;
@@ -153,20 +183,20 @@ async function ollamaChat(messages, env) {
         messages: messages.map((m) => ({ role: m.role, content: m.content })),
         stream: false,
         options: {
-          num_predict: 1400,
+          num_predict: resolveOllamaNumPredict(env, 1400),
           temperature: 0.35,
         },
       }),
       signal:
         typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function"
-          ? AbortSignal.timeout(OLLAMA_FETCH_TIMEOUT_MS)
+          ? AbortSignal.timeout(timeoutMs)
           : undefined,
     });
   } catch (e) {
     const name = e && e.name;
     if (name === "AbortError" || name === "TimeoutError") {
       throw new Error(
-        `Ollama não respondeu em ${Math.round(OLLAMA_FETCH_TIMEOUT_MS / 1000)} s — servidor parado, modelo a carregar na RAM, ou CPU muito lenta. Confirma que o Ollama está a correr e tenta de novo.`,
+        `Ollama não respondeu em ${Math.round(timeoutMs / 1000)} s — servidor parado, modelo a carregar na RAM, ou CPU muito lenta. Confirma que o Ollama está a correr e tenta de novo.`,
       );
     }
     if (e && (e.code === "ECONNREFUSED" || e.cause?.code === "ECONNREFUSED")) {
@@ -198,7 +228,16 @@ async function ollamaChat(messages, env) {
  * @returns {Promise<{ ok: true, answer, model, provider, readAt, sourcePath, senseIa?: true } | { ok: false, error, hint?, dataPath?, senseIa?: true }>}
  */
 async function runSenseIaAsk(customEnv) {
-  const env = customEnv || process.env;
+  const env = customEnv ? { ...customEnv } : { ...process.env };
+  if (isGatilhoFaDiagnosticProfile(env)) {
+    if (!String(env.SENSE_IA_MAX_TOKENS || "").trim()) env.SENSE_IA_MAX_TOKENS = "4096";
+    if (!String(env.SENSE_IA_OLLAMA_NUM_PREDICT || "").trim()) env.SENSE_IA_OLLAMA_NUM_PREDICT = "3200";
+  }
+  const autoCycleProfile = envGet(env, "SENSE_IA_PROMPT_PROFILE", "").toLowerCase() === SENSE_IA_PROFILE_AUTO_CYCLE;
+  if (autoCycleProfile) {
+    if (!String(env.SENSE_IA_MAX_TOKENS || "").trim()) env.SENSE_IA_MAX_TOKENS = "80";
+    if (!String(env.SENSE_IA_OLLAMA_NUM_PREDICT || "").trim()) env.SENSE_IA_OLLAMA_NUM_PREDICT = "80";
+  }
 
   if (typeof fetch !== "function") {
     return {
@@ -220,14 +259,26 @@ async function runSenseIaAsk(customEnv) {
   }
 
   const { compact } = loaded;
-  const userPayload = [
-    "Segue o contexto JSON do painel (uma leitura de mercado agregada).",
-    "",
-    JSON.stringify(compact, null, 2),
-  ].join("\n");
+  const diagnostic = isGatilhoFaDiagnosticProfile(env);
+  const userLines = [];
+  if (diagnostic) {
+    userLines.push(GATILHO_FA_DIAGNOSTIC_USER_PREFIX);
+    userLines.push("");
+    userLines.push("---");
+    userLines.push("");
+  }
+  userLines.push("Segue o contexto JSON do painel (uma leitura de mercado agregada).");
+  userLines.push("");
+  userLines.push(JSON.stringify(compact, null, 2));
+  const userPayload = userLines.join("\n");
 
+  const systemContent = diagnostic
+    ? SYSTEM_PT + SYSTEM_GATILHO_FA_DIAGNOSTIC_ADDON
+    : autoCycleProfile
+      ? SYSTEM_AUTO_CYCLE_PT
+      : SYSTEM_PT;
   const messages = [
-    { role: "system", content: SYSTEM_PT },
+    { role: "system", content: systemContent },
     { role: "user", content: userPayload },
   ];
 
@@ -246,6 +297,7 @@ async function runSenseIaAsk(customEnv) {
       provider,
       readAt: compact._readAt,
       sourcePath: compact._sourcePath,
+      ...(diagnostic ? { senseIaProfile: SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC } : {}),
     };
   } catch (e) {
     const msg = e.message || String(e);
@@ -268,4 +320,11 @@ async function runSenseIaAsk(customEnv) {
   }
 }
 
-module.exports = { runSenseIaAsk, SYSTEM_PT, mergeSenseIaEnvWithConfigFile };
+module.exports = {
+  runSenseIaAsk,
+  SYSTEM_PT,
+  mergeSenseIaEnvWithConfigFile,
+  isGatilhoFaDiagnosticProfile,
+  SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC,
+  SENSE_IA_PROFILE_AUTO_CYCLE,
+};
