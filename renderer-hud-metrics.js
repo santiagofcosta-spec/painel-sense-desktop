@@ -200,7 +200,7 @@ function renderSpeedMiddleIndicator(go, dashboardData) {
   const clock = renderPicoPersistCountdownClock(go);
   if (clock) return `<div class="radar-mid-indicator radar-mid-indicator--clock">${clock}</div>`;
   if (typeof renderGatilhoMemoriaTrianguloHtml !== "function") return "";
-  const triRaw = renderGatilhoMemoriaTrianguloHtml(dashboardData);
+  const triRaw = renderGatilhoMemoriaTrianguloHtml(dashboardData, go);
   if (!triRaw) return "";
   const tri = triRaw.replace("gatilho-mem-tri-wrap", "gatilho-mem-tri-wrap gatilho-mem-tri-wrap--speed-center");
   return `<div class="radar-mid-indicator radar-mid-indicator--tri">${tri}</div>`;

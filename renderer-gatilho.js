@@ -1370,7 +1370,55 @@ function pickContextSide(buyScore, sellScore, dashboardData) {
   return contextoSideHintFromDash(dashboardData);
 }
 
-function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
+function detectLiquidityTrapForSide(side, dashboardData, go) {
+  if (!side) return null;
+  const diag = go && go.diag && typeof go.diag === "object" ? go.diag : null;
+  const trendClash = trendContradictsGatilhoLabel(dashboardData, side === "buy", side === "sell");
+  const lateral = ativoLateralFromDash(dashboardData);
+  const spreadStress = !!(diag && diag.spreadAlert === true);
+  const fpExBuy = !!(diag && diag.fpExaustBuy === true);
+  const fpExSell = !!(diag && diag.fpExaustSell === true);
+  const fpContra = (side === "buy" && fpExBuy) || (side === "sell" && fpExSell);
+  const radarDir = stripAccentsForDisplay(String((dashboardData && dashboardData.radar && dashboardData.radar.dir) || "")).toLowerCase();
+  const radarContra =
+    (side === "buy" && (radarDir.includes("venda") || radarDir.includes("sell"))) ||
+    (side === "sell" && (radarDir.includes("compra") || radarDir.includes("buy")));
+  const buyPct = Number(dashboardData && dashboardData.delta && dashboardData.delta.buyPct);
+  const sellPct = Number(dashboardData && dashboardData.delta && dashboardData.delta.sellPct);
+  const deltaContra =
+    Number.isFinite(buyPct) &&
+    Number.isFinite(sellPct) &&
+    ((side === "buy" && sellPct - buyPct >= 8) || (side === "sell" && buyPct - sellPct >= 8));
+
+  const evidences = [];
+  if (trendClash) evidences.push({ label: `viés contrário (${trendClash})`, w: 0.34 });
+  if (lateral) evidences.push({ label: "mercado lateral", w: 0.18 });
+  if (spreadStress) evidences.push({ label: "stress de spread", w: 0.2 });
+  if (fpContra) evidences.push({ label: side === "buy" ? "exaustão da compra" : "exaustão da venda", w: 0.24 });
+  if (radarContra) evidences.push({ label: "radar contrário", w: 0.16 });
+  if (deltaContra) evidences.push({ label: "delta contrário", w: 0.22 });
+  if (evidences.length < 2) return null;
+
+  const scoreRaw = evidences.reduce((acc, e) => acc + e.w, 0);
+  const score = Math.max(0, Math.min(1, scoreRaw));
+  if (score < 0.45) return null;
+  const high = score >= 0.72;
+  const confidence = Math.round(score * 100);
+  return {
+    level: high ? "high" : "medium",
+    title: high ? "ARMADILHA FORTE" : "ARMADILHA",
+    reason: evidences
+      .sort((a, b) => b.w - a.w)
+      .slice(0, 3)
+      .map((x) => x.label)
+      .join(" + "),
+    confidence,
+    action: high ? "evitar entrada até limpar conflito" : "reduzir agressividade e aguardar alinhamento",
+  };
+}
+
+
+function renderGatilhoMemoriaTrianguloHtml(dashboardData, go) {
   const now = Date.now();
   const buyMem = window.SenseRendererState.regimeCompraConfiavelMemUntil > now;
   const sellMem = window.SenseRendererState.regimeVendaConfiavelMemUntil > now;
@@ -1415,16 +1463,26 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
   }
   if (!side) return "";
 
+  const trap = detectLiquidityTrapForSide(side, dashboardData, go);
+  const contextoTopSide = contextoSideHintFromDash(dashboardData);
   const alignedConfiavel =
     mode === "mem" &&
     ((side === "buy" && buyConfiavelNow) || (side === "sell" && sellConfiavelNow));
+  // Regra estrita: só é confiável quando a linha de cima (contexto) e a de baixo
+  // (compra/venda confiável do bloco) apontam para o mesmo lado no ciclo atual.
+  const strictTopBottomAligned = alignedConfiavel && contextoTopSide === side;
+  const trustedConfiavel = strictTopBottomAligned && !trap;
   const tri = side === "buy" ? "▲" : "▼";
   const title =
     mode === "mem"
-      ? alignedConfiavel
+      ? trustedConfiavel
         ? side === "buy"
           ? "Memória Compra confiável ativa (120s) com alinhamento do contexto."
           : "Memória Venda confiável ativa (120s) com alinhamento do contexto."
+        : trap
+          ? `${trap.title}: possível liquidez momentânea (${trap.reason}).`
+        : alignedConfiavel && contextoTopSide !== side
+          ? "Sem selo confiável: contexto de mercado (linha de cima) divergente do lado atual."
         : side === "buy"
           ? "Memória Compra ativa, mas sem alinhamento completo para selo confiável."
           : "Memória Venda ativa, mas sem alinhamento completo para selo confiável."
@@ -1432,15 +1490,15 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
         ? "Compra acima de 30% no Contexto de mercado (pulso lento)."
         : "Venda acima de 30% no Contexto de mercado (pulso lento).";
   const state = window.SenseRendererState || {};
-  const currentKey = mode === "mem" && alignedConfiavel ? `${mode}:${side}:conf` : `${mode}:${side}:raw`;
+  const currentKey = mode === "mem" && trustedConfiavel ? `${mode}:${side}:conf` : `${mode}:${side}:raw`;
   const lastKey = String(state.gatilhoTriVisualLastKey || "");
   let persistChanged = false;
   if (currentKey !== lastKey) {
-    if (mode === "mem" && alignedConfiavel && side === "buy") {
+    if (mode === "mem" && trustedConfiavel && side === "buy") {
       state.gatilhoTriBlueCount = Math.max(0, Number(state.gatilhoTriBlueCount) || 0) + 1;
       state.gatilhoTriPurpleCount = 0;
       persistChanged = true;
-    } else if (mode === "mem" && alignedConfiavel && side === "sell") {
+    } else if (mode === "mem" && trustedConfiavel && side === "sell") {
       state.gatilhoTriPurpleCount = Math.max(0, Number(state.gatilhoTriPurpleCount) || 0) + 1;
       state.gatilhoTriBlueCount = 0;
       persistChanged = true;
@@ -1463,15 +1521,19 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
     }
   }
   const sideCount =
-    mode === "mem" && alignedConfiavel
+    mode === "mem" && trustedConfiavel
       ? Math.max(0, Number(side === "buy" ? state.gatilhoTriBlueCount : state.gatilhoTriPurpleCount) || 0)
       : 0;
   let visualBadge = "";
+  let trapBadge = "";
   if (mode === "prep") {
     visualBadge = "ATENÇÃO";
-  } else if (mode === "mem" && alignedConfiavel && side === "buy" && (Number(state.gatilhoTriBlueCount) || 0) >= 5) {
+  } else if (mode === "mem" && trap) {
+    visualBadge = side === "buy" ? "COMPRA SUSPEITA" : "VENDA SUSPEITA";
+    trapBadge = trap.level === "high" ? "⛔ ARMADILHA FORTE" : "⚠ ARMADILHA";
+  } else if (mode === "mem" && trustedConfiavel && side === "buy" && (Number(state.gatilhoTriBlueCount) || 0) >= 5) {
     visualBadge = "COMPRA CONFIÁVEL";
-  } else if (mode === "mem" && alignedConfiavel && side === "sell" && (Number(state.gatilhoTriPurpleCount) || 0) >= 5) {
+  } else if (mode === "mem" && trustedConfiavel && side === "sell" && (Number(state.gatilhoTriPurpleCount) || 0) >= 5) {
     visualBadge = "VENDA CONFIÁVEL";
   } else if (mode === "mem") {
     visualBadge = side === "buy" ? "COMPRA" : "VENDA";
@@ -1480,14 +1542,19 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
     ? `<span class="gatilho-mem-badge gatilho-mem-badge--${mode} gatilho-mem-badge--${side}" aria-hidden="true">${visualBadge}</span>`
     : "";
   const counterHtml =
-    mode === "mem" && alignedConfiavel
+    mode === "mem" && trustedConfiavel
       ? `<span class="gatilho-mem-counter gatilho-mem-counter--${side}" aria-hidden="true">${
           sideCount <= 5 ? `${sideCount}/5` : `${sideCount}`
         }</span>`
       : "";
+  const trapHtml =
+    trapBadge && mode === "mem"
+      ? `<span class="gatilho-mem-trap-badge gatilho-mem-trap-badge--${trap.level}" aria-hidden="true">${trapBadge}</span>`
+      : "";
   return `<span class="gatilho-mem-tri-wrap" aria-label="Sinal de preparo/memória do contexto">
     <span class="gatilho-mem-tri gatilho-mem-tri--${side} gatilho-mem-tri--${mode}" title="${title}" aria-hidden="true">${tri}</span>
     ${badgeHtml}
+    ${trapHtml}
     ${counterHtml}
   </span>`;
 }
@@ -1633,6 +1700,16 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
       : audit
         ? `Leitura IA: ${audit.reason} · conf ${audit.confidence}%`
         : "";
+  const trapForEaSide = iaHybridEnabled && eaSide ? detectLiquidityTrapForSide(eaSide, dashboardData, go) : null;
+  const trapLine = trapForEaSide
+    ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${
+        trapForEaSide.level === "high" ? "gatilho-ia-status--sell" : "gatilho-ia-status--neutral"
+      }"><span class="gatilho-ia-audit-tag">⚠ ARMADILHA</span> ${
+        trapForEaSide.title
+      } (${Number(trapForEaSide.confidence) || 0}%) · ${escapeHtml(trapForEaSide.reason)} · Ação: ${escapeHtml(
+        trapForEaSide.action || "esperar novo alinhamento"
+      )}</div></div>`
+    : "";
   const rtAlert = iaHybridEnabled ? buildIaRealtimeAlert(audit, eaSide, dashboardData) : null;
   const rtAlertClass =
     rtAlert && rtAlert.level === "high"
@@ -1675,6 +1752,7 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
     }">
       ${titleRow}
       ${iaHybridLine}
+      ${trapLine}
       ${iaRealtimeAlertLine}
       ${lateralAlert}
       ${direcaoOkAlert}
