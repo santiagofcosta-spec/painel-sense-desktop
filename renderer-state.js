@@ -31,6 +31,8 @@
     senseIaHybridLastLabel: "",
     senseIaHybridLastTriggerAtMs: 0,
     senseIaHybridPulseUntilMs: 0,
+    iaAuditAlertHoldUntilMs: 0,
+    iaAuditAlertHtml: "",
     iaAuditReportLastSavedAtMs: 0,
     iaAuditStats: {
       total: 0,

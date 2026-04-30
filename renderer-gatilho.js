@@ -1723,6 +1723,16 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
           rtAlert.text
         )} · Ação: ${escapeHtml(rtAlert.action)}</div></div>`
       : "";
+  const state = window.SenseRendererState || {};
+  const alertNowHtml = [trapLine, iaRealtimeAlertLine].filter(Boolean).join("");
+  const nowAlertMs = Date.now();
+  const holdMs = 12000;
+  if (alertNowHtml) {
+    state.iaAuditAlertHtml = alertNowHtml;
+    state.iaAuditAlertHoldUntilMs = nowAlertMs + holdMs;
+  }
+  const alertHoldActive = Number(state.iaAuditAlertHoldUntilMs) > nowAlertMs && String(state.iaAuditAlertHtml || "").trim().length > 0;
+  const iaAlertDisplayHtml = alertNowHtml || (alertHoldActive ? state.iaAuditAlertHtml : "");
   const iaHybridLine = iaHybridEnabled
     ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${iaToneClass}"><span class="gatilho-ia-audit-tag">IA AUDITORA (REGRAS)</span> ${iaVerdict} · ${concord}${
         divergenceReason ? ` · ${divergenceReason}` : ""
@@ -1752,8 +1762,7 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
     }">
       ${titleRow}
       ${iaHybridLine}
-      ${trapLine}
-      ${iaRealtimeAlertLine}
+      ${iaAlertDisplayHtml}
       ${lateralAlert}
       ${direcaoOkAlert}
       ${compactReasonHold}
