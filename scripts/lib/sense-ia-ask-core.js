@@ -11,6 +11,10 @@ const {
   SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC,
   SYSTEM_GATILHO_FA_DIAGNOSTIC_ADDON,
 } = require("./sense-ia-gatilho-diagnostic-prompt.js");
+const {
+  SENSE_IA_PROFILE_INPUTS_DIAGNOSTIC,
+  SYSTEM_INPUTS_DIAGNOSTIC_PT,
+} = require("./sense-ia-inputs-diagnostic-prompt.js");
 
 const SYSTEM_PT = `És a SENSE IA. Recebes um JSON com dados agregados do painel SENSE (mercado, delta, fluxo, regime, radar, agressão, etc.).
 Responde em português europeu (Brasil aceitável se preferires tom neutro).
@@ -48,6 +52,10 @@ function envGet(env, key, def) {
 
 function isGatilhoFaDiagnosticProfile(env) {
   return envGet(env, "SENSE_IA_PROMPT_PROFILE", "").toLowerCase() === SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC;
+}
+
+function isInputsDiagnosticProfile(env) {
+  return envGet(env, "SENSE_IA_PROMPT_PROFILE", "").toLowerCase() === SENSE_IA_PROFILE_INPUTS_DIAGNOSTIC;
 }
 
 /** max_tokens OpenAI-compat: env SENSE_IA_MAX_TOKENS ou limite por defeito. */
@@ -229,9 +237,15 @@ async function ollamaChat(messages, env) {
  */
 async function runSenseIaAsk(customEnv) {
   const env = customEnv ? { ...customEnv } : { ...process.env };
-  if (isGatilhoFaDiagnosticProfile(env)) {
+  const gatilhoDiagnostic = isGatilhoFaDiagnosticProfile(env);
+  const inputsDiagnostic = isInputsDiagnosticProfile(env);
+  if (gatilhoDiagnostic) {
     if (!String(env.SENSE_IA_MAX_TOKENS || "").trim()) env.SENSE_IA_MAX_TOKENS = "4096";
     if (!String(env.SENSE_IA_OLLAMA_NUM_PREDICT || "").trim()) env.SENSE_IA_OLLAMA_NUM_PREDICT = "3200";
+  }
+  if (inputsDiagnostic) {
+    if (!String(env.SENSE_IA_MAX_TOKENS || "").trim()) env.SENSE_IA_MAX_TOKENS = "800";
+    if (!String(env.SENSE_IA_OLLAMA_NUM_PREDICT || "").trim()) env.SENSE_IA_OLLAMA_NUM_PREDICT = "900";
   }
   const autoCycleProfile = envGet(env, "SENSE_IA_PROMPT_PROFILE", "").toLowerCase() === SENSE_IA_PROFILE_AUTO_CYCLE;
   if (autoCycleProfile) {
@@ -259,9 +273,8 @@ async function runSenseIaAsk(customEnv) {
   }
 
   const { compact } = loaded;
-  const diagnostic = isGatilhoFaDiagnosticProfile(env);
   const userLines = [];
-  if (diagnostic) {
+  if (gatilhoDiagnostic) {
     userLines.push(GATILHO_FA_DIAGNOSTIC_USER_PREFIX);
     userLines.push("");
     userLines.push("---");
@@ -272,8 +285,10 @@ async function runSenseIaAsk(customEnv) {
   userLines.push(JSON.stringify(compact, null, 2));
   const userPayload = userLines.join("\n");
 
-  const systemContent = diagnostic
+  const systemContent = gatilhoDiagnostic
     ? SYSTEM_PT + SYSTEM_GATILHO_FA_DIAGNOSTIC_ADDON
+    : inputsDiagnostic
+      ? SYSTEM_INPUTS_DIAGNOSTIC_PT
     : autoCycleProfile
       ? SYSTEM_AUTO_CYCLE_PT
       : SYSTEM_PT;
@@ -297,7 +312,8 @@ async function runSenseIaAsk(customEnv) {
       provider,
       readAt: compact._readAt,
       sourcePath: compact._sourcePath,
-      ...(diagnostic ? { senseIaProfile: SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC } : {}),
+      ...(gatilhoDiagnostic ? { senseIaProfile: SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC } : {}),
+      ...(inputsDiagnostic ? { senseIaProfile: SENSE_IA_PROFILE_INPUTS_DIAGNOSTIC } : {}),
     };
   } catch (e) {
     const msg = e.message || String(e);
@@ -325,6 +341,8 @@ module.exports = {
   SYSTEM_PT,
   mergeSenseIaEnvWithConfigFile,
   isGatilhoFaDiagnosticProfile,
+  isInputsDiagnosticProfile,
   SENSE_IA_PROFILE_GATILHO_FA_DIAGNOSTIC,
+  SENSE_IA_PROFILE_INPUTS_DIAGNOSTIC,
   SENSE_IA_PROFILE_AUTO_CYCLE,
 };

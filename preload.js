@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld("senseAPI", {
   senseIaAsk: () => ipcRenderer.invoke("sense-ia-ask"),
   /** Relatório estruturado A–G (Gatilho operacional / FA); não substitui a leitura curta do logo. */
   senseIaAskGatilhoDiagnostic: () => ipcRenderer.invoke("sense-ia-ask-gatilho-diagnostic"),
+  /** Diagnóstico dedicado dos inputs MT5 que influenciam o gatilho operacional. */
+  senseIaAskInputsDiagnostic: () => ipcRenderer.invoke("sense-ia-ask-inputs-diagnostic"),
   /** JSON compacto igual ao da SENSE IA — para colar no Cursor ou outro assistente. */
   senseIaGetCompactContext: () => ipcRenderer.invoke("sense-ia-get-compact-context"),
   /** Leitura automática: minutos entre disparos (0 = off). */
@@ -22,6 +24,8 @@ contextBridge.exposeInMainWorld("senseAPI", {
   saveIaCalibrationReport: (payload) => ipcRenderer.invoke("save-ia-calibration-report", payload || {}),
   /** Guarda o texto do relatório Gatilho FA (A–F) em Markdown no Ambiente de Trabalho. */
   saveIaGatilhoFaReport: (payload) => ipcRenderer.invoke("save-ia-gatilho-fa-report", payload || {}),
+  /** Guarda o diagnóstico de inputs em .md + .txt no Ambiente de Trabalho. */
+  saveIaInputsReport: (payload) => ipcRenderer.invoke("save-ia-inputs-report", payload || {}),
   getLicenseStatus: () => ipcRenderer.invoke("get-license-status"),
   /** Chamado quando o ficheiro dashboard.json muda no disco (ex.: MT5 gravou). */
   onDashboardFileChanged: (cb) => {

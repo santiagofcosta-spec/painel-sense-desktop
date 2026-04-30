@@ -21,6 +21,7 @@ const {
   mergeSenseIaEnvWithConfigFile,
 } = require(path.join(__dirname, "scripts", "lib", "sense-ia-ask-core.js"));
 const { loadCompactContext } = require(path.join(__dirname, "scripts", "lib", "sense-ia-context.js"));
+const { stripMarkdownForTxt } = require(path.join(__dirname, "scripts", "lib", "strip-markdown.js"));
 const { SenseIaAutoCycle } = require(path.join(__dirname, "scripts", "lib", "sense-ia-auto-cycle.js"));
 
 let mainWindow = null;
@@ -872,6 +873,60 @@ ipcMain.handle("sense-ia-ask-gatilho-diagnostic", async () => {
     configPath(),
   );
   return await runSenseIaAsk(env);
+});
+
+/** SENSE IA — diagnóstico de inputs reais do MT5 (eaInputsSnapshot) focado no gatilho operacional. */
+ipcMain.handle("sense-ia-ask-inputs-diagnostic", async () => {
+  const env = mergeSenseIaEnvWithConfigFile(
+    {
+      ...process.env,
+      SENSE_DASHBOARD_DATA_FILE: getDataFilePath(),
+      SENSE_IA_PROMPT_PROFILE: "inputs_diagnostic",
+    },
+    configPath(),
+  );
+  return await runSenseIaAsk(env);
+});
+
+/** Exporta diagnóstico de inputs em .md + .txt na Área de Trabalho. */
+ipcMain.handle("save-ia-inputs-report", async (_evt, payload) => {
+  try {
+    const p = payload && typeof payload === "object" ? payload : {};
+    const answer = String(p.answer || "").trim();
+    if (!answer) return { ok: false, error: "Gera o diagnóstico de inputs antes de guardar (resposta vazia)." };
+    const desktopDir = app.getPath("desktop");
+    const dir = path.join(desktopDir, "Diagnóstico Inputs");
+    fs.mkdirSync(dir, { recursive: true });
+    const now = new Date();
+    const day = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    const hhmm = `${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}`;
+    const base = `diagnostico-inputs-${day}-${hhmm}`;
+    const model = String(p.model || "n/d");
+    const provider = String(p.provider || "n/d");
+    const readAt = String(p.readAt || "n/d");
+    const sourcePath = String(p.sourcePath || p.dataPath || "n/d");
+    const headerMd = [
+      "# Diagnóstico de Inputs MT5",
+      "",
+      `Gerado em: ${now.toISOString()}`,
+      `Modelo: ${model}`,
+      `Fornecedor: ${provider}`,
+      `Leitura JSON (painel): ${readAt}`,
+      `Origem: ${sourcePath}`,
+      "",
+      "---",
+      "",
+    ].join("\n");
+    const mdContent = headerMd + answer + "\n";
+    const txtContent = stripMarkdownForTxt(headerMd) + "\n\n" + stripMarkdownForTxt(answer) + "\n";
+    const mdPath = path.join(dir, `${base}.md`);
+    const txtPath = path.join(dir, `${base}.txt`);
+    fs.writeFileSync(mdPath, mdContent, "utf8");
+    fs.writeFileSync(txtPath, txtContent, "utf8");
+    return { ok: true, mdPath, txtPath, dir };
+  } catch (e) {
+    return { ok: false, error: e && e.message ? e.message : String(e) };
+  }
 });
 
 /** Devolve o JSON compacto (o mesmo núcleo que a SENSE IA envia ao modelo) para colar noutro sítio (ex.: Cursor). */

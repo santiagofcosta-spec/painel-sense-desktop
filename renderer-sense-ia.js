@@ -93,8 +93,39 @@ function senseIaHudCodaTrendLineFromBiasLabel(label) {
  */
 function buildSenseIaHudCodaHtml(d) {
   const flow = d && d.flow && typeof d.flow === "object" ? d.flow : null;
-  const trendDir = flow ? Number(flow.trendDir) : NaN;
-  const ntslZ = flow ? Number(flow.ntslZ) : NaN;
+  const flowAdv = d && d.flowAdvanced && typeof d.flowAdvanced === "object" ? d.flowAdvanced : null;
+  const trendBase = flow ? Number(flow.trendDir) : NaN;
+  const ntslBase = flow ? Number(flow.ntslZ) : NaN;
+  const zMiniAdv = flowAdv ? Number(flowAdv.zMiniNorm) : NaN;
+  const zRefAdv = flowAdv ? Number(flowAdv.zRefNorm) : NaN;
+  const advCap = 3;
+  const toAdv = (v) => (Number.isFinite(v) ? Math.max(-1, Math.min(1, v / advCap)) : NaN);
+  const advMini = toAdv(zMiniAdv);
+  const advRef = toAdv(zRefAdv);
+  const advBias =
+    Number.isFinite(advMini) && Number.isFinite(advRef)
+      ? (advMini + advRef) / 2
+      : Number.isFinite(advMini)
+        ? advMini
+        : Number.isFinite(advRef)
+          ? advRef
+          : NaN;
+  const trendDir =
+    Number.isFinite(trendBase) && Number.isFinite(advBias)
+      ? trendBase * 0.72 + advBias * 0.28
+      : Number.isFinite(trendBase)
+        ? trendBase
+        : Number.isFinite(advBias)
+          ? advBias
+          : NaN;
+  const ntslZ =
+    Number.isFinite(ntslBase) && Number.isFinite(advBias)
+      ? ntslBase * 0.82 + advBias * 0.18
+      : Number.isFinite(ntslBase)
+        ? ntslBase
+        : Number.isFinite(advBias)
+          ? advBias
+          : NaN;
   const lateralPct = Number(d && d.ativoLateralLimitePct);
   const weakPct = flow ? Number(flow.trendWeakPct) : NaN;
   const strongPct = flow ? Number(flow.trendStrongPct) : NaN;
@@ -191,6 +222,11 @@ const senseIaBody = document.getElementById("senseIaBody");
 const senseIaMeta = document.getElementById("senseIaMeta");
 const senseIaDialogClose = document.getElementById("senseIaDialogClose");
 const senseIaProviderHelp = document.getElementById("senseIaProviderHelp");
+const senseIaGatilhoReportBtn = document.getElementById("senseIaGatilhoReportBtn");
+const senseIaInputsDiagnosticBtn = document.getElementById("senseIaInputsDiagnosticBtn");
+const senseIaSaveGatilhoReportBtn = document.getElementById("senseIaSaveGatilhoReportBtn");
+const senseIaSaveInputsReportBtn = document.getElementById("senseIaSaveInputsReportBtn");
+const senseIaCopyContextBtn = document.getElementById("senseIaCopyContextBtn");
 const hudBoxEl = document.getElementById("hudBox");
 
 function renderSenseIaProviderHelp(sch) {
@@ -413,6 +449,15 @@ function formatSenseIaRichHtml(answer) {
   `;
 }
 
+/** Resposta longa (A–F): texto integral com quebras, sem truncar o cartão “Leitura”. */
+function formatSenseIaLongReportHtml(answer) {
+  const raw = String(answer || "").trim();
+  if (!raw) {
+    return `<div class="sense-ia-dialog__empty">Sem resposta da IA.</div>`;
+  }
+  return `<div class="sense-ia-dialog__long-report">${escapeHtml(raw)}</div>`;
+}
+
 if (
   senseIaDialog &&
   window.senseAPI &&
@@ -423,6 +468,45 @@ if (
   let senseIaApiLock = false;
   let senseIaFloatingTimer = null;
   const SENSE_IA_FLOATING_MS = 60_000;
+  /** Último relatório Gatilho FA com sucesso — usado pelo botão “Guardar .md”. */
+  let senseIaGatilhoFaSavePayload = null;
+  /** Último diagnóstico de inputs com sucesso — usado pelo botão “Exportar .md/.txt”. */
+  let senseIaInputsSavePayload = null;
+
+  function syncSenseIaGatilhoSaveButton() {
+    if (!senseIaSaveGatilhoReportBtn) return;
+    const can =
+      !!senseIaGatilhoFaSavePayload &&
+      String(senseIaGatilhoFaSavePayload.answer || "").trim() &&
+      window.senseAPI &&
+      typeof window.senseAPI.saveIaGatilhoFaReport === "function";
+    if (can) senseIaSaveGatilhoReportBtn.removeAttribute("hidden");
+    else senseIaSaveGatilhoReportBtn.setAttribute("hidden", "");
+  }
+
+  function clearSenseIaGatilhoSavePayload() {
+    senseIaGatilhoFaSavePayload = null;
+    syncSenseIaGatilhoSaveButton();
+  }
+
+  function syncSenseIaInputsSaveButton() {
+    if (!senseIaSaveInputsReportBtn) return;
+    const can =
+      !!senseIaInputsSavePayload &&
+      String(senseIaInputsSavePayload.answer || "").trim() &&
+      window.senseAPI &&
+      typeof window.senseAPI.saveIaInputsReport === "function";
+    if (can) senseIaSaveInputsReportBtn.removeAttribute("hidden");
+    else senseIaSaveInputsReportBtn.setAttribute("hidden", "");
+  }
+
+  function clearSenseIaInputsSavePayload() {
+    senseIaInputsSavePayload = null;
+    syncSenseIaInputsSaveButton();
+  }
+
+  syncSenseIaGatilhoSaveButton();
+  syncSenseIaInputsSaveButton();
 
   function senseIaErrorSuggestsOllama(r) {
     const p = String((r && r.provider) || "").toLowerCase();
@@ -484,12 +568,15 @@ if (
 
   function showSenseIaFloatingResult(r) {
     if (!senseIaDialog || !senseIaBody) return;
+    clearSenseIaGatilhoSavePayload();
+    clearSenseIaInputsSavePayload();
     clearSenseIaFloatingTimer();
     if (isSenseIaDialogOpen()) closeSenseIaDialog();
     senseIaDialog.classList.add("sense-ia-dialog--floating");
     openSenseIaDialog();
     if (r && r.ok) {
       applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
+      senseIaBody.classList.remove("sense-ia-dialog__body--long-report");
       senseIaBody.classList.add("sense-ia-dialog__body--rich");
       senseIaBody.innerHTML = formatSenseIaRichHtml(r.answer || "—");
       if (senseIaMeta) {
@@ -498,7 +585,7 @@ if (
       }
     } else {
       applySenseIaDialogBiasTheme("Lateral");
-      senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+      senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
       senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
       if (senseIaMeta) senseIaMeta.textContent = "";
     }
@@ -517,8 +604,11 @@ if (
     try {
       if (isSenseIaDialogOpen()) closeSenseIaDialog();
       openSenseIaDialog();
+      void refreshSenseIaInputsButtonAvailability();
+      clearSenseIaGatilhoSavePayload();
+      clearSenseIaInputsSavePayload();
       if (senseIaBody) {
-        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
         senseIaBody.textContent =
           "A consultar o modelo…\n\n(Ollama: a primeira resposta ou um contexto grande pode demorar vários minutos no CPU.)";
       }
@@ -528,6 +618,7 @@ if (
       const r = await window.senseAPI.senseIaAsk();
       if (r && r.ok && senseIaBody) {
         applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
+        senseIaBody.classList.remove("sense-ia-dialog__body--long-report");
         senseIaBody.classList.add("sense-ia-dialog__body--rich");
         senseIaBody.innerHTML = formatSenseIaRichHtml(r.answer || "—");
         if (senseIaMeta) {
@@ -536,20 +627,175 @@ if (
         }
       } else if (senseIaBody) {
         applySenseIaDialogBiasTheme("Lateral");
-        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
         senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
         if (senseIaMeta) senseIaMeta.textContent = "";
       }
     } catch (e) {
       applySenseIaDialogBiasTheme("Lateral");
       if (senseIaBody) {
-        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
         const msg = e && e.message ? e.message : String(e);
         senseIaBody.innerHTML = buildSenseIaErrorBodyHtml({ ok: false, error: msg });
       }
       if (senseIaMeta) senseIaMeta.textContent = "";
     } finally {
       senseIaApiLock = false;
+    }
+  }
+
+  async function runSenseIaGatilhoDiagnosticDialog() {
+    if (!window.senseAPI || typeof window.senseAPI.senseIaAskGatilhoDiagnostic !== "function") return;
+    clearSenseIaFloatingTimer();
+    senseIaDialog.classList.add("sense-ia-dialog--floating");
+    if (senseIaApiLock) senseIaApiLock = false;
+    senseIaApiLock = true;
+    try {
+      if (isSenseIaDialogOpen()) closeSenseIaDialog();
+      openSenseIaDialog();
+      void refreshSenseIaInputsButtonAvailability();
+      clearSenseIaGatilhoSavePayload();
+      clearSenseIaInputsSavePayload();
+      if (senseIaBody) {
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.remove("sense-ia-dialog__body--long-report");
+        senseIaBody.textContent =
+          "A gerar relatório Gatilho FA (A–F)…\n\n(Ollama: pedidos longos podem demorar vários minutos no CPU.)";
+      }
+      if (senseIaMeta) senseIaMeta.textContent = "";
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const r = await window.senseAPI.senseIaAskGatilhoDiagnostic();
+      if (r && r.ok && senseIaBody) {
+        applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.add("sense-ia-dialog__body--long-report");
+        senseIaBody.innerHTML = formatSenseIaLongReportHtml(r.answer || "—");
+        if (senseIaMeta) {
+          const bits = [r.model, r.provider, r.readAt, "relatório Gatilho FA"].filter(Boolean);
+          senseIaMeta.textContent = bits.join(" · ");
+        }
+        senseIaGatilhoFaSavePayload = {
+          answer: r.answer,
+          model: r.model,
+          provider: r.provider,
+          readAt: r.readAt,
+        };
+        syncSenseIaGatilhoSaveButton();
+      } else if (senseIaBody) {
+        clearSenseIaGatilhoSavePayload();
+        clearSenseIaInputsSavePayload();
+        applySenseIaDialogBiasTheme("Lateral");
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
+        senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
+        if (senseIaMeta) senseIaMeta.textContent = "";
+      }
+    } catch (e) {
+      clearSenseIaGatilhoSavePayload();
+      clearSenseIaInputsSavePayload();
+      applySenseIaDialogBiasTheme("Lateral");
+      if (senseIaBody) {
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
+        const msg = e && e.message ? e.message : String(e);
+        senseIaBody.innerHTML = buildSenseIaErrorBodyHtml({ ok: false, error: msg });
+      }
+      if (senseIaMeta) senseIaMeta.textContent = "";
+    } finally {
+      senseIaApiLock = false;
+    }
+  }
+
+  async function refreshSenseIaInputsButtonAvailability() {
+    if (!senseIaInputsDiagnosticBtn) return;
+    if (!window.senseAPI || typeof window.senseAPI.senseIaGetCompactContext !== "function") {
+      senseIaInputsDiagnosticBtn.disabled = true;
+      senseIaInputsDiagnosticBtn.title = "Contexto compacto indisponível neste ambiente.";
+      return;
+    }
+    try {
+      const ctx = await window.senseAPI.senseIaGetCompactContext();
+      if (!ctx || !ctx.ok || !ctx.json) {
+        senseIaInputsDiagnosticBtn.disabled = true;
+        senseIaInputsDiagnosticBtn.title = "Não foi possível ler o contexto JSON do painel.";
+        return;
+      }
+      const parsed = JSON.parse(ctx.json);
+      const snap = parsed && parsed.eaInputsSnapshot && typeof parsed.eaInputsSnapshot === "object" ? parsed.eaInputsSnapshot : null;
+      if (!snap || Object.keys(snap).length === 0) {
+        senseIaInputsDiagnosticBtn.disabled = true;
+        senseIaInputsDiagnosticBtn.title = "EA não exportou inputs neste ciclo (eaInputsSnapshot ausente).";
+        return;
+      }
+      senseIaInputsDiagnosticBtn.disabled = false;
+      senseIaInputsDiagnosticBtn.title = "Diagnóstico dos inputs reais do MT5 (gatilho operacional).";
+    } catch (_) {
+      senseIaInputsDiagnosticBtn.disabled = true;
+      senseIaInputsDiagnosticBtn.title = "Falha ao validar eaInputsSnapshot no ciclo atual.";
+    }
+  }
+
+  async function runSenseIaInputsDiagnosticDialog() {
+    if (!window.senseAPI || typeof window.senseAPI.senseIaAskInputsDiagnostic !== "function") return;
+    clearSenseIaFloatingTimer();
+    senseIaDialog.classList.add("sense-ia-dialog--floating");
+    if (senseIaApiLock) senseIaApiLock = false;
+    senseIaApiLock = true;
+    if (senseIaInputsDiagnosticBtn) {
+      senseIaInputsDiagnosticBtn.disabled = true;
+      senseIaInputsDiagnosticBtn.textContent = "⏳ Analisando...";
+    }
+    try {
+      if (isSenseIaDialogOpen()) closeSenseIaDialog();
+      openSenseIaDialog();
+      clearSenseIaGatilhoSavePayload();
+      clearSenseIaInputsSavePayload();
+      if (senseIaBody) {
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.remove("sense-ia-dialog__body--long-report");
+        senseIaBody.textContent =
+          "A gerar diagnóstico de inputs do MT5...\n\n(Ollama: pedidos longos podem demorar vários minutos no CPU.)";
+      }
+      if (senseIaMeta) senseIaMeta.textContent = "";
+      await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      const r = await window.senseAPI.senseIaAskInputsDiagnostic();
+      if (r && r.ok && senseIaBody) {
+        applySenseIaDialogBiasTheme(parseSenseIaBiasLabel(r.answer || ""));
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich");
+        senseIaBody.classList.add("sense-ia-dialog__body--long-report");
+        senseIaBody.innerHTML = formatSenseIaLongReportHtml(r.answer || "—");
+        if (senseIaMeta) {
+          const bits = [r.model, r.provider, r.readAt, "diagnóstico de inputs"].filter(Boolean);
+          senseIaMeta.textContent = bits.join(" · ");
+        }
+        senseIaInputsSavePayload = {
+          answer: r.answer,
+          model: r.model,
+          provider: r.provider,
+          readAt: r.readAt,
+          sourcePath: r.sourcePath,
+        };
+        syncSenseIaInputsSaveButton();
+      } else if (senseIaBody) {
+        clearSenseIaInputsSavePayload();
+        applySenseIaDialogBiasTheme("Lateral");
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
+        senseIaBody.innerHTML = buildSenseIaErrorBodyHtml(r || {});
+        if (senseIaMeta) senseIaMeta.textContent = "";
+      }
+    } catch (e) {
+      clearSenseIaInputsSavePayload();
+      applySenseIaDialogBiasTheme("Lateral");
+      if (senseIaBody) {
+        senseIaBody.classList.remove("sense-ia-dialog__body--rich", "sense-ia-dialog__body--long-report");
+        const msg = e && e.message ? e.message : String(e);
+        senseIaBody.innerHTML = buildSenseIaErrorBodyHtml({ ok: false, error: msg });
+      }
+      if (senseIaMeta) senseIaMeta.textContent = "";
+    } finally {
+      senseIaApiLock = false;
+      if (senseIaInputsDiagnosticBtn) {
+        senseIaInputsDiagnosticBtn.textContent = "⚙ Inputs";
+        void refreshSenseIaInputsButtonAvailability();
+      }
     }
   }
 
@@ -618,6 +864,115 @@ if (
     );
   }
 
+  if (senseIaGatilhoReportBtn && typeof window.senseAPI.senseIaAskGatilhoDiagnostic === "function") {
+    senseIaGatilhoReportBtn.removeAttribute("hidden");
+    senseIaGatilhoReportBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      void runSenseIaGatilhoDiagnosticDialog();
+    });
+  }
+
+  if (senseIaInputsDiagnosticBtn && typeof window.senseAPI.senseIaAskInputsDiagnostic === "function") {
+    senseIaInputsDiagnosticBtn.removeAttribute("hidden");
+    senseIaInputsDiagnosticBtn.textContent = "⚙ Inputs";
+    senseIaInputsDiagnosticBtn.addEventListener("click", (ev) => {
+      ev.stopPropagation();
+      void runSenseIaInputsDiagnosticDialog();
+    });
+  }
+
+  if (senseIaSaveGatilhoReportBtn && typeof window.senseAPI.saveIaGatilhoFaReport === "function") {
+    senseIaSaveGatilhoReportBtn.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      if (!senseIaGatilhoFaSavePayload || senseIaApiLock) return;
+      senseIaSaveGatilhoReportBtn.disabled = true;
+      try {
+        const r = await window.senseAPI.saveIaGatilhoFaReport(senseIaGatilhoFaSavePayload);
+        if (r && r.ok && senseIaMeta) {
+          const base = String(r.path || "").replace(/^.*[/\\]/, "");
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `guardado: ${base}`;
+        } else if (senseIaMeta) {
+          const err = (r && r.error) || "falhou";
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `erro ao guardar: ${err}`;
+        }
+      } catch (e) {
+        if (senseIaMeta) {
+          const msg = e && e.message ? e.message : String(e);
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `erro: ${msg}`;
+        }
+      } finally {
+        senseIaSaveGatilhoReportBtn.disabled = false;
+      }
+    });
+  }
+
+  if (senseIaSaveInputsReportBtn && typeof window.senseAPI.saveIaInputsReport === "function") {
+    senseIaSaveInputsReportBtn.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      if (!senseIaInputsSavePayload || senseIaApiLock) return;
+      senseIaSaveInputsReportBtn.disabled = true;
+      try {
+        const r = await window.senseAPI.saveIaInputsReport(senseIaInputsSavePayload);
+        if (r && r.ok && senseIaMeta) {
+          const baseMd = String(r.mdPath || "").replace(/^.*[/\\]/, "");
+          const baseTxt = String(r.txtPath || "").replace(/^.*[/\\]/, "");
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `guardado: ${baseMd}, ${baseTxt}`;
+        } else if (senseIaMeta) {
+          const err = (r && r.error) || "falhou";
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `erro ao guardar: ${err}`;
+        }
+      } catch (e) {
+        if (senseIaMeta) {
+          const msg = e && e.message ? e.message : String(e);
+          senseIaMeta.textContent =
+            (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + `erro: ${msg}`;
+        }
+      } finally {
+        senseIaSaveInputsReportBtn.disabled = false;
+      }
+    });
+  }
+
+  if (senseIaCopyContextBtn && typeof window.senseAPI.senseIaGetCompactContext === "function") {
+    senseIaCopyContextBtn.removeAttribute("hidden");
+    senseIaCopyContextBtn.addEventListener("click", async (ev) => {
+      ev.stopPropagation();
+      senseIaCopyContextBtn.disabled = true;
+      try {
+        const r = await window.senseAPI.senseIaGetCompactContext();
+        if (r && r.ok && r.json) {
+          const src = r.sourcePath || r.dataPath || "n/d";
+          const header =
+            "# SENSE IA — contexto compacto do dashboard (igual ao enviado ao modelo Ollama/OpenAI/Genspark)\n" +
+            `# Origem: ${src}\n` +
+            `# readAt: ${r.readAt || "n/d"}\n\n`;
+          const text = header + r.json;
+          if (!navigator.clipboard || typeof navigator.clipboard.writeText !== "function") {
+            throw new Error("Clipboard indisponível neste ambiente.");
+          }
+          await navigator.clipboard.writeText(text);
+          if (senseIaMeta) {
+            senseIaMeta.textContent = (senseIaMeta.textContent ? `${senseIaMeta.textContent} · ` : "") + "JSON copiado";
+          }
+        } else {
+          const err = (r && r.error) || "Falha ao ler o dashboard.";
+          const hint = r && r.hint ? ` — ${r.hint}` : "";
+          if (senseIaMeta) senseIaMeta.textContent = `Copiar contexto: ${err}${hint}`;
+        }
+      } catch (e) {
+        const msg = e && e.message ? e.message : String(e);
+        if (senseIaMeta) senseIaMeta.textContent = `Copiar contexto: ${msg}`;
+      } finally {
+        senseIaCopyContextBtn.disabled = false;
+      }
+    });
+  }
+
   if (senseIaDialogClose) {
     senseIaDialogClose.addEventListener("click", () => {
       clearSenseIaFloatingTimer();
@@ -636,6 +991,7 @@ if (
       .getSenseIaSchedule()
       .then(function (sch) {
         renderSenseIaProviderHelp(sch);
+        void refreshSenseIaInputsButtonAvailability();
         __SRS.senseIaHybridEnabled = !!(sch && sch.iaHybridEnabled === true);
         __SRS.senseIaHybridButtonOnly = !(sch && sch.iaHybridButtonOnly === false);
         if (!__SRS.senseIaHybridEnabled) {
