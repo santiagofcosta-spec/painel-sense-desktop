@@ -1155,28 +1155,55 @@ function iaAuditOpinion(go, dashboardData, aggressionText, prep, prevSideRaw) {
   };
 }
 
-function maybePersistIaCalibrationReport(audit, eaSide, iaSide, concord) {
+
+function readInputNumber(snap, key) {
+  if (!snap || typeof snap !== "object" || !Object.prototype.hasOwnProperty.call(snap, key)) return null;
+  const n = Number(snap[key]);
+  return Number.isFinite(n) ? n : null;
+}
+
+function readInputBoolText(snap, key) {
+  if (!snap || typeof snap !== "object" || !Object.prototype.hasOwnProperty.call(snap, key)) return "ausente";
+  const raw = snap[key];
+  const b = gatilhoReadyBool(raw);
+  if (b === true) return "true";
+  if (raw === false || raw === "false" || raw === 0 || raw === "0") return "false";
+  return String(snap[key]);
+}
+
+function formatSuggestedNumber(v, digits) {
+  if (!Number.isFinite(v)) return "n/d";
+  return Number(v).toFixed(Number.isFinite(digits) ? digits : 2);
+}
+
+function pushCalibrationHint(hints, key, item) {
+  const prev = hints[key] && typeof hints[key] === "object" ? hints[key] : {};
+  const evidenceCount = (Number(prev.evidenceCount) || 0) + 1;
+  hints[key] = {
+    key,
+    inputName: item.inputName,
+    currentValue: item.currentValue,
+    suggestedValue: item.suggestedValue,
+    direction: item.direction,
+    motivoIntraday: item.motivoIntraday,
+    impactoEsperado: item.impactoEsperado,
+    evidenceCount,
+    score: evidenceCount * (Number(item.weight) || 1),
+  };
+}
+
+function maybePersistIaCalibrationReport(audit, eaSide, iaSide, concord, go, dashboardData) {
   if (!window.SenseRendererState || !window.senseAPI || typeof window.senseAPI.saveIaCalibrationReport !== "function") return;
   const S = window.SenseRendererState;
   if (!S.iaAuditStats || typeof S.iaAuditStats !== "object") return;
   const st = S.iaAuditStats;
   const hints = S.iaAuditInputHints && typeof S.iaAuditInputHints === "object" ? S.iaAuditInputHints : {};
   S.iaAuditInputHints = hints;
-  const bump = (key, item) => {
-    const prev = hints[key] && typeof hints[key] === "object" ? hints[key] : {};
-    const evidenceCount = (Number(prev.evidenceCount) || 0) + 1;
-    hints[key] = {
-      key,
-      inputName: item.inputName,
-      currentValue: item.currentValue,
-      suggestedValue: item.suggestedValue,
-      direction: item.direction,
-      motivoIntraday: item.motivoIntraday,
-      impactoEsperado: item.impactoEsperado,
-      evidenceCount,
-      score: evidenceCount * (Number(item.weight) || 1),
-    };
-  };
+  const snap = dashboardData && dashboardData.eaInputsSnapshot && typeof dashboardData.eaInputsSnapshot === "object" ? dashboardData.eaInputsSnapshot : null;
+  const diag = go && go.diag && typeof go.diag === "object" ? go.diag : null;
+  const buyBlockReason = String((go && go.buyBlockReason) || "").toUpperCase();
+  const sellBlockReason = String((go && go.sellBlockReason) || "").toUpperCase();
+
   st.total = (Number(st.total) || 0) + 1;
   const c = String(concord || "").toUpperCase();
   if (c.includes("CONCORDA")) st.agree = (Number(st.agree) || 0) + 1;
@@ -1184,85 +1211,96 @@ function maybePersistIaCalibrationReport(audit, eaSide, iaSide, concord) {
   if (String(iaSide || "") === "" && String(eaSide || "") !== "") st.neutralVsEa = (Number(st.neutralVsEa) || 0) + 1;
   if (String(iaSide || "") === "buy" && String(eaSide || "") !== "buy") st.divergeBuy = (Number(st.divergeBuy) || 0) + 1;
   if (String(iaSide || "") === "sell" && String(eaSide || "") !== "sell") st.divergeSell = (Number(st.divergeSell) || 0) + 1;
+  if (String(iaSide || "") && String(eaSide || "") && String(iaSide) !== String(eaSide)) st.opportunityLoss = (Number(st.opportunityLoss) || 0) + 1;
   st.lastReason = String((audit && audit.reason) || st.lastReason || "n/d");
+  const divergenceRate = st.total > 0 ? (Number(st.diverge) || 0) / st.total : 0;
+  if (divergenceRate >= 0.45 && st.total >= 8) {
+    st.highRiskAlerts = (Number(st.highRiskAlerts) || 0) + 1;
+    st.lastAlert = "Divergência IA x EA acima de 45% nas últimas leituras.";
+  }
+
   const ia = String(iaSide || "");
   const ea = String(eaSide || "");
   const disagree = String(concord || "").toUpperCase().includes("DIVERGE");
-  if (disagree) {
-    bump("consenso-global", {
-      inputName: "consenso global (todos os critérios do placar)",
-      currentValue: "0.65",
-      suggestedValue: "0.60",
-      direction: "afrouxar leve",
-      motivoIntraday: "excesso de bloqueio em tendência limpa",
-      impactoEsperado: "+entradas válidas sem abrir muito ruído",
-      weight: 2.2,
-    });
-    bump("entry-z-min", {
-      inputName: "Gatilho_Painel_Entry_Z_Min",
-      currentValue: "0.55",
-      suggestedValue: "0.50",
-      direction: "afrouxar leve",
-      motivoIntraday: "gatilho atrasa em aceleração curta de fluxo",
-      impactoEsperado: "entrada mais responsiva mantendo filtro",
-      weight: 1.9,
-    });
-    bump("tri-limiar", {
-      inputName: "limiar do triângulo de pré-sinal no painel (0..1). Ex.: 0.30",
-      currentValue: "0.30",
-      suggestedValue: "0.32",
-      direction: "endurecer leve",
-      motivoIntraday: "pré-sinal acionando cedo em ruído lateral",
-      impactoEsperado: "menos falso preparo no painel",
-      weight: 1.6,
-    });
-    if (ia === "buy" && ea !== "buy") {
-      bump("trend-fraca", {
-        inputName: "% mínima tendência fraca (NTSL, 0.18)",
-        currentValue: "0.18",
-        suggestedValue: "0.20",
-        direction: "endurecer leve",
-        motivoIntraday: "compra em tendência ainda fraca",
-        impactoEsperado: "menos compra prematura",
-        weight: 1.7,
+  if (disagree && snap) {
+    const consensoPct = readInputNumber(snap, "Gatilho_Placar_Consenso_Pct");
+    const entryZMin = readInputNumber(snap, "Gatilho_Painel_Entry_Z_Min");
+    const regimeMin = readInputNumber(snap, "Gatilho_Regime_Confiavel_Min");
+    const msSpread = readInputNumber(snap, "Gatilho_MS_SpreadMaxPts");
+
+    if (Number.isFinite(entryZMin)) {
+      const suggestion = ia && ia !== ea ? Math.max(0.2, entryZMin - 0.03) : Math.min(0.9, entryZMin + 0.02);
+      pushCalibrationHint(hints, "entry-z-min", {
+        inputName: "Gatilho_Painel_Entry_Z_Min",
+        currentValue: formatSuggestedNumber(entryZMin, 4),
+        suggestedValue: formatSuggestedNumber(suggestion, 4),
+        direction: suggestion < entryZMin ? "afrouxar leve" : "endurecer leve",
+        motivoIntraday: `Divergência IA (${ia || "neutro"}) vs EA (${ea || "sem lado"}) em contexto ativo`,
+        impactoEsperado: suggestion < entryZMin ? "capturar entradas rápidas sem perder filtro" : "reduzir sinal cedo em ruído",
+        weight: 2.1,
       });
     }
-    if (ia === "sell" && ea !== "sell") {
-      bump("vies-lateral", {
-        inputName: "[VIES T2%] limite -> ATIVO LATERAL / bloqueia entrada",
-        currentValue: "0.10",
-        suggestedValue: "0.12",
-        direction: "endurecer leve",
-        motivoIntraday: "venda em zona de lateralidade curta",
-        impactoEsperado: "menos operação no miolo lateral",
-        weight: 1.7,
+
+    if (Number.isFinite(consensoPct) && (buyBlockReason.includes("CONSENSO") || sellBlockReason.includes("CONSENSO"))) {
+      const suggestion = Math.max(0.4, consensoPct - 0.02);
+      pushCalibrationHint(hints, "consenso-pct", {
+        inputName: "Gatilho_Placar_Consenso_Pct",
+        currentValue: formatSuggestedNumber(consensoPct, 4),
+        suggestedValue: formatSuggestedNumber(suggestion, 4),
+        direction: "afrouxar leve",
+        motivoIntraday: "Bloqueio recorrente por consenso em cenário com viés definido",
+        impactoEsperado: "reduz perda de entradas relevantes no pregão",
+        weight: 2.4,
       });
     }
-    if (!ia && ea) {
-      bump("confianca-lado", {
-        inputName: "limiar de confiança por lado (0..1), Ex.: 0.4 = 40%",
-        currentValue: "0.30",
-        suggestedValue: "0.35",
+
+    if (Number.isFinite(regimeMin) && ativoLateralFromDash(dashboardData) && ia) {
+      const suggestion = Math.min(0.9, regimeMin + 0.03);
+      pushCalibrationHint(hints, "regime-min", {
+        inputName: "Gatilho_Regime_Confiavel_Min",
+        currentValue: formatSuggestedNumber(regimeMin, 4),
+        suggestedValue: formatSuggestedNumber(suggestion, 4),
         direction: "endurecer leve",
-        motivoIntraday: "EA ativo com leitura IA sem convicção",
-        impactoEsperado: "menos sinal fraco em hold ativo",
+        motivoIntraday: "Conflito em lateralidade com gatilho ainda acionando",
+        impactoEsperado: "menos entradas no miolo lateral",
         weight: 1.8,
       });
     }
+
+    if (Number.isFinite(msSpread) && diag && diag.spreadAlert === true) {
+      const suggestion = msSpread <= 0 ? 2 : Math.max(1, Math.round(msSpread + 1));
+      pushCalibrationHint(hints, "ms-spread", {
+        inputName: "Gatilho_MS_SpreadMaxPts",
+        currentValue: formatSuggestedNumber(msSpread, 0),
+        suggestedValue: formatSuggestedNumber(suggestion, 0),
+        direction: "endurecer risco",
+        motivoIntraday: "Spread stress detectado em diagnóstico FA",
+        impactoEsperado: "melhor qualidade de execução e menor slippage",
+        weight: 1.5,
+      });
+    }
   }
-  bump("spread-max", {
-    inputName: "spread máximo em pontos (0 = não filtra)",
-    currentValue: "0",
-    suggestedValue: "2 (WDO) / 3 (DOL)",
-    direction: "endurecer risco",
-    motivoIntraday: "proteger entrada em piora de execução",
-    impactoEsperado: "reduz slippage em cenário de stress",
-    weight: 1.2,
-  });
+
+  if (snap) {
+    pushCalibrationHint(hints, "fa-ativo-check", {
+      inputName: "FA_Ativo",
+      currentValue: readInputBoolText(snap, "FA_Ativo"),
+      suggestedValue: readInputBoolText(snap, "FA_Ativo"),
+      direction: "monitorar",
+      motivoIntraday: "Confirmação do estado real do filtro FA no MT5",
+      impactoEsperado: "evita calibragem com premissa incorreta",
+      weight: 0.6,
+    });
+  }
+
   const now = Date.now();
   const lastSaved = Number(S.iaAuditReportLastSavedAtMs) || 0;
   if (now - lastSaved < 120000) return;
   S.iaAuditReportLastSavedAtMs = now;
+  const agreeRate = st.total > 0 ? (Number(st.agree) || 0) / st.total : 0;
+  const neutralRate = st.total > 0 ? (Number(st.neutralVsEa) || 0) / st.total : 0;
+  const confidenceAvg = Number(audit && audit.confidence) || 0;
+
   void window.senseAPI.saveIaCalibrationReport({
     stats: {
       total: Number(st.total) || 0,
@@ -1272,11 +1310,56 @@ function maybePersistIaCalibrationReport(audit, eaSide, iaSide, concord) {
       divergeBuy: Number(st.divergeBuy) || 0,
       divergeSell: Number(st.divergeSell) || 0,
       lastReason: st.lastReason || "n/d",
+      opportunityLoss: Number(st.opportunityLoss) || 0,
+      highRiskAlerts: Number(st.highRiskAlerts) || 0,
+      lastAlert: st.lastAlert || "",
     },
+    metrics: {
+      agreeRatePct: Math.round(agreeRate * 100),
+      divergenceRatePct: Math.round(divergenceRate * 100),
+      neutralVsEaRatePct: Math.round(neutralRate * 100),
+      confidenceCurrentPct: confidenceAvg,
+      sampleSize: Number(st.total) || 0,
+    },
+    realtimeAlerts: [
+      ...(st.lastAlert ? [{ level: "HIGH", message: st.lastAlert }] : []),
+      ...(divergenceRate >= 0.35 ? [{ level: "MEDIUM", message: "Divergência acima de 35%: revisar calibração dos inputs críticos." }] : []),
+    ],
+    inputSnapshot: snap
+      ? {
+          FA_Ativo: readInputBoolText(snap, "FA_Ativo"),
+          Gatilho_MS_Ativo: readInputBoolText(snap, "Gatilho_MS_Ativo"),
+          Gatilho_MS_SpreadMaxPts: readInputNumber(snap, "Gatilho_MS_SpreadMaxPts"),
+          Gatilho_Painel_Entry_Z_Min: readInputNumber(snap, "Gatilho_Painel_Entry_Z_Min"),
+          Gatilho_Placar_Consenso_Pct: readInputNumber(snap, "Gatilho_Placar_Consenso_Pct"),
+          Gatilho_Regime_Confiavel_Min: readInputNumber(snap, "Gatilho_Regime_Confiavel_Min"),
+        }
+      : null,
     topInputs: Object.values(hints)
       .sort((a, b) => (Number(b.score) || 0) - (Number(a.score) || 0))
       .slice(0, 10),
   });
+}
+
+function buildIaRealtimeAlert(audit, eaSide, dashboardData) {
+  if (!audit) return null;
+  const iaSide = String(audit.side || "").toLowerCase();
+  const confidence = Number(audit.confidence) || 0;
+  const metaTime = dashboardData && dashboardData.meta && dashboardData.meta.time ? Date.parse(dashboardData.meta.time) : NaN;
+  const ageSec = Number.isFinite(metaTime) ? Math.max(0, Math.round((Date.now() - metaTime) / 1000)) : null;
+  if (Number.isFinite(ageSec) && ageSec > 300) {
+    return { level: "high", text: `ALERTA DADOS: dashboard desatualizado (${ageSec}s).`, action: "pausar decisão até atualizar feed" };
+  }
+  if (iaSide && eaSide && iaSide !== eaSide && confidence >= 70) {
+    return { level: "high", text: `DIVERGÊNCIA FORTE IA x EA (${confidence}%).`, action: "revisar consenso/entry z antes da próxima entrada" };
+  }
+  if (!iaSide && eaSide && confidence < 45) {
+    return { level: "medium", text: "IA neutra com EA ativo e baixa confiança.", action: "reduzir agressividade e aguardar confirmação" };
+  }
+  if (confidence >= 85 && iaSide) {
+    return { level: "info", text: `Convicção IA elevada em ${iaSide === "buy" ? "COMPRA" : "VENDA"} (${confidence}%).`, action: "priorizar setup alinhado e validar risco" };
+  }
+  return null;
 }
 
 function pickContextSide(buyScore, sellScore, dashboardData) {
@@ -1460,7 +1543,7 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
             : iaSide === eaSide
               ? "CONCORDA COM EA"
               : "DIVERGE DO EA";
-        maybePersistIaCalibrationReport(audit, eaSide, iaSide, c);
+        maybePersistIaCalibrationReport(audit, eaSide, iaSide, c, go, dashboardData);
       }
     }
     window.SenseRendererState.senseIaHybridPrevOpinionSide = iaSide;
@@ -1487,6 +1570,19 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
       : audit
         ? `Leitura IA: ${audit.reason} · conf ${audit.confidence}%`
         : "";
+  const rtAlert = iaHybridEnabled ? buildIaRealtimeAlert(audit, eaSide, dashboardData) : null;
+  const rtAlertClass =
+    rtAlert && rtAlert.level === "high"
+      ? "gatilho-ia-status--sell"
+      : rtAlert && rtAlert.level === "medium"
+        ? "gatilho-ia-status--neutral"
+        : "gatilho-ia-status--buy";
+  const iaRealtimeAlertLine =
+    iaHybridEnabled && rtAlert
+      ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${rtAlertClass}"><span class="gatilho-ia-audit-tag">ALERTA IA</span> ${escapeHtml(
+          rtAlert.text
+        )} · Ação: ${escapeHtml(rtAlert.action)}</div></div>`
+      : "";
   const iaHybridLine = iaHybridEnabled
     ? `<div class="gatilho-lateral-alert-wrap gatilho-aux-line-wrap"><div class="gatilho-lateral-alert gatilho-lateral-alert--reason-info gatilho-compact-reason gatilho-ia-status ${iaToneClass}"><span class="gatilho-ia-audit-tag">IA AUDITORA (REGRAS)</span> ${iaVerdict} · ${concord}${
         divergenceReason ? ` · ${divergenceReason}` : ""
@@ -1516,6 +1612,7 @@ function renderGatilhoOperacional(go, schemaVersion, aggressionText, dashboardDa
     }">
       ${titleRow}
       ${iaHybridLine}
+      ${iaRealtimeAlertLine}
       ${lateralAlert}
       ${direcaoOkAlert}
       ${compactReasonHold}

@@ -972,6 +972,9 @@ ipcMain.handle("save-ia-calibration-report", async (_evt, payload) => {
     const ts = d.toISOString();
     const p = payload && typeof payload === "object" ? payload : {};
     const s = p.stats && typeof p.stats === "object" ? p.stats : {};
+    const m = p.metrics && typeof p.metrics === "object" ? p.metrics : {};
+    const alerts = Array.isArray(p.realtimeAlerts) ? p.realtimeAlerts : [];
+    const snap = p.inputSnapshot && typeof p.inputSnapshot === "object" ? p.inputSnapshot : null;
     const top = Array.isArray(p.topInputs) ? p.topInputs : [];
     const dirBadge = (d) => {
       const x = String(d || "").toLowerCase();
@@ -991,10 +994,46 @@ ipcMain.handle("save-ia-calibration-report", async (_evt, payload) => {
       `- IA neutro vs EA ativo: ${Number(s.neutralVsEa) || 0}`,
       `- Divergencias lado COMPRA: ${Number(s.divergeBuy) || 0}`,
       `- Divergencias lado VENDA: ${Number(s.divergeSell) || 0}`,
+      `- Oportunidades perdidas (proxy): ${Number(s.opportunityLoss) || 0}`,
+      `- Alertas de alto risco: ${Number(s.highRiskAlerts) || 0}`,
       `- Motivo mais recente: ${String(s.lastReason || "n/d")}`,
       "",
-      "## Top 10 Inputs Sugeridos (prioridade IA)",
+      "## Metricas objetivas de qualidade",
+      `- Taxa de concordancia IA x EA: ${Number(m.agreeRatePct) || 0}%`,
+      `- Taxa de divergencia IA x EA: ${Number(m.divergenceRatePct) || 0}%`,
+      `- Taxa IA neutra com EA ativo: ${Number(m.neutralVsEaRatePct) || 0}%`,
+      `- Confianca atual da IA: ${Number(m.confidenceCurrentPct) || 0}%`,
+      `- Tamanho da amostra: ${Number(m.sampleSize) || 0}`,
+      "",
+      "## Alertas uteis em tempo real",
     ];
+    if (alerts.length > 0) {
+      alerts.forEach((a, idx) => {
+        const level = String((a && a.level) || "INFO").toUpperCase();
+        const msg = String((a && a.message) || "n/d");
+        lines.push(`${idx + 1}. [${level}] ${msg}`);
+      });
+    } else {
+      lines.push("- Sem alertas ativos na ultima janela de análise.");
+    }
+    lines.push(
+      "",
+      "## Snapshot atual de inputs MT5 (fonte real)",
+    );
+    if (snap) {
+      lines.push(`- FA_Ativo: ${String(snap.FA_Ativo ?? "ausente")}`);
+      lines.push(`- Gatilho_MS_Ativo: ${String(snap.Gatilho_MS_Ativo ?? "ausente")}`);
+      lines.push(`- Gatilho_MS_SpreadMaxPts: ${String(snap.Gatilho_MS_SpreadMaxPts ?? "ausente")}`);
+      lines.push(`- Gatilho_Painel_Entry_Z_Min: ${String(snap.Gatilho_Painel_Entry_Z_Min ?? "ausente")}`);
+      lines.push(`- Gatilho_Placar_Consenso_Pct: ${String(snap.Gatilho_Placar_Consenso_Pct ?? "ausente")}`);
+      lines.push(`- Gatilho_Regime_Confiavel_Min: ${String(snap.Gatilho_Regime_Confiavel_Min ?? "ausente")}`);
+    } else {
+      lines.push("- Snapshot de inputs indisponivel no ciclo atual.");
+    }
+    lines.push(
+      "",
+      "## Top 10 Inputs Sugeridos (prioridade IA)",
+    );
     if (top.length > 0) {
       lines.push("| # | Nome do input | Valor atual | Valor sugerido | Direção | Motivo intraday | Evidência | Impacto esperado |");
       lines.push("|---|---|---|---|---|---|---:|---|");
