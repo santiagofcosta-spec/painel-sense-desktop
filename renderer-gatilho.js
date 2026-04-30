@@ -1415,17 +1415,80 @@ function renderGatilhoMemoriaTrianguloHtml(dashboardData) {
   }
   if (!side) return "";
 
+  const alignedConfiavel =
+    mode === "mem" &&
+    ((side === "buy" && buyConfiavelNow) || (side === "sell" && sellConfiavelNow));
   const tri = side === "buy" ? "▲" : "▼";
   const title =
     mode === "mem"
-      ? side === "buy"
-        ? "Memória Compra confiável ativa (120s)."
-        : "Memória Venda confiável ativa (120s)."
+      ? alignedConfiavel
+        ? side === "buy"
+          ? "Memória Compra confiável ativa (120s) com alinhamento do contexto."
+          : "Memória Venda confiável ativa (120s) com alinhamento do contexto."
+        : side === "buy"
+          ? "Memória Compra ativa, mas sem alinhamento completo para selo confiável."
+          : "Memória Venda ativa, mas sem alinhamento completo para selo confiável."
       : side === "buy"
         ? "Compra acima de 30% no Contexto de mercado (pulso lento)."
         : "Venda acima de 30% no Contexto de mercado (pulso lento).";
+  const state = window.SenseRendererState || {};
+  const currentKey = mode === "mem" && alignedConfiavel ? `${mode}:${side}:conf` : `${mode}:${side}:raw`;
+  const lastKey = String(state.gatilhoTriVisualLastKey || "");
+  let persistChanged = false;
+  if (currentKey !== lastKey) {
+    if (mode === "mem" && alignedConfiavel && side === "buy") {
+      state.gatilhoTriBlueCount = Math.max(0, Number(state.gatilhoTriBlueCount) || 0) + 1;
+      state.gatilhoTriPurpleCount = 0;
+      persistChanged = true;
+    } else if (mode === "mem" && alignedConfiavel && side === "sell") {
+      state.gatilhoTriPurpleCount = Math.max(0, Number(state.gatilhoTriPurpleCount) || 0) + 1;
+      state.gatilhoTriBlueCount = 0;
+      persistChanged = true;
+    }
+    state.gatilhoTriVisualLastKey = currentKey;
+    persistChanged = true;
+  }
+  if (persistChanged) {
+    try {
+      window.localStorage.setItem(
+        "sense.gatilhoTriCounts.v1",
+        JSON.stringify({
+          lastKey: String(state.gatilhoTriVisualLastKey || ""),
+          blueCount: Math.max(0, Number(state.gatilhoTriBlueCount) || 0),
+          purpleCount: Math.max(0, Number(state.gatilhoTriPurpleCount) || 0),
+        })
+      );
+    } catch (_e) {
+      // Persistência visual opcional: ignorar erro de storage.
+    }
+  }
+  const sideCount =
+    mode === "mem" && alignedConfiavel
+      ? Math.max(0, Number(side === "buy" ? state.gatilhoTriBlueCount : state.gatilhoTriPurpleCount) || 0)
+      : 0;
+  let visualBadge = "";
+  if (mode === "prep") {
+    visualBadge = "ATENÇÃO";
+  } else if (mode === "mem" && alignedConfiavel && side === "buy" && (Number(state.gatilhoTriBlueCount) || 0) >= 5) {
+    visualBadge = "COMPRA CONFIÁVEL";
+  } else if (mode === "mem" && alignedConfiavel && side === "sell" && (Number(state.gatilhoTriPurpleCount) || 0) >= 5) {
+    visualBadge = "VENDA CONFIÁVEL";
+  } else if (mode === "mem") {
+    visualBadge = side === "buy" ? "COMPRA" : "VENDA";
+  }
+  const badgeHtml = visualBadge
+    ? `<span class="gatilho-mem-badge gatilho-mem-badge--${mode} gatilho-mem-badge--${side}" aria-hidden="true">${visualBadge}</span>`
+    : "";
+  const counterHtml =
+    mode === "mem" && alignedConfiavel
+      ? `<span class="gatilho-mem-counter gatilho-mem-counter--${side}" aria-hidden="true">${
+          sideCount <= 5 ? `${sideCount}/5` : `${sideCount}`
+        }</span>`
+      : "";
   return `<span class="gatilho-mem-tri-wrap" aria-label="Sinal de preparo/memória do contexto">
     <span class="gatilho-mem-tri gatilho-mem-tri--${side} gatilho-mem-tri--${mode}" title="${title}" aria-hidden="true">${tri}</span>
+    ${badgeHtml}
+    ${counterHtml}
   </span>`;
 }
 
