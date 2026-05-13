@@ -11,5 +11,12 @@
   flex-direction: column;
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.panel-tr::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }

@@ -1104,7 +1104,14 @@ dialog::backdrop {
   min-height: 0;
   align-self: stretch;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.panel-tl::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }
 
 /* Ocupa a altura da célula da grelha; a faixa REGIME estica em baixo e fecha o «buraco» visual */
@@ -1177,7 +1184,14 @@ dialog::backdrop {
   flex-direction: column;
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.panel-tr::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
 }
 
 .panel-tr .levels {

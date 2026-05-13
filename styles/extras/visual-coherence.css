@@ -119,6 +119,17 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 }
 
 /* ═══════════════════════════════════════════════════════════
+   TERMÔMETRO — ajuste no contexto HUD (hud-makers-preparo)
+   O theme-thermo-futuristic.css adiciona padding: 6px 4px 4px ao
+   .gatilho-thermo-meter-wrap. No HUD (container 102px), isso
+   empurra o topo do termômetro ~4px para fora. Corrigido aqui.
+═══════════════════════════════════════════════════════════ */
+
+.hud-makers-preparo .gatilho-thermo-meter-wrap {
+  padding-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
    4. DIALOG SENSE IA
 ═══════════════════════════════════════════════════════════ */
 
