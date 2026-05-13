@@ -39,6 +39,24 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   RAIO-X — oculto (componente ainda não está no padrão visual do painel)
+═══════════════════════════════════════════════════════════ */
+
+.raiox-wrap {
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SPEEDS (hud-makers-delta) — altura mínima protegida
+   Garante que os gauges %PICO / %CONF-IA / %PERSIST não sejam
+   comprimidos mesmo quando o Row 2 da grid recebe menos espaço.
+═══════════════════════════════════════════════════════════ */
+
+.hud-col-instruments .hud-makers-delta {
+  min-height: 130px;
+}
+
+/* ═══════════════════════════════════════════════════════════
    FLUXO — Footprint C/V e Regime/Contexto sempre visíveis no fundo
    Footprint cola a 26px da base (deixa espaço para o Regime abaixo).
    Regime (.regime-mercado) cola diretamente na base.
