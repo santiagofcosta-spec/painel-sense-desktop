@@ -3,11 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: file: blob:; font-src 'self' data:; connect-src 'self' http://127.0.0.1:* http://localhost:* https://* ws://127.0.0.1:* ws://localhost:* wss://*; frame-src 'none'; object-src 'none'; base-uri 'self';"
+    />
     <title>Painel SENSE</title>
-    <link rel="stylesheet" href="styles.css?v=20260424cssfix2" />
-    <link rel="stylesheet" href="styles/semantic/0132-flow-advanced.css?v=20260427gatilhoFa" />
+    <link rel="stylesheet" href="styles.css?v=20260512cssrestore" />
+    <!-- 0132-flow-advanced.css agora vive em styles/extras/ para sobreviver
+         à regeneração de scripts/split-css-semantic.js (que apaga semantic/*.css). -->
+    <link rel="stylesheet" href="styles/extras/0132-flow-advanced.css?v=20260512cssrestore" />
+    <link rel="stylesheet" href="styles/extras/visual-coherence.css?v=20260513neon1" />
   </head>
   <body>
+    <div id="sense-stale-alert" aria-live="polite"></div>
     <main class="layout">
       <header class="topbar">
         <div class="brand" aria-hidden="false">
@@ -18,7 +26,6 @@
               width="200"
               height="48"
               alt="SENSE"
-              onerror="this.onerror=null;this.src='assets/sense-ico-white.ico';"
             />
           </picture>
         </div>
@@ -133,31 +140,15 @@
         </div>
       </section>
     </main>
-    <script>
-      (function () {
-        function showErr(msg) {
-          var b = document.getElementById("dataBanner");
-          if (b) {
-            b.hidden = false;
-            b.className = "data-banner data-banner--show";
-            b.textContent = msg;
-          }
-        }
-        window.addEventListener("error", function (e) {
-          showErr("Erro JS: " + (e.message || (e.error && e.error.message) || "desconhecido"));
-        });
-        window.addEventListener("unhandledrejection", function (e) {
-          var r = e.reason;
-          showErr("Promise: " + (r && r.message ? r.message : String(r)));
-        });
-      })();
-    </script>
+    <script src="renderer-global-errors.js?v=1"></script>
+    <script src="brand-logo-fallback.js?v=1"></script>
     <script src="dashboard-guard.js?v=20260416j"></script>
     <script src="renderer-utils.js?v=20260424modular"></script>
+    <script src="renderer-dom-style-hints.js?v=1"></script>
     <script src="renderer-dom-shell.js?v=20260424dom"></script>
     <script src="renderer-state.js?v=20260424modular"></script>
     <script src="renderer-contracts.js?v=20260425phase23"></script>
-    <script src="renderer-sr-motion.js?v=20260424modular"></script>
+    <script src="renderer-sr-motion.js?v=20260511wapiInfinite"></script>
     <script src="renderer-sense-ia.js?v=20260428flowfusion1"></script>
     <script src="renderer-auto-cycle-toast.js?v=1"></script>
     <script src="renderer-flow-levels.js?v=20260424flow"></script>
@@ -177,6 +168,9 @@
     <script src="renderer-render-view-panels.js?v=20260428decimalpad1"></script>
     <script src="renderer-render-view.js?v=20260424split"></script>
     <script src="renderer.js?v=20260424split"></script>
+    <script src="scripts/lib/sense-block-histogram-core.js?v=20260512raiox1"></script>
+    <script src="renderer-block-histogram.js?v=20260512raiox1"></script>
+    <script src="renderer-gatilho-raiox.js?v=20260512raiox1"></script>
     <script src="renderer-bootstrap.js?v=20260424boot"></script>
     <div id="autoCycleToastContainer"></div>
   </body>
