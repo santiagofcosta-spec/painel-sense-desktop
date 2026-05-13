@@ -54,15 +54,6 @@
   display: none !important;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   SPEEDS (hud-makers-delta) — altura mínima protegida
-   Garante que os gauges %PICO / %CONF-IA / %PERSIST não sejam
-   comprimidos mesmo quando o Row 2 da grid recebe menos espaço.
-═══════════════════════════════════════════════════════════ */
-
-.hud-col-instruments .hud-makers-delta {
-  min-height: 140px;
-}
 
 /* ═══════════════════════════════════════════════════════════
    FLUXO — compactação do Speeds pair e das flow-rows
@@ -231,21 +222,21 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
    Fix: zeramos padding e reduzimos margin-bottom para caber nos 102px.
 ═══════════════════════════════════════════════════════════ */
 
-/* Expande o container de 102px → 118px (era 120px antes da redução em bloco 05).
-   Isto permite o termômetro completo (caps + tubo 48px + pct ≈ 105px) ficar visível.
-   A logo scale é reduzida de 1.32 → 1.20 para não cobrir o %CONF-IA. */
+/* Compacta o preparo (logo + termômetro) de 135px → 112px.
+   Reduz a coluna Instruments para que AGR e Radar mostrem Pressão forte
+   e ULT. VIRADA sem scroll. Tubo 36px; logo scale 1.10. */
 .hud-makers-preparo {
-  height: 135px !important;
-  min-height: 135px !important;
-  max-height: 135px !important;
-  --gatilho-idle-logo-scale: 1.20;
+  height: 112px !important;
+  min-height: 112px !important;
+  max-height: 112px !important;
+  --gatilho-idle-logo-scale: 1.10;
   --gatilho-idle-logo-side: min(
-    calc(var(--gatilho-idle-logo-gauge-baseline) * 1.20),
-    min(92px, 100%)
+    calc(var(--gatilho-idle-logo-gauge-baseline) * 1.10),
+    min(84px, 100%)
   );
 }
 
-/* Centraliza o botão COMPRA/VENDA verticalmente no container expandido para 135px */
+/* Centraliza o botão COMPRA/VENDA verticalmente */
 .hud-makers-preparo__dual-layer--hold {
   justify-content: center;
 }
@@ -254,11 +245,21 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   padding-top: 0;
   padding-bottom: 0;
   margin-top: 0;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
-  height: 48px;
+  height: 36px;
+}
+
+/* Compacta os Speeds (makers-delta): gauge 72px → 58px, menos margem/padding.
+   Os arcos %PICO / %CONF-IA / %PERSIST mantêm leitura num tamanho ajustado. */
+.hud-col-instruments .hud-makers-delta {
+  min-height: 120px;
+  margin-top: 6px;
+  padding-top: 10px;
+  padding-bottom: 6px;
+  --radar-delta-gauge-svg-h-makers: 58px;
 }
 
 /* ═══════════════════════════════════════════════════════════
