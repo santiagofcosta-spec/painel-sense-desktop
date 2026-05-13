@@ -355,7 +355,7 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 .hud-col-instruments .hud-makers-preparo
   .gatilho-thermo-viz--side-buy ~ .gatilho-thermo-pct::before {
   content: "▲";
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1;
   color: #38bdf8;
   text-shadow: 0 0 6px rgba(56, 189, 248, 0.9), 0 0 12px rgba(56, 189, 248, 0.5);
@@ -368,7 +368,7 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 .hud-col-instruments .hud-makers-preparo
   .gatilho-thermo-viz--side-sell ~ .gatilho-thermo-pct::before {
   content: "▼";
-  font-size: 7px;
+  font-size: 10px;
   line-height: 1;
   color: #fb923c;
   text-shadow: 0 0 6px rgba(251, 146, 60, 0.9), 0 0 12px rgba(251, 146, 60, 0.5);
