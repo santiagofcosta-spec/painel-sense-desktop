@@ -338,9 +338,38 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   transform: none !important;
 }
 
-/* Marker: oculto (não faz sentido em barra horizontal slim) */
+/* Marker: reativado e reposicionado junto à % label
+   - Remove position:relative do tube-wrap → marker escapa para meter-wrap (position:relative)
+   - Posicionado na base direita do wrapper, ao lado da percentagem
+   - ▼ Venda: laranja neon em vez do vermelho original
+   - > 10% força: pisca rápido (classe --anim já aplicada pelo renderer) */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
+  position: static !important;
+  overflow: visible !important;
+}
+
 .hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker {
-  display: none;
+  display: block !important;
+  position: absolute !important;
+  bottom: 1px !important;
+  right: 0 !important;
+  left: auto !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Venda → laranja neon (em vez do vermelho original) */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker--down {
+  border-color: #fb923c transparent transparent transparent !important;
+  filter:
+    drop-shadow(0 0 7px rgba(251, 146, 60, 0.95))
+    drop-shadow(0 0 12px rgba(251, 146, 60, 0.5)) !important;
+}
+
+/* Margem direita no label % para não sobrepor o triângulo */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-pct {
+  padding-right: 14px;
+  text-align: left;
 }
 
 /* Caps C/V: compactas à esquerda (V) e direita (C) da barra */
