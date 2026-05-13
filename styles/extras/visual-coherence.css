@@ -130,8 +130,14 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 
 .hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
   padding-top: 0;
-  padding-bottom: 2px;
-  margin-bottom: 4px;
+  padding-bottom: 0;
+  margin-top: 0;
+  margin-bottom: 6px;
+}
+
+/* Reduz o tubo de 48px → 36px no contexto HUD para caber nos 102px do container */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
+  height: 36px;
 }
 
 /* ═══════════════════════════════════════════════════════════
