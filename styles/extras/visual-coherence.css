@@ -39,6 +39,27 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   FLUXO — Footprint C/V e Regime/Contexto sempre visíveis no fundo
+   Footprint cola a 26px da base (deixa espaço para o Regime abaixo).
+   Regime (.regime-mercado) cola diretamente na base.
+═══════════════════════════════════════════════════════════ */
+
+#flowBox .flow-row--footprint {
+  position: sticky;
+  bottom: 26px;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 2;
+}
+
+#flowBox .regime-mercado {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 3;
+  padding-bottom: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
    ALVOS/NÍVEIS — linhas críticas sempre visíveis no fundo
    % da TEND., Viés/TEND. e Absorção ficam sticky ao fundo do
    painel (panel-tr overflow-y:auto). Em janelas com espaço
