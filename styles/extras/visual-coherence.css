@@ -1,0 +1,176 @@
+/**
+ * visual-coherence.css — coesão visual neon para áreas genéricas do painel.
+ * Carregado após todos os blocos semânticos (index.html).
+ * NÃO é gerado por scripts/split-css-semantic.js — sobrevive à regeneração.
+ *
+ * Áreas cobertas:
+ *   1. Topbar (.topbar, .hint, .btn-pick-json)
+ *   2. Títulos dos painéis (.panel-title, .panel)
+ *   3. Rodapé (.footer, .status)
+ *   4. Dialog SENSE IA (.sense-ia-dialog__*)
+ */
+
+/* ═══════════════════════════════════════════════════════════
+   1. TOPBAR
+═══════════════════════════════════════════════════════════ */
+
+.topbar {
+  background: linear-gradient(90deg, #0a0f1c 0%, #080c16 100%);
+  border-bottom-color: rgba(56, 189, 248, 0.12);
+}
+
+.hint {
+  color: var(--speed-pos-soft);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+  letter-spacing: 0.02em;
+}
+
+.btn-pick-json {
+  color: var(--speed-pos-soft);
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.1);
+}
+
+.btn-pick-json:hover {
+  color: var(--speed-pos);
+  background: rgba(14, 23, 50, 0.7);
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   2. TÍTULOS DOS PAINÉIS
+═══════════════════════════════════════════════════════════ */
+
+.panel-title {
+  color: var(--speed-pos-soft);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+  border-left: 2px solid rgba(56, 189, 248, 0.5);
+  padding-left: 6px;
+}
+
+/* borda do painel levemente azulada para unificar com os títulos */
+.panel {
+  border-color: rgba(56, 189, 248, 0.14);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3. RODAPÉ DE STATUS
+═══════════════════════════════════════════════════════════ */
+
+.footer {
+  background: linear-gradient(90deg, #080c16 0%, #070b12 100%);
+  border-top-color: rgba(56, 189, 248, 0.1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status {
+  color: var(--speed-pos-soft);
+}
+
+.status.error {
+  color: #ff8b8b;
+}
+
+.status.warning {
+  color: #fbbf24;
+}
+
+/* dot "ao vivo" — usa as classes já aplicadas pelo renderer:
+   className="status"         → ao vivo (dot verde)
+   className="status warning" → stale (sem dot)
+   className="status error"   → erro (sem dot) */
+.status:not(.error):not(.warning)::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e;
+  margin-right: 6px;
+  animation: sense-dot-pulse 2.2s ease-in-out infinite;
+  vertical-align: middle;
+}
+
+@keyframes sense-dot-pulse {
+  0%, 100% {
+    opacity: 0.5;
+    box-shadow: 0 0 4px #22c55e;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px #22c55e, 0 0 14px rgba(34, 197, 94, 0.3);
+  }
+}
+
+/* desativar dot em modo realtime-optimized (mesmo padrão dos outros keyframes) */
+html.realtime-optimized .status:not(.error):not(.warning)::before {
+  animation: none;
+  opacity: 0.8;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   4. DIALOG SENSE IA
+═══════════════════════════════════════════════════════════ */
+
+.sense-ia-dialog__panel {
+  background: linear-gradient(135deg, #080d1c 0%, #060a16 100%);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  box-shadow:
+    0 0 24px rgba(0, 80, 200, 0.08),
+    inset 0 0 16px rgba(0, 40, 100, 0.05);
+}
+
+.sense-ia-dialog__title {
+  color: var(--speed-pos);
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+#senseIaMeta {
+  color: #334155;
+  letter-spacing: 0.03em;
+}
+
+.sense-ia-dialog__body {
+  border-top-color: rgba(56, 189, 248, 0.1);
+  border-bottom-color: rgba(56, 189, 248, 0.1);
+}
+
+.sense-ia-dialog__kbd {
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  color: var(--speed-pos-soft);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* botões de ação primários: Gatilho FA, ⚙ Inputs */
+.sense-ia-dialog__action-btn {
+  color: var(--speed-pos);
+  border-color: rgba(56, 189, 248, 0.45);
+  background: linear-gradient(135deg, rgba(8, 18, 44, 0.9), rgba(6, 13, 32, 0.95));
+  box-shadow: 0 0 7px rgba(56, 189, 248, 0.12);
+  letter-spacing: 0.04em;
+}
+
+.sense-ia-dialog__action-btn:hover {
+  border-color: rgba(56, 189, 248, 0.65);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+}
+
+/* botões secundários: guardar .md, exportar inputs, copiar JSON */
+.sense-ia-dialog__save-md-btn,
+.sense-ia-dialog__copy-context-btn {
+  color: #475569;
+  border-color: rgba(56, 189, 248, 0.15);
+  background: rgba(7, 12, 30, 0.7);
+}
+
+.sense-ia-dialog__save-md-btn:hover,
+.sense-ia-dialog__copy-context-btn:hover {
+  color: var(--speed-pos-soft);
+  border-color: rgba(56, 189, 248, 0.3);
+}
