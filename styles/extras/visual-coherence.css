@@ -49,6 +49,12 @@
   padding-left: 6px;
 }
 
+/* HUD: título full-width — apenas cor e glow, sem borda/padding */
+.panel-hud .panel-title {
+  color: var(--speed-pos-soft);
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.3);
+}
+
 /* borda do painel levemente azulada para unificar com os títulos */
 .panel {
   border-color: rgba(56, 189, 248, 0.14);
@@ -132,7 +138,7 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 }
 
 #senseIaMeta {
-  color: #334155;
+  color: #475569;
   letter-spacing: 0.03em;
 }
 
