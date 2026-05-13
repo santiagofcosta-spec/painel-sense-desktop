@@ -132,9 +132,9 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
    Isto permite o termômetro completo (caps + tubo 48px + pct ≈ 105px) ficar visível.
    A logo scale é reduzida de 1.32 → 1.20 para não cobrir o %CONF-IA. */
 .hud-makers-preparo {
-  height: 118px !important;
-  min-height: 118px !important;
-  max-height: 118px !important;
+  height: 135px !important;
+  min-height: 135px !important;
+  max-height: 135px !important;
   --gatilho-idle-logo-scale: 1.20;
   --gatilho-idle-logo-side: min(
     calc(var(--gatilho-idle-logo-gauge-baseline) * 1.20),
