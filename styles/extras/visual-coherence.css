@@ -128,6 +128,20 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
    Fix: zeramos padding e reduzimos margin-bottom para caber nos 102px.
 ═══════════════════════════════════════════════════════════ */
 
+/* Expande o container de 102px → 118px (era 120px antes da redução em bloco 05).
+   Isto permite o termômetro completo (caps + tubo 48px + pct ≈ 105px) ficar visível.
+   A logo scale é reduzida de 1.32 → 1.20 para não cobrir o %CONF-IA. */
+.hud-makers-preparo {
+  height: 118px !important;
+  min-height: 118px !important;
+  max-height: 118px !important;
+  --gatilho-idle-logo-scale: 1.20;
+  --gatilho-idle-logo-side: min(
+    calc(var(--gatilho-idle-logo-gauge-baseline) * 1.20),
+    min(92px, 100%)
+  );
+}
+
 .hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
   padding-top: 0;
   padding-bottom: 0;
@@ -135,9 +149,8 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   margin-bottom: 6px;
 }
 
-/* Reduz o tubo de 48px → 36px no contexto HUD para caber nos 102px do container */
 .hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
-  height: 36px;
+  height: 48px;
 }
 
 /* ═══════════════════════════════════════════════════════════
