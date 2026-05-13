@@ -39,6 +39,39 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   ALVOS/NÍVEIS — linhas críticas sempre visíveis no fundo
+   % da TEND., Viés/TEND. e Absorção ficam sticky ao fundo do
+   painel (panel-tr overflow-y:auto). Em janelas com espaço
+   suficiente ficam na posição normal; em janelas pequenas
+   colam ao fundo sem desaparecer.
+═══════════════════════════════════════════════════════════ */
+
+#levelsBox .levels-trend-pct {
+  position: sticky;
+  bottom: 48px; /* espaço para Viés/TEND (~24px) + Absorção (~24px) abaixo */
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 3;
+  padding-top: 2px;
+}
+
+/* Viés/TEND. — vem logo após .levels-trend-pct no DOM */
+#levelsBox .levels-trend-pct + .flow-row {
+  position: sticky;
+  bottom: 24px;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 2;
+}
+
+/* Absorção — sticky na base; :empty já tem display:none por block-02 */
+#levelsBox .levels-absorption-wrap:not(:empty) {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 1;
+  padding-bottom: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
    2. TÍTULOS DOS PAINÉIS
 ═══════════════════════════════════════════════════════════ */
 
