@@ -48,8 +48,8 @@
   box-shadow: 0 0 24px rgba(0, 80, 255, 0.06);
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: clip;
-  contain: layout paint;
+  /* overflow-y: visible — painéis têm altura determinada pelo grid (1fr), não pelo conteúdo */
+  overflow-y: visible;
 }
 
 .panel-tl {
@@ -60,5 +60,5 @@
   min-height: 0;
   align-self: stretch;
   overflow-x: hidden;
-  overflow-y: clip;
+  overflow-y: visible;
 }
