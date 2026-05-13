@@ -142,6 +142,11 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   );
 }
 
+/* Centraliza o botão COMPRA/VENDA verticalmente no container expandido para 135px */
+.hud-makers-preparo__dual-layer--hold {
+  justify-content: center;
+}
+
 .hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
   padding-top: 0;
   padding-bottom: 0;
