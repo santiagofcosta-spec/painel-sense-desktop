@@ -120,13 +120,18 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 
 /* ═══════════════════════════════════════════════════════════
    TERMÔMETRO — ajuste no contexto HUD (hud-makers-preparo)
-   O theme-thermo-futuristic.css adiciona padding: 6px 4px 4px ao
-   .gatilho-thermo-meter-wrap. No HUD (container 102px), isso
-   empurra o topo do termômetro ~4px para fora. Corrigido aqui.
+   .hud-makers-preparo tem height/max-height: 102px + overflow: hidden.
+   O theme-thermo-futuristic.css adiciona padding: 6px 4px 4px ao wrapper
+   e block-05 define margin-bottom: 14px.
+   Com align-items: flex-end, o topo do termômetro fica ~10px acima do
+   container e é cortado pelo overflow:hidden.
+   Fix: zeramos padding e reduzimos margin-bottom para caber nos 102px.
 ═══════════════════════════════════════════════════════════ */
 
-.hud-makers-preparo .gatilho-thermo-meter-wrap {
-  padding-top: 2px;
+.hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
+  padding-top: 0;
+  padding-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 /* ═══════════════════════════════════════════════════════════
