@@ -39,10 +39,18 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
-   RAIO-X — oculto (componente ainda não está no padrão visual do painel)
+   RAIO-X — visível mas abaixo do fold; acessível via scroll no HUD
+   O .panel-hud passa a overflow-y:auto com scrollbar oculta.
 ═══════════════════════════════════════════════════════════ */
 
-.raiox-wrap {
+.panel-hud {
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.panel-hud::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
   display: none !important;
 }
 
@@ -53,7 +61,30 @@
 ═══════════════════════════════════════════════════════════ */
 
 .hud-col-instruments .hud-makers-delta {
-  min-height: 130px;
+  min-height: 140px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FLUXO — compactação do Speeds pair e das flow-rows
+   Reduz padding/margem excessivos para todo o conteúdo do bloco
+   Fluxo caber na altura disponível sem scroll.
+═══════════════════════════════════════════════════════════ */
+
+/* Speeds pair: menos padding e margem */
+#flowBox .flow-speeds-pair {
+  padding: 5px 4px;
+  margin: 2px auto 3px;
+  gap: 8px;
+}
+
+/* Gauges dos Speeds no Fluxo: altura reduzida de 76px → 58px */
+#flowBox .flow-speeds-pair .radar-delta-gauge--flow .radar-delta-gauge__viz {
+  height: 58px;
+}
+
+/* Flow rows: gap menor entre as linhas */
+#flowBox.flow {
+  gap: 2px;
 }
 
 /* ═══════════════════════════════════════════════════════════
