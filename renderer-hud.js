@@ -314,12 +314,22 @@ function deriveAggressionTextureFromDashboard(d, agg) {
   let weightedSum = 0.22;
 
   const flow = d && d.flow && typeof d.flow === "object" ? d.flow : null;
+  const flowAdv = d && d.flowAdvanced && typeof d.flowAdvanced === "object" ? d.flowAdvanced : null;
   const zMini = Number(flow && flow.zMini);
   const zRef = Number(flow && flow.zRef);
-  if (Number.isFinite(zMini) || Number.isFinite(zRef)) {
+  const zMiniAdv = Number(flowAdv && flowAdv.zMiniNorm);
+  const zRefAdv = Number(flowAdv && flowAdv.zRefNorm);
+  if (Number.isFinite(zMini) || Number.isFinite(zRef) || Number.isFinite(zMiniAdv) || Number.isFinite(zRefAdv)) {
     const z1 = Number.isFinite(zMini) ? Math.abs(zMini) : 0;
     const z2 = Number.isFinite(zRef) ? Math.abs(zRef) : 0;
-    const zAvg = (z1 + z2) / (Number.isFinite(zMini) && Number.isFinite(zRef) ? 2 : 1);
+    const z3 = Number.isFinite(zMiniAdv) ? Math.min(3, Math.abs(zMiniAdv)) / 3 : 0;
+    const z4 = Number.isFinite(zRefAdv) ? Math.min(3, Math.abs(zRefAdv)) / 3 : 0;
+    const n =
+      (Number.isFinite(zMini) ? 1 : 0) +
+      (Number.isFinite(zRef) ? 1 : 0) +
+      (Number.isFinite(zMiniAdv) ? 1 : 0) +
+      (Number.isFinite(zRefAdv) ? 1 : 0);
+    const zAvg = n > 0 ? (z1 + z2 + z3 + z4) / n : 0;
     const zNorm = Math.max(0, Math.min(1, zAvg / 1.2));
     const heavyFlow = 30 + 50 * zNorm;
     weightedHeavy += heavyFlow * 0.38;
@@ -402,8 +412,8 @@ function renderAggressionProxyBlock(d, agg) {
   return `<div class="aggr-texture aggr-texture--compact" title="${escapeHtml(blockTitle)}">
     <div class="aggr-texture__label">PRESSÃO (LEVE vs PESADO)</div>
     <div class="aggr-texture__bar" role="img" aria-label="${escapeHtml(ariaPress)}">
-      <span class="aggr-texture__fine" style="width:${fp.toFixed(1)}%"></span>
-      <span class="aggr-texture__heavy" style="width:${hp.toFixed(1)}%"></span>
+      <span class="aggr-texture__fine" data-sense-wpct="${escapeHtml(fp.toFixed(1))}"></span>
+      <span class="aggr-texture__heavy" data-sense-wpct="${escapeHtml(hp.toFixed(1))}"></span>
     </div>
     <div class="aggr-texture__nums"><span>LEVE ~${fp.toFixed(0)}%</span><span>PESADO ~${hp.toFixed(0)}%</span></div>
     ${heavyHintHtml}
@@ -484,6 +494,245 @@ function absorptionRealLineFromDash(d) {
   </div>`;
 }
 
+function hudNumMaybe(v) {
+  if (v === null || v === undefined) return NaN;
+  if (typeof v === "number") return Number.isFinite(v) ? v : NaN;
+  const n = Number(String(v).trim().replace(",", "."));
+  return Number.isFinite(n) ? n : NaN;
+}
+
+function hudFmtPrice(v, digits) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return "—";
+  const d = Number.isFinite(digits) ? Math.max(0, Math.min(4, Math.floor(digits))) : 1;
+  return n.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+}
+
+function hudFmtPts(v) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return "—";
+  return n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+}
+
+function hudNormalizeIaStatus(statusRaw, side, confidence, minConfidence) {
+  const s = stripAccentsForDisplay(String(statusRaw || "")).toUpperCase();
+  if (s.includes("REJEIT")) return "ENTRADA NÃO RECOMENDADA";
+  if (s.includes("ALVO_AJUST") || s.includes("AJUST")) return "ALVO SUGERIDO MENOR";
+  if (side && Number.isFinite(confidence) && confidence >= minConfidence) return "SINAL VALIDADO";
+  return "AGUARDANDO NOVA LEITURA";
+}
+
+function hudLieDetectorSignals(d, go, side) {
+  const out = { flags: [], severity: "low", targetPenalty: 0, confidenceDelta: 0, reason: "fluxo coerente no momento" };
+  const fa = d && d.flowAdvanced && typeof d.flowAdvanced === "object" ? d.flowAdvanced : null;
+  const ofi = fa && fa.ofiNocional && typeof fa.ofiNocional === "object" ? fa.ofiNocional : null;
+  const ar = fa && fa.absorptionReal && typeof fa.absorptionReal === "object" ? fa.absorptionReal : null;
+  const diag = go && go.diag && typeof go.diag === "object" ? go.diag : null;
+  const tapeTicks = Number(fa && fa.tapeTicksPerSec);
+  const spreadAlert = !!((fa && fa.spreadLiquidityAlert === true) || (diag && diag.spreadAlert === true));
+  const deltaPct = Number(d && d.delta && d.delta.deltaPct);
+  const pctBid = Number(ofi && ofi.pctBid);
+  const priceMove = Number(ar && ar.priceMove);
+  const deltaAbs = Number(ar && ar.deltaAbs);
+
+  // A) Spoofing/layering (suspeita visual): book extremo + pouco deslocamento real.
+  const spoofSuspect =
+    Number.isFinite(pctBid) &&
+    Number.isFinite(deltaPct) &&
+    Number.isFinite(tapeTicks) &&
+    Number.isFinite(priceMove) &&
+    ((pctBid >= 72 || pctBid <= 28) && Math.abs(deltaPct) <= 12 && tapeTicks >= 12 && Math.abs(priceMove) <= 1.2);
+  if (spoofSuspect) {
+    out.flags.push("BLEFE DE LOTE");
+    out.targetPenalty += 0.2;
+    out.confidenceDelta -= 12;
+    out.reason = "book extremo com pouco deslocamento efetivo";
+  }
+
+  // B) Iceberg/absorção: volume absorvido sem deslocamento proporcional.
+  const icebergAbsorption =
+    !!(ar && (ar.buy === true || ar.sell === true)) &&
+    Number.isFinite(deltaAbs) &&
+    Number.isFinite(priceMove) &&
+    Math.abs(deltaAbs) >= 0.5 &&
+    Math.abs(priceMove) <= 1.3;
+  if (icebergAbsorption) {
+    out.flags.push("ABSORÇÃO FORTE");
+    out.targetPenalty += 0.18;
+    out.confidenceDelta -= 10;
+    out.reason = "absorção institucional com baixo deslocamento";
+  }
+
+  // C) Armadilha de liquidez usando classificador já existente.
+  let trap = null;
+  if (typeof detectLiquidityTrapForSide === "function" && side) {
+    trap = detectLiquidityTrapForSide(side, d, go);
+  }
+  if (trap) {
+    out.flags.push(trap.level === "high" ? "ARMADILHA FORTE" : "ARMADILHA DE PREÇO");
+    out.targetPenalty += trap.level === "high" ? 0.32 : 0.18;
+    out.confidenceDelta -= trap.level === "high" ? 24 : 12;
+    out.reason = trap.reason || "possível armadilha de liquidez";
+  }
+
+  // D) Viabilidade do alvo: parede oposta no caminho + stress de spread.
+  const opposingWall =
+    Number.isFinite(pctBid) &&
+    ((side === "buy" && pctBid <= 42) || (side === "sell" && pctBid >= 58));
+  if (opposingWall) {
+    out.flags.push("BARREIRA NO ALVO");
+    out.targetPenalty += 0.16;
+    out.confidenceDelta -= 8;
+    out.reason = "parede de liquidez no caminho do alvo";
+  }
+  if (spreadAlert) {
+    out.flags.push("SPREAD ESTRESSADO");
+    out.targetPenalty += 0.1;
+    out.confidenceDelta -= 6;
+  }
+
+  if (out.flags.includes("TRAP_FORTE")) out.severity = "high";
+  else if (out.flags.length >= 2) out.severity = "medium";
+  else out.severity = "low";
+  return out;
+}
+
+function hudBuildIaAuditShadowHtml(d, go) {
+  const ia = go && go.iaDecision && typeof go.iaDecision === "object" ? go.iaDecision : null;
+  const shadow = go && go.iaAuditShadow && typeof go.iaAuditShadow === "object" ? go.iaAuditShadow : null;
+  const side = String((shadow && shadow.side) || (ia && ia.side) || "").toLowerCase();
+  const confidence = Number(ia && ia.confidence);
+  const minConfidence = Number(ia && ia.minConfidence);
+  const minConf = Number.isFinite(minConfidence) ? minConfidence : 80;
+  const baseStatus = hudNormalizeIaStatus(ia && ia.status, side, confidence, minConf);
+  const entry = hudNumMaybe(shadow && shadow.entryPrice);
+  const target = hudNumMaybe(shadow && shadow.targetPrice);
+  const currentPts = hudNumMaybe(shadow && shadow.targetPts);
+  const hasTarget = !!(shadow && shadow.hasTarget) && Number.isFinite(entry) && Number.isFinite(target);
+  const detector = hudLieDetectorSignals(d, go, side);
+  const flags = detector.flags.slice(0, 3);
+  let status = baseStatus;
+  if (detector.severity === "high") status = "REJEITADO";
+  else if (detector.targetPenalty >= 0.16 && status !== "REJEITADO") status = "ALVO_AJUSTADO";
+  else if (status === "SEM_LEITURA" && side) status = "CONFIRMADO";
+  let suggestedPts = NaN;
+  let suggestedPrice = NaN;
+  if (hasTarget && Number.isFinite(currentPts) && currentPts > 0) {
+    let factor = 1.0;
+    if (status === "ALVO_AJUSTADO") factor = 0.75;
+    else if (status === "REJEITADO") factor = 0.65;
+    else if (Number.isFinite(confidence)) factor = confidence >= 85 ? 1.0 : confidence >= 70 ? 0.9 : 0.8;
+    const diag = go && go.diag && typeof go.diag === "object" ? go.diag : null;
+    if (diag && diag.spreadAlert === true) factor = Math.min(factor, 0.8);
+    if (detector.targetPenalty > 0) factor = Math.max(0.5, factor - detector.targetPenalty);
+    suggestedPts = Math.max(3, currentPts * factor);
+    if (side === "buy") suggestedPrice = entry + suggestedPts;
+    else if (side === "sell") suggestedPrice = entry - suggestedPts;
+  }
+  const latencyMs = Number(ia && ia.latencyMs);
+  const reasonRaw = detector.reason || String((ia && ia.reason) || "").trim();
+  const reason = reasonRaw ? reasonRaw.slice(0, 62) : "aguardando auditoria";
+  const lineAlvo = hasTarget
+    ? Number.isFinite(suggestedPts) && Number.isFinite(suggestedPrice)
+      ? `ALVO SUG: ${hudFmtPts(suggestedPts)} pts => ${hudFmtPrice(suggestedPrice, 1)}`
+      : `ALVO EA: ${hudFmtPts(currentPts)} pts => ${hudFmtPrice(target, 1)}`
+    : "ALVO SUG: sem alvo válido";
+  const confAdj = Number.isFinite(confidence)
+    ? Math.max(0, Math.min(100, Math.round(confidence + detector.confidenceDelta)))
+    : NaN;
+  const detectorLine = flags.length ? `DETECTOR: ${flags.join(" | ")}` : "DETECTOR: SEM SINAL CRÍTICO";
+  const fluxoText = detectorLine.replace("DETECTOR: ", "").trim();
+  let statusLabel = status;
+  if (status === "REJEITADO") statusLabel = "ENTRADA NÃO RECOMENDADA";
+  else if (status === "ALVO_AJUSTADO") statusLabel = "ALVO MAIS CONSERVADOR";
+  else if (status === "CONFIRMADO") statusLabel = "SINAL CONSISTENTE";
+  const statusCls =
+    status === "SINAL VALIDADO" || status === "CONFIRMADO"
+      ? "hud-ia-audit--ok"
+      : status === "ALVO SUGERIDO MENOR" || status === "ALVO_AJUSTADO"
+        ? "hud-ia-audit--warn"
+        : status === "ENTRADA NÃO RECOMENDADA" || status === "REJEITADO"
+          ? "hud-ia-audit--bad"
+          : "hud-ia-audit--idle";
+  const attentionCls =
+    status === "REJEITADO" ||
+    status === "ALVO_AJUSTADO" ||
+    status === "ENTRADA NÃO RECOMENDADA" ||
+    status === "ALVO SUGERIDO MENOR" ||
+    detector.severity === "high"
+      ? " hud-ia-audit--attention"
+      : detector.severity === "medium"
+        ? " hud-ia-audit--attention-soft"
+        : "";
+  const latencyLabel = Number.isFinite(latencyMs) ? `${Math.round(latencyMs)} ms` : "—";
+  const confBarPct = Number.isFinite(confAdj) ? confAdj : 0;
+  const html = `<div class="hud-ia-audit ${statusCls}${attentionCls}" title="IA de apoio em modo sombra: somente visual, sem interferir na EA.">
+    <div class="hud-ia-audit__head">
+      <span class="hud-ia-audit__title">IA Auditoria</span>
+      <span class="hud-ia-audit__badge">Apoio · só visual</span>
+    </div>
+    <div class="hud-ia-audit__hero hud-ia-audit__hero--row">
+      <span class="hud-ia-audit__pill"><span class="hud-ia-audit__pill-dot" aria-hidden="true"></span>${escapeHtml(statusLabel)}</span>
+      <div class="hud-ia-audit__hero-target" title="${escapeHtml(lineAlvo)}">${escapeHtml(lineAlvo)}</div>
+    </div>
+    <div class="hud-ia-audit__conf-strip">
+      <div class="hud-ia-audit__conf-main">
+        <span class="hud-ia-audit__conf-num">${Number.isFinite(confAdj) ? `${confAdj}<span class="hud-ia-audit__conf-pct">%</span>` : "—"}</span>
+        <div class="hud-ia-audit__conf-meta">
+          <span class="hud-ia-audit__conf-label">Conf. ajust.</span>
+          <span class="hud-ia-audit__conf-lat">${escapeHtml(latencyLabel)}</span>
+        </div>
+      </div>
+      <div class="hud-ia-audit__conf-track" role="presentation"><span class="hud-ia-audit__conf-fill" data-sense-wpct="${escapeHtml(String(confBarPct))}"></span></div>
+    </div>
+    <div class="hud-ia-audit__reads hud-ia-audit__reads--cols">
+      <div class="hud-ia-audit__read hud-ia-audit__read--flux">
+        <span class="hud-ia-audit__read-k">Fluxo</span>
+        <span class="hud-ia-audit__read-v">${escapeHtml(fluxoText)}</span>
+      </div>
+      <div class="hud-ia-audit__read hud-ia-audit__read--main">
+        <span class="hud-ia-audit__read-k">Principal</span>
+        <span class="hud-ia-audit__read-v">${escapeHtml(reason)}</span>
+      </div>
+    </div>
+  </div>`;
+  const critical =
+    status === "ENTRADA NÃO RECOMENDADA" ||
+    status === "ALVO SUGERIDO MENOR" ||
+    status === "REJEITADO" ||
+    status === "ALVO_AJUSTADO";
+  return { html, critical };
+}
+
+function hudPickRadarSlotView(hasAbsorption, iaAuditCritical) {
+  const S = window.SenseRendererState || {};
+  const now = Date.now();
+  const order = hasAbsorption ? ["radar", "absorption", "ia"] : ["radar", "ia"];
+  if (iaAuditCritical) {
+    S.hudRadarSlotView = "ia";
+    S.hudRadarSlotUntilMs = now + 15000;
+    window.SenseRendererState = S;
+    return "ia";
+  }
+  const current = String(S.hudRadarSlotView || "");
+  let idx = order.indexOf(current);
+  if (idx < 0) {
+    S.hudRadarSlotView = order[0];
+    S.hudRadarSlotUntilMs = now + 10000;
+    window.SenseRendererState = S;
+    return order[0];
+  }
+  const until = Number(S.hudRadarSlotUntilMs || 0);
+  if (now < until) return current;
+  idx = (idx + 1) % order.length;
+  const next = order[idx];
+  const dur = next === "radar" ? 10000 : 8000;
+  S.hudRadarSlotView = next;
+  S.hudRadarSlotUntilMs = now + dur;
+  window.SenseRendererState = S;
+  return next;
+}
+
 
 function renderHudBlock(d, schemaVersion, consensus) {
   const v = Number(schemaVersion || 1);
@@ -513,63 +762,76 @@ function renderHudBlock(d, schemaVersion, consensus) {
   const aggrRowTone = hudAggrRowToneClass(agg);
   const aggrDay = aggressionDayAccumMeta(agg, d.zMediaAcumBias);
   const absorptionLines = absorptionLinesFromDash(d);
-  const hasAbsorption = absorptionLines.length > 0 || !!absorptionRealLineFromDash(d);
-  const absorptionFocusHtml = hasAbsorption
-    ? `<div class="hud-absorption-focus" role="group" aria-label="Absorção em destaque">
-        <h3 class="hud-col-title hud-col-title--radar-follows-makers">Absorção (foco)</h3>
-        <div class="hud-absorption-focus__body">${hudAbsorptionRowHtml(d)}</div>
-      </div>`
+  /* As linhas de Absorção foram movidas para o rodapé do painel «Alvos / Níveis» (paintDashboardLevelsPanel).
+     Por isso, o ciclo do slot do Radar deixa de incluir a Absorção (passa a alternar só «Radar → IA Apoio»).
+     `absorptionLines` continua disponível caso outras funções queiram consultar; só hasAbsorption fica false. */
+  const hasAbsorption = false;
+  void absorptionLines;
+  const radarPanelHtml = `${(() => {
+    const side = sideFromDirectionText(rad.dir);
+    const c = evaluateDirectionalConflict(side, d);
+    const cs = consensus && typeof consensus === "object" ? consensus : null;
+    const consensusOpposes =
+      !!cs &&
+      side &&
+      cs.bias !== "neutral" &&
+      cs.bias !== side &&
+      (cs.conflictLevel === "medium" || cs.conflictLevel === "high");
+    const divergent = c.divergent || consensusOpposes;
+    const dirTxt = divergent && side ? `${rad.dir} (DIVERGENTE)` : rad.dir;
+    const line = hudRadarLine(
+      "Direção",
+      dirTxt,
+      "dir",
+      flowStrengthHud,
+      radarDirMeterMode(dirTxt),
+      divergent ? "hud-line--radar-divergent" : ""
+    );
+    if (!cs) return line;
+    const confPct = Math.round((Number(cs.confidence01) || 0) * 100);
+    const conflictPt = cs.conflictLevel === "low" ? "baixo" : cs.conflictLevel === "medium" ? "médio" : "alto";
+    const isNoConflict100 = confPct >= 100;
+    const consensusToneCls =
+      cs.conflictLevel === "medium" || cs.conflictLevel === "high"
+        ? "hud-line--radar-consensus-divergent"
+        : cs.bias === "buy"
+          ? "hud-line--radar-consensus-buy"
+          : cs.bias === "sell"
+            ? "hud-line--radar-consensus-sell"
+            : "hud-line--radar-consensus-neutral";
+    const pulseCls = isNoConflict100 ? "hud-line--radar-consensus-pulse" : "";
+    const conflictLabel = isNoConflict100 ? "SEM CONFLITO" : `conflito ${escapeHtml(conflictPt)}`;
+    const reactiveTag = cs.reactiveNowOn
+      ? `<span class="hud-consensus-reactive-tag" title="Consenso em modo reativo ao momento atual.">MOMENTO ON</span>`
+      : "";
+    const row = `<div class="hud-line hud-line--radar-consensus ${consensusToneCls} ${pulseCls}"><span class="hud-k">Consenso</span><span class="hud-v-wrap"><span class="hud-v">` +
+      `${escapeHtml(consensusLabelPt(cs.bias))} · ${confPct}% · ${conflictLabel}` +
+      `${cs.hysteresisHold ? " · estabilizando" : ""}</span>${reactiveTag}</span></div>`;
+    return line + row;
+  })()}
+  ${hudRadarLine("Picos C+/V−", rad.peaks, "picos")}
+  ${hudRadarLine("Persistência (s)", rad.persist, "persist")}
+  ${hudRadarLine("Saldo picos", rad.saldoPicos, "saldoPicos")}
+  ${hudRadarLine("Saldo persist", rad.saldoPersist, "saldoPersist")}
+  ${hudRadarLine("Últ. virada", rad.flip, "flip", undefined, undefined, "hud-line--radar-ult-virada")}`;
+  const absorptionPanelHtml = hasAbsorption
+    ? `<div class="hud-absorption-focus__body">${hudAbsorptionRowHtml(d)}</div>`
     : "";
-  const radarHtml = hasAbsorption
-    ? absorptionFocusHtml
-    : `<h3 class="hud-col-title hud-col-title--radar-follows-makers">Radar</h3>
-        ${(() => {
-          const side = sideFromDirectionText(rad.dir);
-          const c = evaluateDirectionalConflict(side, d);
-          const cs = consensus && typeof consensus === "object" ? consensus : null;
-          const consensusOpposes =
-            !!cs &&
-            side &&
-            cs.bias !== "neutral" &&
-            cs.bias !== side &&
-            (cs.conflictLevel === "medium" || cs.conflictLevel === "high");
-          const divergent = c.divergent || consensusOpposes;
-          const dirTxt = divergent && side ? `${rad.dir} (DIVERGENTE)` : rad.dir;
-          const line = hudRadarLine(
-            "Direção",
-            dirTxt,
-            "dir",
-            flowStrengthHud,
-            radarDirMeterMode(dirTxt),
-            divergent ? "hud-line--radar-divergent" : ""
-          );
-          if (!cs) return line;
-          const confPct = Math.round((Number(cs.confidence01) || 0) * 100);
-          const conflictPt = cs.conflictLevel === "low" ? "baixo" : cs.conflictLevel === "medium" ? "médio" : "alto";
-          const isNoConflict100 = confPct >= 100;
-          const consensusToneCls =
-            cs.conflictLevel === "medium" || cs.conflictLevel === "high"
-              ? "hud-line--radar-consensus-divergent"
-              : cs.bias === "buy"
-              ? "hud-line--radar-consensus-buy"
-              : cs.bias === "sell"
-              ? "hud-line--radar-consensus-sell"
-              : "hud-line--radar-consensus-neutral";
-          const pulseCls = isNoConflict100 ? "hud-line--radar-consensus-pulse" : "";
-          const conflictLabel = isNoConflict100 ? "SEM CONFLITO" : `conflito ${escapeHtml(conflictPt)}`;
-          const reactiveTag = cs.reactiveNowOn
-            ? `<span class="hud-consensus-reactive-tag" title="Consenso em modo reativo ao momento atual.">MOMENTO ON</span>`
-            : "";
-          const row = `<div class="hud-line hud-line--radar-consensus ${consensusToneCls} ${pulseCls}"><span class="hud-k">Consenso</span><span class="hud-v-wrap"><span class="hud-v">` +
-            `${escapeHtml(consensusLabelPt(cs.bias))} · ${confPct}% · ${conflictLabel}` +
-            `${cs.hysteresisHold ? " · estabilizando" : ""}</span>${reactiveTag}</span></div>`;
-          return line + row;
-        })()}
-        ${hudRadarLine("Picos C+/V−", rad.peaks, "picos")}
-        ${hudRadarLine("Persistência (s)", rad.persist, "persist")}
-        ${hudRadarLine("Saldo picos", rad.saldoPicos, "saldoPicos")}
-        ${hudRadarLine("Saldo persist", rad.saldoPersist, "saldoPersist")}
-        ${hudRadarLine("Últ. virada", rad.flip, "flip")}`;
+  const iaAudit = hudBuildIaAuditShadowHtml(d, go);
+  const slotView = hudPickRadarSlotView(hasAbsorption, iaAudit.critical);
+  const slotTitle =
+    slotView === "absorption"
+      ? "Absorção"
+      : slotView === "ia"
+        ? "IA Auditoria"
+        : "Radar";
+  const slotBody =
+    slotView === "absorption"
+      ? absorptionPanelHtml
+      : slotView === "ia"
+        ? iaAudit.html
+        : radarPanelHtml;
+  const radarHtml = `<h3 class="hud-col-title hud-col-title--radar-follows-makers">${slotTitle}</h3>${slotBody}`;
   return `
     <div class="hud-cols">
       <div class="hud-col">

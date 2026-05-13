@@ -56,21 +56,32 @@
 
 
 /* ═══════════════════════════════════════════════════════════
-   FLUXO — compactação do Speeds pair e das flow-rows
-   Reduz padding/margem excessivos para todo o conteúdo do bloco
-   Fluxo caber na altura disponível sem scroll.
+   FLUXO — linhas Tape Vel, Spread Z e OFI ocultadas
+   Mantém apenas Footprint C/V e Contexto de Mercado.
+   flow-row--adv é a classe partilhada por todas essas linhas;
+   flow-row--footprint distingue o Footprint das restantes.
 ═══════════════════════════════════════════════════════════ */
 
-/* Speeds pair: menos padding e margem */
-#flowBox .flow-speeds-pair {
-  padding: 5px 4px;
-  margin: 2px auto 3px;
-  gap: 8px;
+#flowBox .flow-row--adv:not(.flow-row--footprint) {
+  display: none !important;
 }
 
-/* Gauges dos Speeds no Fluxo: altura reduzida de 76px → 58px */
+/* ═══════════════════════════════════════════════════════════
+   FLUXO — Speeds maiores e centralizados no espaço libertado
+═══════════════════════════════════════════════════════════ */
+
+#flowBox .flow-speeds-pair {
+  flex: 1;
+  padding: 10px 4px;
+  margin: 0 auto;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gauges: 58px → 80px */
 #flowBox .flow-speeds-pair .radar-delta-gauge--flow .radar-delta-gauge__viz {
-  height: 58px;
+  height: 80px;
 }
 
 /* Flow rows: gap menor entre as linhas */
@@ -114,26 +125,38 @@
 
 /* ═══════════════════════════════════════════════════════════
    ALVOS/NÍVEIS — linhas críticas sempre visíveis no fundo
-   % da TEND., Viés/TEND. e Absorção ficam sticky ao fundo do
-   painel (panel-tr overflow-y:auto). Em janelas com espaço
-   suficiente ficam na posição normal; em janelas pequenas
-   colam ao fundo sem desaparecer.
+   Alturas efectivas com padding:5px 7px:
+     Absorção (hud-line flex-col) ≈ 36px
+     Viés/TEND. (flow-row.delta-row) ≈ 24px
+     % da TEND. (flow-row.delta-row) ≈ 24px
+     PTAX slot (placar-ptax + compasso 24px) ≈ 38px
+   Stack (4px gap):
+     Absorção → bottom:0  Viés → 40  % TED → 68  PTAX → 96
 ═══════════════════════════════════════════════════════════ */
+
+/* PTAX Bússola — mais alta, fica por cima das linhas de tendência */
+#levelsBox .levels-ptax-slot {
+  position: sticky;
+  bottom: 96px;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 5;
+  padding-top: 2px;
+}
 
 #levelsBox .levels-trend-pct {
   position: sticky;
-  bottom: 48px; /* espaço para Viés/TEND (~24px) + Absorção (~24px) abaixo */
+  bottom: 68px;
   background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
-  z-index: 3;
+  z-index: 4;
   padding-top: 2px;
 }
 
 /* Viés/TEND. — vem logo após .levels-trend-pct no DOM */
 #levelsBox .levels-trend-pct + .flow-row {
   position: sticky;
-  bottom: 24px;
+  bottom: 40px;
   background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
-  z-index: 2;
+  z-index: 3;
 }
 
 /* Absorção — sticky na base; :empty já tem display:none por block-02 */
@@ -141,7 +164,7 @@
   position: sticky;
   bottom: 0;
   background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
-  z-index: 1;
+  z-index: 2;
   padding-bottom: 2px;
 }
 
@@ -475,4 +498,140 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
 .sense-ia-dialog__copy-context-btn:hover {
   color: var(--speed-pos-soft);
   border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX 1 — BLOCO CENTRAL (hold): exaustão não cortada
+   overflow:hidden existe para impedir que a logo SVG (idle)
+   cubra os Speed gauges abaixo. Em hold a logo está oculta,
+   então overflow:visible é seguro e mostra os badges de exaustão.
+═══════════════════════════════════════════════════════════ */
+
+.hud-makers-preparo.hud-makers-preparo--hold {
+  overflow: visible !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX 2 — LINHA BE: sticky na base da col AGR
+   panel-hud tem overflow-y:auto com scrollbar oculta;
+   o BE ficava abaixo do fold. Sticky garante visibilidade.
+═══════════════════════════════════════════════════════════ */
+
+.hud-cols > .hud-col:first-child .gatilho-breakeven-wrap {
+  position: sticky;
+  bottom: 4px;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 3;
+  padding-top: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX 3 — ÚLT. VIRADA: sticky na base da col Makers
+   Classe hud-line--radar-ult-virada injetada em renderer-hud.js.
+═══════════════════════════════════════════════════════════ */
+
+.hud-col-makers .hud-line--radar-ult-virada {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
+  z-index: 2;
+  padding-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIX 4 — SPEED %CONF-IA: triângulo menor para não cobrir label
+   Triângulo era 38px; desce o badge a ~92px colidindo com __label
+   do gauge em ~93px. Reduzir para 26px dá ~10px de folga.
+═══════════════════════════════════════════════════════════ */
+
+.hud-col-instruments .hud-makers-delta
+  .radar-mid-indicator--tri
+  .gatilho-mem-tri-wrap--speed-center
+  .gatilho-mem-tri {
+  font-size: 26px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   COMPACTAÇÃO — Fluxo + Alvo/Níveis: gabarito único
+   Todas as linhas seguem o mesmo padrão do .level-row:
+   padding 5px 7px · strong 10.8px · lbl 10px
+   Footprint, Regime e sticky não são afectados.
+═══════════════════════════════════════════════════════════ */
+
+/* Linhas condicionais invisíveis: padding anulado para não criar espaço
+   fantasma que force o sticky do footprint/regime para cima sobre linhas visíveis.
+   A altura de 3px mantém o placeholder mínimo no DOM (evita re-layout brusco). */
+#flowBox .flow-row.flow-row--hidden-by-threshold {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  height: 3px !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Fluxo: rows delta */
+#flowBox .flow .flow-row.delta-row {
+  padding: 5px 7px;
+  gap: 7px;
+}
+
+#flowBox .flow .flow-row.delta-row > strong {
+  font-size: 10.8px;
+}
+
+#flowBox .flow .flow-row.delta-row .lbl {
+  font-size: 10px;
+}
+
+/* Alvo/Níveis: rows delta (% da TEND., Viés/TEND.) */
+#levelsBox .flow-row.delta-row {
+  padding: 5px 7px;
+  gap: 7px;
+}
+
+#levelsBox .flow-row.delta-row > strong {
+  font-size: 10.8px;
+}
+
+#levelsBox .flow-row.delta-row .lbl {
+  font-size: 10px;
+}
+
+/* Alvo/Níveis: linhas hud-line (Absorção) */
+#levelsBox .hud-line {
+  padding: 5px 7px;
+  min-height: 0;
+  margin-bottom: 2px;
+}
+
+#levelsBox .hud-line .hud-k {
+  font-size: 9.5px;
+}
+
+#levelsBox .hud-line .hud-v {
+  font-size: 10.8px;
+}
+
+/* PTAX Bússola no slot Alvo/Níveis: compasso menor para alinhar com demais linhas */
+.levels-ptax-slot {
+  margin-top: 2px;
+}
+
+.levels-ptax-slot .placar-ptax__compass.ptax-compass {
+  width: 24px;
+  height: 24px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GRID — Row 1 compactado (Fluxo+Níveis); Row 2 mantido em
+   1.5fr — equilibra espaço HUD sem deixar o Raio-X dos 22
+   filtros aparecer pela metade (fica abaixo do fold, acessível
+   por scroll com scrollbar oculta).
+═══════════════════════════════════════════════════════════ */
+
+.grid {
+  grid-template-rows:
+    minmax(160px, 1.6fr)
+    minmax(270px, 1.5fr)
+    minmax(185px, 0.9fr) !important;
 }
