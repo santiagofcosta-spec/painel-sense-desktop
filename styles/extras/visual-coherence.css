@@ -84,9 +84,22 @@
    Regime (.regime-mercado) cola diretamente na base.
 ═══════════════════════════════════════════════════════════ */
 
+/* Regime: flex:1 1 auto faz-o expandir — travamos a altura máxima para que
+   não ocupe todo o painel e não colida com o footprint sticky acima */
+.panel-tl .flow > .regime-mercado--one {
+  flex: 0 0 auto !important;
+  max-height: 80px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.panel-tl .flow > .regime-mercado--one::-webkit-scrollbar {
+  display: none !important;
+}
+
 #flowBox .flow-row--footprint {
   position: sticky;
-  bottom: 26px;
+  bottom: 84px; /* regime max-height 80px + 4px gap */
   background: linear-gradient(180deg, #0d1422 0%, #0a0f18 100%);
   z-index: 2;
 }
@@ -246,11 +259,11 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
    Resultado: ~28px de altura total (vs ~80px anterior).
 ═══════════════════════════════════════════════════════════ */
 
-/* Container: altura reduzida para acomodar barra slim */
+/* Container: 100px dá folga à logo (transform scale ~88px) sem desperdício */
 .hud-makers-preparo {
-  height: 90px !important;
-  min-height: 90px !important;
-  max-height: 90px !important;
+  height: 100px !important;
+  min-height: 100px !important;
+  max-height: 100px !important;
   --gatilho-idle-logo-scale: 1.10;
   --gatilho-idle-logo-side: min(
     calc(var(--gatilho-idle-logo-gauge-baseline) * 1.10),
@@ -339,13 +352,13 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   box-shadow: none !important;
 }
 
-/* Speeds: gauge ligeiramente maior agora que preparo é mais compacto */
+/* Speeds: gauge 68px — mantém espaço para o triângulo contador e label sem colisão */
 .hud-col-instruments .hud-makers-delta {
-  min-height: 120px;
+  min-height: 128px;
   margin-top: 4px;
-  padding-top: 8px;
+  padding-top: 10px;
   padding-bottom: 6px;
-  --radar-delta-gauge-svg-h-makers: 62px;
+  --radar-delta-gauge-svg-h-makers: 68px;
 }
 
 /* ═══════════════════════════════════════════════════════════
