@@ -147,29 +147,7 @@ body {
 }
 
 .data-banner {
-  display: block;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 43px;
-  z-index: 16;
-  pointer-events: none;
-  margin: 0;
-  padding: 10px 12px;
-  font-size: 12px;
-  line-height: 1.45;
-  box-sizing: border-box;
-  min-height: 34px;
-  max-height: 34px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: #fecaca;
-  background: linear-gradient(90deg, #3f1d1d 0%, #2a1212 100%);
-  border-bottom: 1px solid #7f1d1d;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 120ms ease;
+  display: none !important;
 }
 
 .data-banner.data-banner--show {
@@ -317,11 +295,38 @@ dialog::backdrop {
 
 .sense-ia-dialog__title {
   margin: 0;
+  flex: 1;
+  min-width: 0;
   font-size: 15px;
   font-weight: 800;
   letter-spacing: 0.06em;
   color: #a5f3fc;
   text-transform: uppercase;
+}
+
+.sense-ia-dialog__action-btn {
+  flex-shrink: 0;
+  padding: 6px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #e0f2fe;
+  background: rgba(14, 116, 144, 0.45);
+  border: 1px solid rgba(34, 211, 238, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sense-ia-dialog__action-btn:hover {
+  background: rgba(8, 145, 178, 0.55);
+  border-color: rgba(103, 232, 249, 0.5);
+}
+
+.sense-ia-dialog__action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .sense-ia-dialog__close {
@@ -367,6 +372,18 @@ dialog::backdrop {
 .sense-ia-dialog__body--rich {
   white-space: normal;
   padding: 10px 2px;
+}
+
+.sense-ia-dialog__body--long-report {
+  max-height: min(72vh, 560px);
+}
+
+.sense-ia-dialog__long-report {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #e2e8f0;
 }
 
 .sense-ia-card {
@@ -508,6 +525,60 @@ dialog::backdrop {
 
 .sense-ia-dialog__body::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, rgba(100, 116, 139, 0.95) 0%, rgba(71, 85, 105, 0.95) 100%);
+}
+
+.sense-ia-dialog__save-md-btn {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #ecfccb;
+  background: rgba(63, 98, 18, 0.45);
+  border: 1px solid rgba(163, 230, 53, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.sense-ia-dialog__save-md-btn:hover {
+  background: rgba(77, 124, 15, 0.55);
+  border-color: rgba(190, 242, 100, 0.5);
+}
+
+.sense-ia-dialog__save-md-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.sense-ia-dialog__copy-context-btn {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #e0f2fe;
+  background: rgba(30, 58, 138, 0.4);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.sense-ia-dialog__copy-context-btn:hover {
+  background: rgba(37, 99, 235, 0.45);
+  border-color: rgba(125, 211, 252, 0.5);
+}
+
+.sense-ia-dialog__copy-context-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
 }
 
 .sense-ia-dialog__foot {
@@ -984,7 +1055,7 @@ dialog::backdrop {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows:
-    minmax(100px, auto)
+    minmax(100px, 1fr)
     minmax(255px, 1.58fr)
     minmax(200px, 1.12fr);
   gap: var(--grid-gap);
@@ -992,7 +1063,7 @@ dialog::backdrop {
   width: 100%;
   box-sizing: border-box;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   scrollbar-gutter: unset;
   /* Barra oculta (incl. Electron/Win — scroll com roda / touch) */
   scrollbar-width: none !important;
@@ -1021,8 +1092,8 @@ dialog::backdrop {
   box-shadow: 0 0 24px rgba(0, 80, 255, 0.06);
   min-height: 0;
   overflow-x: hidden;
-  /* Conteúdo visível; scroll global no body se a janela for baixa */
-  overflow-y: visible;
+  overflow-y: clip;
+  contain: layout paint;
 }
 
 .panel-tl {
@@ -1033,7 +1104,7 @@ dialog::backdrop {
   min-height: 0;
   align-self: stretch;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: clip;
 }
 
 /* Ocupa a altura da célula da grelha; a faixa REGIME estica em baixo e fecha o «buraco» visual */
@@ -1106,7 +1177,7 @@ dialog::backdrop {
   flex-direction: column;
   min-height: 0;
   overflow-x: hidden;
-  overflow-y: visible;
+  overflow-y: clip;
 }
 
 .panel-tr .levels {
