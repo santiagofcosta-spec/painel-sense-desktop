@@ -124,4 +124,29 @@ async function fetchBcPtaxUsdAuto() {
   return empty;
 }
 
-module.exports = { fetchBcPtaxUsdAuto, brDateMmDdYyyy };
+// Background poller — mantém resultado em memória para read-dashboard nunca bloquear na rede
+let _bgResult = null;
+let _bgFetching = false;
+
+async function _runBgFetch() {
+  if (_bgFetching) return;
+  _bgFetching = true;
+  try {
+    _bgResult = await fetchBcPtaxUsdAuto();
+  } catch (e) {
+    _bgResult = { ok: false, error: e && e.message ? e.message : String(e) };
+  } finally {
+    _bgFetching = false;
+  }
+}
+
+function startPtaxPoller(intervalMs = 60_000) {
+  _runBgFetch(); // primeira busca imediata, sem bloquear
+  setInterval(_runBgFetch, intervalMs);
+}
+
+function getPtaxSync() {
+  return _bgResult;
+}
+
+module.exports = { fetchBcPtaxUsdAuto, brDateMmDdYyyy, startPtaxPoller, getPtaxSync };
