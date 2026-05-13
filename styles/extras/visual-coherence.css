@@ -222,13 +222,35 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
    Fix: zeramos padding e reduzimos margin-bottom para caber nos 102px.
 ═══════════════════════════════════════════════════════════ */
 
-/* Compacta o preparo (logo + termômetro) de 135px → 112px.
-   Reduz a coluna Instruments para que AGR e Radar mostrem Pressão forte
-   e ULT. VIRADA sem scroll. Tubo 36px; logo scale 1.10. */
+/* ═══════════════════════════════════════════════════════════
+   PAINEL DELTA (panel-bl) — overflow auto para Pressão forte
+   e Pressão rápida sempre acessíveis mesmo com Row 3 compacta.
+═══════════════════════════════════════════════════════════ */
+
+.panel-bl {
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+.panel-bl::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TERMÔMETRO — redesign horizontal compacto neon
+   Converte o tubo vertical em barra horizontal slim (8px altura).
+   O fill usa width: calc(--thermo-pos * 100%) em vez de height.
+   Caps C/V ficam à esquerda e direita da barra.
+   Resultado: ~28px de altura total (vs ~80px anterior).
+═══════════════════════════════════════════════════════════ */
+
+/* Container: altura reduzida para acomodar barra slim */
 .hud-makers-preparo {
-  height: 112px !important;
-  min-height: 112px !important;
-  max-height: 112px !important;
+  height: 90px !important;
+  min-height: 90px !important;
+  max-height: 90px !important;
   --gatilho-idle-logo-scale: 1.10;
   --gatilho-idle-logo-side: min(
     calc(var(--gatilho-idle-logo-gauge-baseline) * 1.10),
@@ -236,30 +258,94 @@ html.realtime-optimized .status:not(.error):not(.warning)::before {
   );
 }
 
-/* Centraliza o botão COMPRA/VENDA verticalmente */
+/* Centraliza botão COMPRA/VENDA */
 .hud-makers-preparo__dual-layer--hold {
   justify-content: center;
 }
 
+/* Wrapper do termômetro: sem padding, margem mínima */
 .hud-makers-preparo__thermo .gatilho-thermo-meter-wrap {
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-top: 0;
-  margin-bottom: 4px;
+  padding: 0;
+  margin: 0 0 4px 0;
+  background: none;
+  box-shadow: none;
+  clip-path: none;
 }
 
+/* Viz: layout horizontal — caps flanqueiam a barra */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  animation: none;
+}
+
+/* Tubo: wide + slim (barra horizontal) */
 .hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__tube-wrap {
-  height: 36px;
+  width: 44px !important;
+  height: 8px !important;
+  flex: 1 1 auto;
+  overflow: hidden;
+  border-radius: 4px;
 }
 
-/* Compacta os Speeds (makers-delta): gauge 72px → 58px, menos margem/padding.
-   Os arcos %PICO / %CONF-IA / %PERSIST mantêm leitura num tamanho ajustado. */
+/* Fill: horizontal — width controlado por --thermo-pos */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__fill {
+  position: absolute;
+  left: 0 !important;
+  bottom: 0 !important;
+  top: 0 !important;
+  height: 100% !important;
+  width: calc(var(--thermo-pos, 0.5) * 100%) !important;
+  background: linear-gradient(90deg,
+    rgba(56, 189, 248, 0.05) 0%,
+    rgba(56, 189, 248, 0.55) 50%,
+    rgba(125, 211, 252, 0.9) 100%) !important;
+  border-top: none !important;
+  border-right: 1px solid rgba(125, 211, 252, 0.6) !important;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5), inset 0 0 4px rgba(56, 189, 248, 0.2) !important;
+  mix-blend-mode: normal !important;
+  border-radius: 4px;
+}
+
+/* Track: linha central de equilíbrio — vertical no meio da barra */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__track {
+  background: none !important;
+}
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__track::after {
+  left: 50% !important;
+  right: auto !important;
+  top: -2px !important;
+  bottom: -2px !important;
+  width: 1px !important;
+  height: auto !important;
+  background: rgba(250, 204, 21, 0.7) !important;
+  filter: drop-shadow(0 0 3px rgba(250, 204, 21, 0.5)) !important;
+  transform: none !important;
+}
+
+/* Marker: oculto (não faz sentido em barra horizontal slim) */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__marker {
+  display: none;
+}
+
+/* Caps C/V: compactas à esquerda (V) e direita (C) da barra */
+.hud-col-instruments .hud-makers-preparo .gatilho-thermo-viz__cap {
+  font-size: 8px !important;
+  padding: 0 2px !important;
+  background: none !important;
+  clip-path: none !important;
+  box-shadow: none !important;
+}
+
+/* Speeds: gauge ligeiramente maior agora que preparo é mais compacto */
 .hud-col-instruments .hud-makers-delta {
   min-height: 120px;
-  margin-top: 6px;
-  padding-top: 10px;
+  margin-top: 4px;
+  padding-top: 8px;
   padding-bottom: 6px;
-  --radar-delta-gauge-svg-h-makers: 58px;
+  --radar-delta-gauge-svg-h-makers: 62px;
 }
 
 /* ═══════════════════════════════════════════════════════════

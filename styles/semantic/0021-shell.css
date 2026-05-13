@@ -11,9 +11,9 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows:
-    minmax(180px, 2.2fr)
-    minmax(280px, 1.6fr)
-    minmax(160px, 0.8fr);
+    minmax(180px, 2fr)
+    minmax(250px, 1.5fr)
+    minmax(185px, 0.9fr);
   gap: var(--grid-gap);
   padding: 5px 6px;
   width: 100%;
