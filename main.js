@@ -744,7 +744,12 @@ async function readAndParseDashboard(filePath) {
   let lastErr = null;
   for (let i = 0; i < 8; i++) {
     try {
-      const rawBuffer = await fs.promises.readFile(filePath);
+      // Timeout evita que readFile fique pendurado indefinidamente (ex: Windows Defender lock em
+      // C:\Program Files), o que travaria tickInFlight no renderer para sempre.
+      const rawBuffer = await Promise.race([
+        fs.promises.readFile(filePath),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("readFile timeout 800ms")), 800)),
+      ]);
       const rawUtf8 = stripJsonBom(rawBuffer.toString("utf8"));
       const rawLatin1 = stripJsonBom(rawBuffer.toString("latin1"));
       const rawUtf16 = stripJsonBom(rawBuffer.toString("utf16le"));

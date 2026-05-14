@@ -23,11 +23,13 @@ function pathLooksCloudSynced(p) {
   );
 }
 
-/** O EA grava em …\\MQL5\\Files\\dashboard.json — outro sítio quase sempre é cópia ou caminho errado. */
+/** O EA grava em MQL5\\Files ou Common\\Files — ambos são caminhos válidos do MT5. */
 function pathLooksLikeMt5Mql5Files(p) {
   if (!p || typeof p !== "string") return false;
   const u = p.replace(/\\/g, "/").toLowerCase();
-  return u.includes("mql5") && u.includes("files");
+  const isMql5Files = u.includes("mql5") && u.includes("files");
+  const isCommonFiles = u.includes("metaquotes") && u.includes("common") && u.includes("files");
+  return isMql5Files || isCommonFiles;
 }
 
 function parseMetaTimeToMs(metaTime) {
