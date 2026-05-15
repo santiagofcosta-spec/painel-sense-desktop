@@ -11,8 +11,10 @@
     <link rel="stylesheet" href="styles.css?v=20260512cssrestore" />
     <!-- Componentes standalone — criados fora do ciclo de regeneração semântica -->
     <link rel="stylesheet" href="styles/sense-stale-alert.css?v=20260513" />
+    <link rel="stylesheet" href="styles/sense-health.css" />
     <link rel="stylesheet" href="styles/auto-cycle-toast.css?v=20260513" />
     <link rel="stylesheet" href="styles/raiox.css?v=20260513" />
+    <link rel="stylesheet" href="styles/alvo-invertido.css?v=1" />
     <link rel="stylesheet" href="styles/theme-flow-speeds.css?v=20260513" />
     <link rel="stylesheet" href="styles/theme-thermo-futuristic.css?v=20260513" />
     <!-- 0132-flow-advanced.css e extras sobrevivem à regeneração de split-css-semantic.js -->
@@ -110,6 +112,7 @@
             </button>
           </header>
           <p id="senseIaMeta" class="sense-ia-dialog__meta"></p>
+          <div id="senseHealthBar" class="sense-health-bar sense-health-bar--loading" aria-live="polite">a verificar...</div>
           <div id="senseIaBody" class="sense-ia-dialog__body"></div>
           <footer class="sense-ia-dialog__foot">
             <span id="senseIaProviderHelp">
@@ -155,6 +158,7 @@
     <script src="renderer-contracts.js?v=20260425phase23"></script>
     <script src="renderer-sr-motion.js?v=20260511wapiInfinite"></script>
     <script src="renderer-sense-ia.js?v=20260428flowfusion1"></script>
+    <script src="renderer-sense-health.js"></script>
     <script src="renderer-auto-cycle-toast.js?v=1"></script>
     <script src="renderer-flow-levels.js?v=20260424flow"></script>
     <script src="renderer-aggression-format.js?v=20260424aggfmt"></script>

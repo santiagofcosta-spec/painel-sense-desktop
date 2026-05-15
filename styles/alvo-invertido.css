@@ -1,0 +1,74 @@
+/* ===== Alvo Invertido — Card de Alerta ===== */
+
+@keyframes alvoInvPulseBorder {
+  0%,  100% { border-color: #ff6b00; box-shadow: 0 0 0 0 rgba(255,107,0,.4); }
+  50%        { border-color: #ffaa00; box-shadow: 0 0 0 4px rgba(255,107,0,0); }
+}
+
+#alvoInvertidoCard {
+  margin-bottom: 4px;
+}
+
+.alvo-inv-alert {
+  background: #1a0a00;
+  border: 1px solid #ff6b00;
+  border-radius: 6px;
+  padding: 10px 12px;
+  animation: alvoInvPulseBorder 1s infinite;
+  font-size: 12px;
+}
+
+.alvo-inv-header {
+  color: #ff6b00;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.alvo-inv-desc {
+  color: #888;
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+
+.alvo-inv-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 3px;
+}
+
+.alvo-inv-row .lbl { color: #555; }
+.alvo-inv-row strong { color: #fff; }
+.alvo-inv--buy  { color: #00e676 !important; }
+.alvo-inv--sl   { color: #ff4444 !important; }
+
+.alvo-inv-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.alvo-inv-footer span { color: #ff6b00; font-size: 13px; }
+.alvo-inv-footer strong { font-size: 16px; font-weight: bold; }
+
+.alvo-inv-btn-cancel {
+  background: #cc2222;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  letter-spacing: .5px;
+}
+.alvo-inv-btn-cancel:hover { background: #ee3333; }
+
+.alvo-inv-session-badge {
+  margin-top: 6px;
+  font-size: 10px;
+  color: #ff6b00;
+  opacity: .75;
+  text-align: right;
+}
