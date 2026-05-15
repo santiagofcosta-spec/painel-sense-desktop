@@ -384,9 +384,6 @@ function paintDashboardHud(hudBox, d, v, consensus) {
 }
 
 function paintDashboardLevelsPanel(levelsBox, d, v, S, levelsHoldMsDefault) {
-  if (typeof paintAlvoInvertidoOverlay === "function" && paintAlvoInvertidoOverlay(levelsBox, d)) {
-    return;
-  }
   const levels = Array.isArray(d.levels) ? d.levels : [];
   const flowObj = d.flow && typeof d.flow === "object" ? d.flow : null;
   const deltaObj = d.delta && typeof d.delta === "object" ? d.delta : null;
@@ -443,6 +440,10 @@ function paintDashboardLevelsPanel(levelsBox, d, v, S, levelsHoldMsDefault) {
     }
   }
   S.levelsHoldMap = nextLevelsHold;
+
+  if (typeof paintAlvoInvertidoOverlay === "function" && paintAlvoInvertidoOverlay(levelsBox, d)) {
+    return;
+  }
 
   const levelSortPriority = (label) => {
     const s = stripAccentsForDisplay(String(label || "")).toUpperCase();
