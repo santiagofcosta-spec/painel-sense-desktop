@@ -19,6 +19,7 @@ function _tocarAlertaAlvoInvertido() {
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
     osc.start();
     osc.stop(ctx.currentTime + 0.4);
+    osc.onended = () => ctx.close();
   } catch (_) { /* AudioContext não disponível */ }
 }
 
