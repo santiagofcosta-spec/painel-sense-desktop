@@ -62,6 +62,15 @@ const DASHBOARD_FS_WATCH_DEBOUNCE_MS = 120;
 /** Rotação do audit HMAC do dashboard (evita JSONL ilimitado em userData). */
 const DASHBOARD_SIGNATURE_AUDIT_MAX_BYTES = 8 * 1024 * 1024;
 
+const senseHealthState = {
+  lastFileChangedAt: 0,
+  lastReadSuccessAt: 0,
+  lastReadDurationMs: 0,
+  readTimeoutCount: 0,
+  readFailCount: 0,
+  lastReadFailAt: 0,
+};
+
 const IPC_MAIN_HANDLE_CHANNELS = [
   "read-dashboard",
   "pick-dashboard-file",
@@ -81,6 +90,7 @@ const IPC_MAIN_HANDLE_CHANNELS = [
   "trigger-inputs-autocalib",
   "get-security-status",
   "get-license-status",
+  "get-sense-health",
 ];
 
 function unregisterSenseIpcHandlers() {
@@ -742,6 +752,7 @@ function delay(ms) {
 /** MT5/Windows: leitura pode falhar ou JSON vir truncado a meio da escrita — várias tentativas. */
 async function readAndParseDashboard(filePath) {
   let lastErr = null;
+  const _readStart = Date.now();
   for (let i = 0; i < 8; i++) {
     try {
       // Timeout evita que readFile fique pendurado indefinidamente (ex: Windows Defender lock em
@@ -764,12 +775,19 @@ async function readAndParseDashboard(filePath) {
           data = JSON.parse(rawUtf16);
         }
       }
+      senseHealthState.lastReadSuccessAt = Date.now();
+      senseHealthState.lastReadDurationMs = Date.now() - _readStart;
       return { data, raw: rawUtf8, rawLatin1, rawUtf16 };
     } catch (e) {
+      if (e && e.message && e.message.includes("readFile timeout 800ms")) {
+        senseHealthState.readTimeoutCount++;
+      }
       lastErr = e;
       await delay(6);
     }
   }
+  senseHealthState.readFailCount++;
+  senseHealthState.lastReadFailAt = Date.now();
   throw lastErr || new Error("readAndParseDashboard");
 }
 
@@ -789,6 +807,7 @@ function stopDashboardWatch() {
 }
 
 function notifyDashboardFileChanged() {
+  senseHealthState.lastFileChangedAt = Date.now();
   if (mainWindow && !mainWindow.isDestroyed()) {
     mainWindow.webContents.send("dashboard-file-changed");
   }
@@ -1126,6 +1145,16 @@ app.on("before-quit", () => {
   if (inputsAutocalibInstance) inputsAutocalibInstance.stop();
   stopDashboardWatch();
   unregisterSenseIpcHandlers();
+});
+
+ipcMain.handle("cancelar-alvo-invertido", async () => {
+  try {
+    const cancelPath = path.join(path.dirname(getDataFilePath()), "sense_cancel.txt");
+    await fs.promises.writeFile(cancelPath, "1", "utf8");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err.message) };
+  }
 });
 
 ipcMain.handle("read-dashboard", async () => {
@@ -1991,4 +2020,17 @@ ipcMain.handle("get-security-status", async () => {
 
 ipcMain.handle("get-license-status", async () => {
   return { ...licenseRuntimeStatus };
+});
+
+ipcMain.handle("get-sense-health", () => {
+  return {
+    ok: true,
+    lastFileChangedAt: senseHealthState.lastFileChangedAt,
+    lastReadSuccessAt: senseHealthState.lastReadSuccessAt,
+    lastReadDurationMs: senseHealthState.lastReadDurationMs,
+    readTimeoutCount: senseHealthState.readTimeoutCount,
+    readFailCount: senseHealthState.readFailCount,
+    lastReadFailAt: senseHealthState.lastReadFailAt,
+    nowMs: Date.now(),
+  };
 });
