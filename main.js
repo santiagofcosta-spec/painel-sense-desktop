@@ -91,6 +91,7 @@ const IPC_MAIN_HANDLE_CHANNELS = [
   "get-security-status",
   "get-license-status",
   "get-sense-health",
+  "cancelar-alvo-invertido",
 ];
 
 function unregisterSenseIpcHandlers() {
@@ -1147,10 +1148,14 @@ app.on("before-quit", () => {
   unregisterSenseIpcHandlers();
 });
 
+/** Sinal de cancelamento para a EA: cria sense_cancel.txt na pasta do dashboard.json.
+ *  A EA detecta o arquivo em ProcessarAlvoInvertido() e cancela o countdown ativo. */
 ipcMain.handle("cancelar-alvo-invertido", async () => {
   try {
     const cancelPath = path.join(path.dirname(getDataFilePath()), "sense_cancel.txt");
-    await fs.promises.writeFile(cancelPath, "1", "utf8");
+    const tmp = `${cancelPath}.tmp-${process.pid}-${Date.now()}`;
+    fs.writeFileSync(tmp, "1", "utf8");
+    fs.renameSync(tmp, cancelPath);
     return { ok: true };
   } catch (err) {
     return { ok: false, error: String(err.message) };
