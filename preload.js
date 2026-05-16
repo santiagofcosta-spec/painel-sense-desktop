@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld("senseAPI", {
   travarEa:              () => ipcRenderer.invoke("travar-ea"),
   desbloquearEa:         () => ipcRenderer.invoke("desbloquear-ea"),
   killSwitchStatus:      () => ipcRenderer.invoke("kill-switch-status"),
+  readPnlHistory:        () => ipcRenderer.invoke("read-pnl-history"),
   pickDashboardFile: () => ipcRenderer.invoke("pick-dashboard-file"),
   /** SENSE IA — modelo via config.json (senseIa) ou env: OpenAI, Ollama ou Genspark. */
   senseIaAsk: () => ipcRenderer.invoke("sense-ia-ask"),
