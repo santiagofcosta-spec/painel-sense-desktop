@@ -92,6 +92,9 @@ const IPC_MAIN_HANDLE_CHANNELS = [
   "get-license-status",
   "get-sense-health",
   "cancelar-alvo-invertido",
+  "travar-ea",
+  "desbloquear-ea",
+  "kill-switch-status",
 ];
 
 function unregisterSenseIpcHandlers() {
@@ -1160,6 +1163,36 @@ ipcMain.handle("cancelar-alvo-invertido", async () => {
   } catch (err) {
     return { ok: false, error: String(err.message) };
   }
+});
+
+/** Kill switch: trava o EA criando sense_kill.txt na pasta do dashboard.json. */
+ipcMain.handle("travar-ea", async () => {
+  try {
+    const killPath = path.join(path.dirname(getDataFilePath()), "sense_kill.txt");
+    const tmp = `${killPath}.tmp-${process.pid}-${Date.now()}`;
+    fs.writeFileSync(tmp, "1", "utf8");
+    fs.renameSync(tmp, killPath);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err.message) };
+  }
+});
+
+/** Kill switch: desbloqueio — deleta sense_kill.txt. */
+ipcMain.handle("desbloquear-ea", async () => {
+  try {
+    const killPath = path.join(path.dirname(getDataFilePath()), "sense_kill.txt");
+    if (fs.existsSync(killPath)) fs.unlinkSync(killPath);
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: String(err.message) };
+  }
+});
+
+/** Kill switch: retorna estado atual (para sincronizar botão ao abrir o painel). */
+ipcMain.handle("kill-switch-status", async () => {
+  const killPath = path.join(path.dirname(getDataFilePath()), "sense_kill.txt");
+  return { active: fs.existsSync(killPath) };
 });
 
 ipcMain.handle("read-dashboard", async () => {
