@@ -8,6 +8,9 @@ const { contextBridge, ipcRenderer } = require("electron");
 contextBridge.exposeInMainWorld("senseAPI", {
   readDashboard: () => ipcRenderer.invoke("read-dashboard"),
   cancelarAlvoInvertido: () => ipcRenderer.invoke("cancelar-alvo-invertido"),
+  travarEa:              () => ipcRenderer.invoke("travar-ea"),
+  desbloquearEa:         () => ipcRenderer.invoke("desbloquear-ea"),
+  killSwitchStatus:      () => ipcRenderer.invoke("kill-switch-status"),
   pickDashboardFile: () => ipcRenderer.invoke("pick-dashboard-file"),
   /** SENSE IA — modelo via config.json (senseIa) ou env: OpenAI, Ollama ou Genspark. */
   senseIaAsk: () => ipcRenderer.invoke("sense-ia-ask"),
@@ -77,3 +80,4 @@ contextBridge.exposeInMainWorld("senseAPI", {
     return () => ipcRenderer.removeListener("sense-ia-inputs-autocalib-result", fn);
   },
 });
+
