@@ -20,6 +20,7 @@
     <!-- 0132-flow-advanced.css e extras sobrevivem à regeneração de split-css-semantic.js -->
     <link rel="stylesheet" href="styles/extras/0132-flow-advanced.css?v=20260512cssrestore" />
     <link rel="stylesheet" href="styles/extras/visual-coherence.css?v=20260513neon1" />
+    <link rel="stylesheet" href="styles/pnl-modal.css" />
   </head>
   <body>
     <div id="sense-stale-alert" aria-live="polite"></div>
@@ -43,6 +44,9 @@
         <button type="button" id="btn-kill-switch" data-active="false"
           onclick="killSwitchToggle()">
           Travar EA
+        </button>
+        <button type="button" id="btn-pnl-history" onclick="pnlModalOpen()">
+          Histórico PnL
         </button>
         <div class="topbar__tail">
           <span id="pathLabel" class="path"></span>
@@ -186,8 +190,54 @@
     <script src="scripts/lib/sense-block-histogram-core.js?v=20260512raiox1"></script>
     <script src="renderer-block-histogram.js?v=20260512raiox1"></script>
     <script src="renderer-gatilho-raiox.js?v=20260512raiox1"></script>
+    <script src="renderer-pnl.js"></script>
     <script src="renderer-kill-switch.js"></script>
     <script src="renderer-bootstrap.js?v=20260424boot"></script>
+    <div id="pnl-modal-overlay" onclick="if(event.target===this)pnlModalClose()">
+      <div id="pnl-modal">
+        <div id="pnl-modal-header">
+          <span id="pnl-modal-title">Histórico PnL</span>
+          <button id="pnl-modal-close" onclick="pnlModalClose()">✕</button>
+        </div>
+        <div id="pnl-metrics">
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Resultado hoje</div>
+            <div class="pnl-metric__value" id="pnl-m-hoje">—</div>
+          </div>
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Operações</div>
+            <div class="pnl-metric__value pnl-metric__value--neutral" id="pnl-m-ops">—</div>
+          </div>
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Win rate</div>
+            <div class="pnl-metric__value pnl-metric__value--neutral" id="pnl-m-winrate">—</div>
+          </div>
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Drawdown máx. hoje</div>
+            <div class="pnl-metric__value" id="pnl-m-dd">—</div>
+          </div>
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Sequência atual</div>
+            <div class="pnl-metric__value pnl-metric__value--neutral" id="pnl-m-seq">—</div>
+          </div>
+          <div class="pnl-metric">
+            <div class="pnl-metric__label">Resultado semana</div>
+            <div class="pnl-metric__value" id="pnl-m-semana">—</div>
+          </div>
+        </div>
+        <div class="pnl-chart-section">
+          <div class="pnl-chart-label">Curva intraday — hoje</div>
+          <canvas id="pnl-canvas-intraday" class="pnl-canvas"></canvas>
+        </div>
+        <div class="pnl-chart-section">
+          <div class="pnl-chart-label">Resultado por dia — últimos 14 pregões</div>
+          <canvas id="pnl-canvas-multiday" class="pnl-canvas"></canvas>
+        </div>
+        <div id="pnl-modal-footer">
+          <span id="pnl-last-update">—</span>
+        </div>
+      </div>
+    </div>
     <div id="autoCycleToastContainer"></div>
   </body>
 </html>
