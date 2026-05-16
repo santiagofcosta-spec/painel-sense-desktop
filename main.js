@@ -95,6 +95,7 @@ const IPC_MAIN_HANDLE_CHANNELS = [
   "travar-ea",
   "desbloquear-ea",
   "kill-switch-status",
+  "read-pnl-history",
 ];
 
 function unregisterSenseIpcHandlers() {
@@ -1193,6 +1194,118 @@ ipcMain.handle("desbloquear-ea", async () => {
 ipcMain.handle("kill-switch-status", async () => {
   const killPath = path.join(path.dirname(getDataFilePath()), "sense_kill.txt");
   return { active: fs.existsSync(killPath) };
+});
+
+/** Histórico PnL: lê e parseia todos os SENSE_TradeLog_*.csv dos últimos 14 dias. */
+ipcMain.handle("read-pnl-history", async () => {
+  try {
+    const dir = path.dirname(getDataFilePath());
+
+    // 1. Listar arquivos SENSE_TradeLog_*.csv, ordenados, últimos 14
+    const files = fs.readdirSync(dir)
+      .filter(f => /^SENSE_TradeLog_\d{8}\.csv$/.test(f))
+      .sort()
+      .slice(-14);
+
+    // 2. Identificar arquivo de hoje
+    const now = new Date();
+    const yy  = now.getFullYear();
+    const mm  = String(now.getMonth() + 1).padStart(2, "0");
+    const dd  = String(now.getDate()).padStart(2, "0");
+    const todayKey  = `${yy}${mm}${dd}`;
+    const todayFile = `SENSE_TradeLog_${todayKey}.csv`;
+
+    // 3. Parsear cada arquivo
+    const days = [];
+    let todayTrades = [];
+
+    for (const fname of files) {
+      const fpath = path.join(dir, fname);
+      const raw   = fs.readFileSync(fpath, "latin1");
+      const lines = raw.split(/\r?\n/).filter(Boolean);
+
+      const closes = lines
+        .slice(1) // pular header
+        .map(l => l.split(";"))
+        .filter(cols => cols[1] === "CLOSE" && cols[8] !== "");
+
+      const dateCode = fname.replace("SENSE_TradeLog_", "").replace(".csv", "");
+      const label    = `${dateCode.slice(6, 8)}/${dateCode.slice(4, 6)}`;
+
+      const trades = closes.map(cols => ({
+        time:      (cols[0] || "").split(" ")[1] || cols[0] || "",
+        resultado: parseFloat(cols[8]) || 0,
+        pnlAcum:   parseFloat(cols[9]) || 0,
+      }));
+
+      const wins   = trades.filter(t => t.resultado > 0).length;
+      const losses = trades.filter(t => t.resultado < 0).length;
+      const resultado = trades.length > 0 ? trades[trades.length - 1].pnlAcum : 0;
+
+      days.push({ date: label, totalOps: trades.length, wins, losses, resultado });
+      if (fname === todayFile) todayTrades = trades;
+    }
+
+    // 4. Calcular métricas
+    const todayLabel = `${dd}/${mm}`;
+    const todayDay   = days.find(d => d.date === todayLabel)
+      || { totalOps: 0, wins: 0, losses: 0, resultado: 0 };
+
+    const resultadoHoje = todayDay.resultado;
+    const totalOpsHoje  = todayDay.totalOps;
+    const winRateHoje   = totalOpsHoje > 0
+      ? Math.round((todayDay.wins / totalOpsHoje) * 100)
+      : 0;
+
+    const drawdownMaxHoje = todayTrades.length > 0
+      ? Math.min(...todayTrades.map(t => t.pnlAcum))
+      : 0;
+
+    // Sequência atual: contagem de resultados consecutivos iguais no fim
+    let sequenciaAtual = { tipo: "nenhuma", count: 0 };
+    if (todayTrades.length > 0) {
+      const last = todayTrades[todayTrades.length - 1];
+      const tipo = last.resultado >= 0 ? "ganho" : "perda";
+      let count = 0;
+      for (let i = todayTrades.length - 1; i >= 0; i--) {
+        if ((tipo === "ganho") === (todayTrades[i].resultado >= 0)) count++;
+        else break;
+      }
+      sequenciaAtual = { tipo, count };
+    }
+
+    // Resultado semana: soma dos dias de Seg a hoje
+    const dow = now.getDay(); // 0=Dom
+    const mondayOffset = dow === 0 ? -6 : 1 - dow;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() + mondayOffset);
+    weekStart.setHours(0, 0, 0, 0);
+
+    const resultadoSemana = days
+      .filter(d => {
+        const [ddd, mmm] = d.date.split("/");
+        const fd = new Date(yy, parseInt(mmm) - 1, parseInt(ddd));
+        return fd >= weekStart && fd <= now;
+      })
+      .reduce((sum, d) => sum + d.resultado, 0);
+
+    return {
+      today: todayTrades,
+      days,
+      metrics: {
+        resultadoHoje,
+        totalOpsHoje,
+        winRateHoje,
+        drawdownMaxHoje,
+        sequenciaAtual,
+        resultadoSemana,
+      },
+      lastUpdated: now.toLocaleTimeString("pt-BR"),
+      error: null,
+    };
+  } catch (err) {
+    return { today: [], days: [], metrics: null, lastUpdated: null, error: String(err.message) };
+  }
 });
 
 ipcMain.handle("read-dashboard", async () => {
