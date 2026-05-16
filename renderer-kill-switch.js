@@ -25,9 +25,8 @@ async function killSwitchToggle() {
 function updateKillButton(active) {
   const btn = document.getElementById("btn-kill-switch");
   if (!btn) return;
-  btn.dataset.active            = active ? "true" : "false";
-  btn.textContent               = active ? "Desbloquear EA" : "Travar EA";
-  btn.style.backgroundColor     = active ? "#cc0000" : "#1a7a1a";
+  btn.dataset.active = active ? "true" : "false";
+  btn.textContent    = active ? "Desbloquear EA" : "Travar EA";
 }
 
 window.addEventListener("DOMContentLoaded", killSwitchInit);
